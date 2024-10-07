@@ -11,16 +11,19 @@ class Assets {
     private static $css_assets = array(
         'grw-admin-main-css'      => 'css/admin-main',
         'grw-public-clean-css'    => 'css/public-clean',
-        'grw-public-main-css'     => 'css/public-main',
+        'grw-public-main-css'     => 'css/public-main'
     );
 
     private static $js_assets = array(
         'grw-admin-main-js'       => 'js/admin-main',
         'grw-admin-builder-js'    => 'js/admin-builder',
         'grw-admin-apexcharts-js' => 'js/admin-apexcharts',
-        'grw-public-time-js'      => 'js/public-time',
-        'grw-public-blazy-js'     => 'js/public-blazy.min',
         'grw-public-main-js'      => 'js/public-main',
+        'rpi-time-js'             => 'https://cdn.reviewsplugin.com/assets/js/time.js',
+        'rpi-utils-js'            => 'https://cdn.reviewsplugin.com/assets/js/utils.js',
+        'rpi-column-js'           => 'https://cdn.reviewsplugin.com/assets/js/column.js',
+        'rpi-common-js'           => 'https://cdn.reviewsplugin.com/assets/js/common.js',
+        'rpi-slider-js'           => 'https://cdn.reviewsplugin.com/assets/js/slider.js'
     );
 
     public function __construct($url, $version, $debug) {
@@ -57,8 +60,6 @@ class Assets {
         $js_assets = array(
             'grw-admin-main-js'    => 'js/admin-main',
             'grw-admin-builder-js' => 'js/admin-builder',
-            'grw-public-time-js'   => 'js/public-time',
-            'grw-public-blazy-js'  => 'js/public-blazy.min',
             'grw-public-main-js'   => 'js/public-main',
         );
         if (isset($handle) && array_key_exists($handle, $js_assets)) {
@@ -100,8 +101,11 @@ class Assets {
         $scripts = array('grw-admin-main-js', 'grw-public-main-js', 'grw-admin-apexcharts-js');
         if ($this->debug) {
             array_push($scripts, 'grw-admin-builder-js');
-            array_push($scripts, 'grw-public-time-js');
-            array_push($scripts, 'grw-public-blazy-js');
+            array_push($scripts, 'rpi-time-js');
+            array_push($scripts, 'rpi-utils-js');
+            array_push($scripts, 'rpi-column-js');
+            array_push($scripts, 'rpi-common-js');
+            array_push($scripts, 'rpi-slider-js');
         }
         $this->register_scripts_loop($scripts);
     }
@@ -149,8 +153,11 @@ class Assets {
 
     public function enqueue_public_scripts() {
         if ($this->debug) {
-            wp_enqueue_script('grw-public-time-js');
-            wp_enqueue_script('grw-public-blazy-js');
+            wp_enqueue_script('rpi-time-js');
+            wp_enqueue_script('rpi-utils-js');
+            wp_enqueue_script('rpi-column-js');
+            wp_enqueue_script('rpi-common-js');
+            wp_enqueue_script('rpi-slider-js');
         }
         wp_enqueue_script('grw-public-main-js');
     }
@@ -172,7 +179,8 @@ class Assets {
     }
 
     public function get_js_asset($asset) {
-        return $this->url . ($this->debug ? 'src/' : '') . self::$js_assets[$asset] . '.js';
+        $js = self::$js_assets[$asset];
+        return strpos($js, 'https:') === 0 ? $js : $this->url . ($this->debug ? 'src/' : '') . $js . '.js';
     }
 
     public function version() {

@@ -555,10 +555,10 @@
 }
 
 /*-------------------------------- Slider dots --------------------------------*/
-.wp-gr .grw-dots {
+/*.wp-gr .grw-dots {
     position: absolute!important;
-    right: 50%!important;
-    transform: translate(50%, 0)!important;
+    left: 50%!important;
+    transform: translate(-50%, 0)!important;
     text-align: center!important;
 }
 
@@ -581,7 +581,7 @@
 .wp-gr .grw-dot.active {
     opacity: 1!important;
     background: #427fed !important;
-}
+}*/
 
 /*-------------------------------- slider overrides --------------------------------*/
 .wp-gr .grw-review .wp-google-left {
@@ -679,6 +679,62 @@
     transform-origin: center center!important;
     transform: scale(1)!important;
     transition: transform 0.5s!important;
+}
+
+/*-------------------------------- Slider dots --------------------------------*/
+.wp-gr {
+    --slider-dot-size: 8px;
+}
+
+.wp-gr .rpi-dots-wrap {
+    position: absolute!important;
+    top: calc(100% - 1px)!important;
+    right: 0!important;
+    left: 0!important;
+    display: flex!important;
+    justify-content: center!important;
+    margin: 0 var(--slider-btn)!important;
+    padding-top: var(--slider-dot-padding-top, 16px)!important;
+}
+
+.wp-gr .rpi-dots {
+    display: flex!important;
+    flex-wrap: nowrap!important;
+    overflow-x: scroll!important;
+    scrollbar-width: none!important;
+    scroll-snap-type: x mandatory!important;
+    /*scroll-behavior: smooth!important;*/
+    -webkit-overflow-scrolling: touch!important;
+}
+
+.wp-gr .rpi-dot {
+    display: inline-block!important;
+    width: var(--slider-dot-size)!important;
+    height: var(--slider-dot-size)!important;
+    margin: 1px 5px!important;
+    background-color: var(--slider-dot-color, #999999)!important;
+    border-radius: 20px!important;
+    cursor: pointer!important;
+    opacity: .4!important;
+    vertical-align: middle!important;
+    flex: 1 0 auto!important;
+    width: var(--slider-dot-size)!important;
+    transform: scale(0.65)!important;
+    scroll-snap-align: center!important;
+}
+.wp-gr .rpi-dot:hover {
+    opacity: 1!important;
+}
+.wp-gr .rpi-dot.active {
+    opacity: 1!important;
+    transform: scale(1.1)!important;
+    background-color: var(--slider-act-dot-color, #154fc1)!important;
+}
+.wp-gr .rpi-dot.s2 {
+    transform: scale(.9)!important;
+}
+.wp-gr .rpi-dot.s3 {
+    transform: scale(.75)!important;
 }
 
 /*-------------------------------- grid --------------------------------*/

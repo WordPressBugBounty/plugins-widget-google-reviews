@@ -183,11 +183,16 @@
     width: 100%;
     font-size: 14px;
     font-weight: 700;
+    color: #ff3a3a;
     text-align: center;
     margin: 10px 0 0;
     padding: 5px 0 0;
     border-top: 1px solid #ccc;
     text-transform: uppercase;
+}
+
+#grw-upgrade-tips > a:hover {
+    color: #f70e0e;
 }
 
 /*-------------------------------- Builder page --------------------------------*/

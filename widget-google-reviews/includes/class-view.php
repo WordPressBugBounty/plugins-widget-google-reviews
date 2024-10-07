@@ -7,10 +7,6 @@ class View {
     public function render($feed_id, $businesses, $reviews, $options, $is_admin = false) {
         ob_start();
 
-        if ($options->lazy_load_img) {
-            wp_enqueue_script('blazy-js');
-        }
-
         $max_width = $options->max_width;
         if (is_numeric($max_width)) {
             $max_width = $max_width . 'px';
@@ -32,7 +28,7 @@ class View {
         }
 
         ?>
-        <div class="wp-gr wpac<?php if ($options->dark_theme) { ?> wp-dark<?php } ?>"<?php if ($style) { ?> style="<?php echo $style;?>"<?php } ?> data-id="<?php echo $feed_id; ?>" data-layout="<?php echo $options->view_mode; ?>" data-exec="false">
+        <div class="wp-gr wpac<?php if ($options->dark_theme) { ?> wp-dark<?php } ?>"<?php if ($style) { ?> style="<?php echo $style;?>"<?php } ?> data-id="<?php echo $feed_id; ?>" data-layout="<?php echo $options->view_mode; ?>" data-exec="false" data-options='<?php echo $this->options($options); ?>'>
         <?php
         switch ($options->view_mode) {
             case 'slider':
@@ -59,13 +55,25 @@ class View {
         return preg_replace('/[\n\r]|(>)\s+(<)/', '$1$2', ob_get_clean());
     }
 
+    private function options($options) {
+        return json_encode(
+            array(
+                'text_size' => $options->text_size,
+                'trans'     => array(
+                    'read more' => __('read more', 'widget-google-reviews')
+                )
+            )
+        );
+    }
+
     private function render_slider($businesses, $reviews, $options, $is_admin = false) {
-        ?>
-        <div class="grw-row grw-row-m" data-options='<?php
+        $count = count($reviews); ?>
+        <div class="grw-row grw-row-m" data-count="<?php echo $count; ?>" data-offset="<?php echo $count; ?>" data-options='<?php
             echo json_encode(
                 array(
-                    'speed'    => $options->slider_speed ? $options->slider_speed : 5,
-                    'autoplay' => $options->slider_autoplay
+                    'speed'     => $options->slider_speed ? $options->slider_speed : 3,
+                    'autoplay'  => $options->slider_autoplay,
+                    'mousestop' => $options->slider_mousestop
                 )
             ); ?>'>
             <?php if (count($businesses) > 0) { ?>
@@ -102,7 +110,7 @@ class View {
                     </div>
                     <?php } ?>
                 </div>
-                <?php if (!$options->slider_hide_dots) { ?><div class="grw-dots"></div><?php } ?>
+                <?php if (!$options->slider_hide_dots) { ?><div class="rpi-dots-wrap"><div class="rpi-dots"></div></div><?php } ?>
             </div>
             <?php } ?>
         </div>
@@ -377,7 +385,7 @@ class View {
                 <div class="wp-google-time" data-time="<?php echo $review->time; ?>"><?php echo gmdate("H:i d M y", $review->time); ?></div>
                 <div class="wp-google-feedback">
                     <span class="wp-google-stars"><?php echo $this->grw_stars($review->rating); ?></span>
-                    <span class="wp-google-text"><?php echo $this->grw_trim_text($review->text, $options->text_size); ?></span>
+                    <span class="wp-google-text"><?php echo $review->text; ?></span>
                 </div>
                 <?php if ($is_admin) {
                     echo '<a href="#" class="wp-review-hide" data-id=' . $review->id . '>' . ($review->hide == '' ? 'Hide' : 'Show') . ' review</a>';
@@ -428,7 +436,7 @@ class View {
                 <div>
                     <div class="wp-google-feedback" <?php if (strlen($options->slider_text_height) > 0) {?> style="height:<?php echo $options->slider_text_height; ?>!important"<?php } ?>>
                         <?php if (strlen($review->text) > 0) { ?>
-                        <span class="wp-google-text"><?php echo $this->grw_trim_text($review->text, $options->text_size); ?></span>
+                        <span class="wp-google-text"><?php echo $review->text; ?></span>
                         <?php } ?>
                     </div>
                     <?php if ($is_admin) {
@@ -461,44 +469,11 @@ class View {
     }
 
     function grw_image($src, $alt, $lazy, $def_ava = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', $atts = '') {
-        ?><img <?php if ($lazy) { ?>src="<?php echo $def_ava; ?>" data-<?php } ?>src="<?php echo $src; ?>" class="rplg-review-avatar<?php if ($lazy) { ?> rplg-blazy<?php } ?>" alt="<?php echo $alt; ?>" width="50" height="50" title="<?php echo $alt; ?>" onerror="if(this.src!='<?php echo $def_ava; ?>')this.src='<?php echo $def_ava; ?>';" <?php echo $atts; ?>><?php
+        ?><img src="<?php echo $src; ?>"<?php if ($lazy) { ?> loading="lazy"<?php } ?> class="rplg-review-avatar" alt="<?php echo $alt; ?>" width="50" height="50" title="<?php echo $alt; ?>" onerror="if(this.src!='<?php echo $def_ava; ?>')this.src='<?php echo $def_ava; ?>';" <?php echo $atts; ?>><?php
     }
 
     function js_loader($func, $data = '') {
         ?><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="js_loader" onload="(function(el, data) {var f = function() { window.<?php echo $func; ?> ? <?php echo $func; ?>(el, data) : setTimeout(f, 400) }; f() })(this<?php if (strlen($data) > 0) { ?>, <?php echo str_replace('"', '\'', $data); } ?>);" width="1" height="1" style="display:none"><?php
-    }
-
-    function grw_trim_text($text, $size) {
-        if ($size > 0 && $this->grw_strlen($text) > $size) {
-            $sub_text = $this->grw_substr($text, 0, $size);
-            $idx = $this->grw_strrpos($sub_text, ' ') + 1;
-
-            if ($idx < 1 || $size - $idx > ($size / 2)) {
-                $idx = $size;
-            }
-            if ($idx > 0) {
-                $visible_text = $this->grw_substr($text, 0, $idx - 1);
-                $invisible_text = $this->grw_substr($text, $idx - 1, $this->grw_strlen($text));
-            }
-            echo $visible_text;
-            if ($this->grw_strlen($invisible_text) > 0) {
-                ?><span>... </span><span class="wp-more"><?php echo $invisible_text; ?></span><span class="wp-more-toggle"><?php echo __('read more', 'widget-google-reviews'); ?></span><?php
-            }
-        } else {
-            echo $text;
-        }
-    }
-
-    function grw_strlen($str) {
-        return function_exists('mb_strlen') ? mb_strlen($str, 'UTF-8') : strlen($str);
-    }
-
-    function grw_strrpos($haystack, $needle, $offset = 0) {
-        return function_exists('mb_strrpos') ? mb_strrpos($haystack, $needle, $offset, 'UTF-8') : strrpos($haystack, $needle, $offset);
-    }
-
-    function grw_substr($str, $start, $length = NULL) {
-        return function_exists('mb_substr') ? mb_substr($str, $start, $length, 'UTF-8') : substr($str, $start, $length);
     }
 
     function grw_array($params=null) {

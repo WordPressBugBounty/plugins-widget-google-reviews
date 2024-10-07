@@ -144,7 +144,7 @@ var GRW_HTML_CONTENT = '' +
         '<div class="grw-builder-inside" style="display:none">' +
             '<div class="grw-builder-option">' +
                 'Speed in second' +
-                '<input type="text" name="slider_speed" value="" placeholder="Default: 5">' +
+                '<input type="text" name="slider_speed" value="" placeholder="Default: 3">' +
             '</div>' +
             '<div class="grw-builder-option">' +
                 'Text height' +
@@ -154,6 +154,12 @@ var GRW_HTML_CONTENT = '' +
                 '<label>' +
                     '<input type="checkbox" name="slider_autoplay" value="" checked>' +
                     'Auto-play' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<label>' +
+                    '<input type="checkbox" name="slider_mousestop" value="" checked>' +
+                    'Stop auto play on mouse over' +
                 '</label>' +
             '</div>' +
             '<div class="grw-builder-option">' +

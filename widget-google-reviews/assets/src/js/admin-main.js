@@ -222,7 +222,7 @@ jQuery(document).ready(function($) {
                             (place.updated ?
                             '<div class="wp-google-powered">Last updated: ' +
                                 '<span class="wp-google-time">' +
-                                    WPacTime.getTime(parseInt(place.updated), _rplg_lang(), 'ago') +
+                                    rpi.Time.getTime(parseInt(place.updated), rpi.Utils.lang(), 'ago') +
                                 '</span>' +
                             '</div>' : '') +
                         '</div>'
@@ -231,7 +231,13 @@ jQuery(document).ready(function($) {
                     /*
                      * Render reviews
                      */
-                    var list = '';
+                    var list = '',
+                        common = rpi.Common($reviews[0], {text_size: 50}, {
+                            time     : 'wp-google-time',
+                            text     : 'wp-google-text',
+                            readmore : 'wp-more-toggle'
+                        });
+
                     $.each(res.reviews, function(i, review) {
                         list += grw_review(review);
                     });
@@ -240,8 +246,7 @@ jQuery(document).ready(function($) {
                             '<div class="wp-google-reviews">' + list + '</div>' +
                         '</div>'
                     );
-                    _rplg_timeago(document.querySelectorAll('.wpac [data-time]'));
-                    _rplg_read_more();
+                    common.init();
 
                     $('.wp-review-hide', $reviews).unbind('click').click(function() {
                         grw_review_hide($(this));
@@ -460,36 +465,11 @@ function grw_review(review) {
             '<div class="wp-google-time" data-time="' + review.time + '"></div>' +
             '<div class="wp-google-feedback">' +
                 '<span class="wp-google-stars">' + grw_stars(review.rating, '#fb8e28', 16) + '</span>' +
-                '<span class="wp-google-text">' + grw_trimtext(review.text, 50) + '</span>' +
+                '<span class="wp-google-text">' + review.text + '</span>' +
             '</div>' +
             '<a href="#" class="wp-review-hide" data-id="' + review.id + '">' + (review.hide == '' ? 'Hide' : 'Show') + ' review</a>' +
         '</div>' +
     '</div>';
-}
-
-function grw_trimtext(text, size) {
-    if (size && text && text.length > size) {
-        var subtext = text.substring(0, size),
-            idx = subtext.indexOf(' ') + 1;
-
-        if (idx < 1 || size - idx > (size / 2)) {
-            idx = size;
-        }
-
-        var visibletext = '', invisibletext = '';
-        if (idx > 0) {
-            visibletext = text.substring(0, idx - 1);
-            invisibletext = text.substring(idx - 1, text.length);
-        }
-
-        return visibletext +
-               (invisibletext ?
-               '<span>... </span>' +
-               '<span class="wp-more">' + invisibletext + '</span>' +
-               '<span class="wp-more-toggle">read more</span>' : '');
-    } else {
-        return text;
-    }
 }
 
 function grw_s2dmy(s) {

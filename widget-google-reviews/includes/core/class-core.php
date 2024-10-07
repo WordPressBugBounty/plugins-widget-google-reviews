@@ -26,7 +26,8 @@ class Core {
             'slider_hide_prevnext'      => false,
             'slider_hide_dots'          => false,
             'slider_text_height'        => '',
-            'slider_speed'              => 5,
+            'slider_speed'              => 3,
+            'slider_mousestop'          => true,
 
             'header_merge_social'       => false,
             'header_hide_social'        => false,
