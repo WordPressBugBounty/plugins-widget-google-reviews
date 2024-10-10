@@ -41,7 +41,9 @@ function rplg_leave_review_window() {
 
 function grw_init(el, layout) {
     const rootEl = rpi.Utils.getParent(el, 'wp-gr');
+
     if (rootEl.getAttribute('data-exec') == 'true') return;
+    else rootEl.setAttribute('data-exec', 'true');
 
     const options = JSON.parse(rootEl.getAttribute('data-options')),
         common = rpi.Common(rootEl, options, {
@@ -53,8 +55,6 @@ function grw_init(el, layout) {
     common.init();
 
     if (rootEl && rootEl.getAttribute('data-exec') != 'true' && (layout == 'slider' || layout == 'grid')) {
-        rootEl.setAttribute('data-exec', 'true');
-
         // Init Slider or Grid
         const row  = rootEl.querySelector('.grw-row'),
             options = JSON.parse(row.getAttribute('data-options')),
