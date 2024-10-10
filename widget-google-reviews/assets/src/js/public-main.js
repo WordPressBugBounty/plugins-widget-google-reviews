@@ -54,7 +54,7 @@ function grw_init(el, layout) {
 
     common.init();
 
-    if (rootEl && rootEl.getAttribute('data-exec') != 'true' && (layout == 'slider' || layout == 'grid')) {
+    if (layout == 'slider' || layout == 'grid') {
         // Init Slider or Grid
         const row  = rootEl.querySelector('.grw-row'),
             options = JSON.parse(row.getAttribute('data-options')),
