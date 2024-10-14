@@ -51,7 +51,7 @@
 }
 
 .wp-gr .wp-google-rating {
-    color: #fb8e28!important;
+    color: var(--star-color, #fb8e28)!important;
     font-size: 21px!important;
     font-weight: 600!important;
     margin: 0 6px 0 0!important;
@@ -140,6 +140,10 @@
     width: 19px!important;
     height: 19px!important;
     vertical-align: middle!important
+}
+
+.wp-gr .wp-star svg path {
+    fill: var(--star-color, #fb8e28);
 }
 
 .wp-gr .wp-google-name {

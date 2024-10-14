@@ -1039,6 +1039,23 @@ img.grw-connect-photo {
     word-break: break-all;
 }
 
+.grw-builder-inside input[type="color"] {
+    width: 25px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.grw-builder-inside input[type="color"] + input[type="text"] {
+    padding: 0;
+    margin: 0 2px 0 0;
+    width: 52px;
+    height: 18px;
+    min-height: 0;
+    font-size: 12px;
+    border-color: #fff;
+    vertical-align: middle;
+}
+
 /*-------------------------------- G connection wizard --------------------------------*/
 #grw-connect-wizard p {
     color: #ef4e4e;

@@ -12,6 +12,7 @@ class Admin_Feed_Columns {
         'list'   => 'List',
         'slider' => 'Slider',
         'grid'   => 'Grid',
+        'rating' => 'Rating'
     );
 
     public function __construct($feed_deserializer) {

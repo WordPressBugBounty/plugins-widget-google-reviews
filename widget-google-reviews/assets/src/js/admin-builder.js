@@ -180,6 +180,11 @@ var GRW_HTML_CONTENT = '' +
         '<div class="grw-builder-top grw-toggle">Style Options</div>' +
         '<div class="grw-builder-inside" style="display:none">' +
             '<div class="grw-builder-option">' +
+                '<input type="color" name="--star-color" value="#fb8e28" data-val="#fb8e28" data-defval="#fb8e28"/>' +
+                '<input type="text" value="#fb8e28"/>' +
+                'Stars color' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
                 '<label>' +
                     '<input type="checkbox" name="dark_theme">' +
                     'Dark background' +
@@ -218,6 +223,7 @@ var GRW_HTML_CONTENT = '' +
                 'Container max-height' +
                 '<input type="text" name="max_height" value="" placeholder="for instance: 500px">' +
             '</div>' +
+            '<input id="style_vars" name="style_vars" type="hidden"/>' +
         '</div>' +
 
         /* Advance Options */
@@ -278,6 +284,46 @@ var GRW_HTML_CONTENT = '' +
 
     '</div>';
 
+function grw_stylechange2(target) {
+    let rp = document.getElementsByClassName('wp-gr')[0];
+
+    if (target.type == 'range' || target.type == 'color') {
+        let val = target.value + (target.getAttribute('data-postfix') || '');
+        target.setAttribute('data-val', val);
+        rp.style.setProperty(target.name, val);
+
+        // if color input put color to the next text input
+        if (target.type == 'color') {
+            target.nextSibling.value = val;
+        }
+    } else if (target.type == 'checkbox' || target.type == 'radio') {
+        let vars = target.getAttribute('data-vars');
+        if (vars) {
+            let arr = vars.split(';');
+            for (let i = 0; i < arr.length; i++) {
+                let pair = arr[i].split(':');
+                if (pair.length > 1) {
+                    if (target.checked) {
+                        let val = pair[1].trim();
+                        rp.style.setProperty(pair[0].trim(), pair[1].trim());
+                    } else {
+                        rp.style.removeProperty(pair[0].trim());
+                    }
+                }
+            }
+        }
+        if (target.checked) {
+            rp.style.setProperty(target.name, target.getAttribute('data-on'));
+        } else if (target.getAttribute('data-off')) {
+            rp.style.setProperty(target.name, target.getAttribute('data-off'));
+        } else {
+            rp.style.removeProperty(target.name);
+        }
+    }
+
+    window.style_vars.value = rp.getAttribute('style');
+}
+
 function grw_builder_init($, data) {
 
     var el = document.querySelector(data.el);
@@ -334,6 +380,15 @@ function grw_builder_init($, data) {
     });
     $('.grw-connect-options input[type="checkbox"],.grw-connect-options select').change(function() {
         grw_serialize_connections();
+    });
+    $('.grw-connect-options input[name^="--"]').on('input', function() {
+        grw_stylechange2(this);
+        clearTimeout(GRW_AUTOSAVE_TIMEOUT);
+        GRW_AUTOSAVE_TIMEOUT = setTimeout(grw_serialize_connections, GRW_AUTOSAVE_KEYUP_TIMEOUT);
+    });
+    $('.grw-connect-options input[type="color"][name^="--"] + input[type="text"]').change(function() {
+        this.previousElementSibling.value = this.value;
+        this.previousElementSibling.dispatchEvent(new Event('change'));
     });
 
     $('.grw-toggle', el).unbind('click').click(function () {

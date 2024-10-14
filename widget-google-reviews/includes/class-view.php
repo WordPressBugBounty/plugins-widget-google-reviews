@@ -26,6 +26,9 @@ class View {
         if ($options->centered) {
             $style .= 'margin:0 auto!important;';
         }
+        if (isset($options->style_vars) && strlen($options->style_vars) > 0) {
+            $style .= $options->style_vars;
+        }
 
         ?>
         <div class="wp-gr wpac<?php if ($options->dark_theme) { ?> wp-dark<?php } ?>"<?php if ($style) { ?> style="<?php echo $style;?>"<?php } ?> data-id="<?php echo $feed_id; ?>" data-layout="<?php echo $options->view_mode; ?>" data-exec="false" data-options='<?php echo $this->options($options); ?>'>

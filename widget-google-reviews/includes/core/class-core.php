@@ -39,6 +39,7 @@ class Core {
             'centered'                  => false,
             'max_width'                 => '',
             'max_height'                => '',
+            'style_vars'                => '',
 
             'open_link'                 => true,
             'nofollow_link'             => true,

@@ -4,7 +4,7 @@ Donate link: https://richplugins.com/business-reviews-bundle-wordpress-plugin
 Tags: google reviews, google map reviews, reviews, slider, google rating
 Requires at least: 3.0.1
 Tested up to: 6.6
-Stable tag: 4.5
+Stable tag: 4.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,6 +104,11 @@ To find out more about who we are and what we do, here are some useful links:
 * Get 10 reviews with own Google API key reviews refreshing
 
 == Changelog ==
+
+= 4.6 =
+* Improve: new style option 'Stars color'
+* Bugfix: Undefined Rating theme error on the reviews widget list page
+* Bugfix: JavaScript error when dots are disabled and autoplay is enabled in the Slider theme
 
 = 4.5 =
 * Bugfix: incorrect initialization of the Slider theme in the previous release
