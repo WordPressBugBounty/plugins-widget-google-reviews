@@ -45,32 +45,40 @@ function grw_init(el, layout) {
     if (rootEl.getAttribute('data-exec') == 'true') return;
     else rootEl.setAttribute('data-exec', 'true');
 
-    const options = JSON.parse(rootEl.getAttribute('data-options')),
-        common = rpi.Common(rootEl, options, {
-            time     : 'wp-google-time',
-            text     : 'wp-google-text',
-            readmore : 'wp-more-toggle'
-        });
+    const options = JSON.parse(rootEl.getAttribute('data-options'));
+
+    const common = rpi.Common(rootEl, options, {
+        time     : 'wp-google-time',
+        text     : 'wp-google-text',
+        readmore : 'wp-more-toggle'
+    });
+    const column = rpi.Column(rootEl, options, {
+        cnt      : 'grw-row',
+        col      : 'grw-row',
+        card     : 'grw-review'
+    });
 
     common.init();
 
     if (layout == 'slider' || layout == 'grid') {
         // Init Slider or Grid
-        const row  = rootEl.querySelector('.grw-row'),
-            options = JSON.parse(row.getAttribute('data-options')),
-            slider = rpi.Slider(rootEl, options, {
-                cnt      : 'grw-row',
-                col      : 'grw-row',
-                content  : 'grw-content',
-                cards    : 'grw-reviews',
-                card     : 'grw-review',
-                text     : 'wp-google-text',
-                btnPrev  : 'grw-prev',
-                btnNext  : 'grw-next',
-                dotsWrap : 'rpi-dots-wrap',
-                dots     : 'rpi-dots',
-                dot      : 'rpi-dot'
-            });
+        const row = rootEl.getElementsByClassName('grw-row')[0];
+        const opt = JSON.parse(row.getAttribute('data-options'));
+        const slider = rpi.Slider(rootEl, opt, {
+            cnt      : 'grw-row',
+            col      : 'grw-row',
+            content  : 'grw-content',
+            cards    : 'grw-reviews',
+            card     : 'grw-review',
+            text     : 'wp-google-text',
+            btnPrev  : 'grw-prev',
+            btnNext  : 'grw-next',
+            dotsWrap : 'rpi-dots-wrap',
+            dots     : 'rpi-dots',
+            dot      : 'rpi-dot'
+        }, {
+            column: column
+        });
         slider.init();
     }
 }

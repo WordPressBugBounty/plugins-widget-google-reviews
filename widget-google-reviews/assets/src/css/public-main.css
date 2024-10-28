@@ -637,9 +637,10 @@
     padding: 6px 15px 10px!important;
     outline: none !important;
     border-radius: 27px!important;
-    background: #0a6cff!important;
+    background: var(--btn-color, #1f67e7)!important;
     white-space: nowrap!important;
     vertical-align: middle!important;
+    opacity: .9!important;
     text-shadow: 1px 1px 0 #888!important;
     box-shadow: 0 0 2px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .24)!important;
     user-select: none!important;
@@ -647,12 +648,14 @@
 }
 
 .wp-gr .wp-google-wr a:hover {
-    background: #1f67e7!important;
+    opacity: .95!important;
+    background: var(--btn-color, #1f67e7)!important;
     box-shadow: 0 0 2px rgba(0, 0, 0, .12), 0 3px 5px rgba(0, 0, 0, .24)!important;
 }
 
 .wp-gr .wp-google-wr a:active {
-    background: #0a6cff!important;
+    opacity: 1!important;
+    background: var(--btn-color, #1f67e7)!important;
     box-shadow: none!important;
 }
 

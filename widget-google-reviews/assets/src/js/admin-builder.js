@@ -185,6 +185,11 @@ var GRW_HTML_CONTENT = '' +
                 'Stars color' +
             '</div>' +
             '<div class="grw-builder-option">' +
+                '<input type="color" name="--btn-color" value="#1f67e7" data-val="#1f67e7" data-defval="#1f67e7"/>' +
+                '<input type="text" value="#1f67e7"/>' +
+                'Button color' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
                 '<label>' +
                     '<input type="checkbox" name="dark_theme">' +
                     'Dark background' +
