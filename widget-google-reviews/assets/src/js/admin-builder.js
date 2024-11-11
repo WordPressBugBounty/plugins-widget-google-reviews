@@ -190,6 +190,16 @@ var GRW_HTML_CONTENT = '' +
                 'Button color' +
             '</div>' +
             '<div class="grw-builder-option">' +
+                '<input type="color" name="--rev-color" value="#fafafa" data-val="#fafafa" data-defval="#fafafa"/>' +
+                '<input type="text" value="#fafafa"/>' +
+                'Reviews color' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<input type="color" name="--text-color" value="#222222" data-val="#222222" data-defval="#222222"/>' +
+                '<input type="text" value="#222222"/>' +
+                'Reviews text color' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
                 '<label>' +
                     '<input type="checkbox" name="dark_theme">' +
                     'Dark background' +

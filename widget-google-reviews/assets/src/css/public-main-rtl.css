@@ -166,7 +166,7 @@
 }
 
 .wp-gr .wp-google-text {
-    color: #222!important;
+    color: var(--text-color, #222222)!important;
     font-size: 15px!important;
     line-height: 24px!important;
     max-width: 100%!important;
@@ -487,7 +487,7 @@
 }
 
 .wp-gr:not(.wp-dark) .grw-review-inner.grw-backgnd {
-    background: #fafafa!important;
+    background: var(--rev-color, #fafafa)!important;
 }
 
 .wp-gr .grw-review-inner.grw-round {

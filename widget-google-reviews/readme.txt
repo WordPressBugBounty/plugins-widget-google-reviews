@@ -4,7 +4,7 @@ Donate link: https://richplugins.com/business-reviews-bundle-wordpress-plugin
 Tags: google reviews, google map reviews, reviews, slider, google rating
 Requires at least: 3.0.1
 Tested up to: 6.6
-Stable tag: 4.7
+Stable tag: 4.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,6 +104,12 @@ To find out more about who we are and what we do, here are some useful links:
 * Get 10 reviews with own Google API key reviews refreshing
 
 == Changelog ==
+
+= 4.8 =
+* Improve: added WordPress preview feature
+* Improve: new style option 'Reviews color'
+* Improve: new style option 'Reviews text color'
+* Bugfix: added nofollow attribute for 'review us on G' button
 
 = 4.7 =
 * Improve: new style option 'Button color'

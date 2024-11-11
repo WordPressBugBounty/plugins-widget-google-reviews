@@ -251,6 +251,7 @@
     color: #f71212;
     font-size: 16px;
     font-weight: 600;
+    text-transform: uppercase;
 }
 
 .grw-toolbar-control button {
@@ -337,8 +338,8 @@
 #grw-rate_us-wrap {
     display: block;
     position: fixed;
-    left: 0;
     top: 100%;
+    right: 0;
     width: auto;
     font-size: 16px;
     z-index: 99999;
