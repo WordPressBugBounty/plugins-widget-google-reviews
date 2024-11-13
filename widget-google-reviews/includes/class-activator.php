@@ -172,6 +172,9 @@ class Activator {
             //case version_compare($last_active_version, '4.2', '<'):
                 //$this->delete_duplicates();
                 //$wpdb->query("ALTER TABLE `" . $wpdb->prefix . Database::REVIEW_TABLE . "` ADD UNIQUE `grp_author_url_lang` (`author_url`, `language`)");
+
+            case version_compare($last_active_version, '4.8.1', '<'):
+                $wpdb->query("ALTER TABLE `" . $wpdb->prefix . Database::REVIEW_TABLE . "` MODIFY COLUMN `author_url` VARCHAR(127)");
         }
 
         if (!empty($wpdb->last_error)) {

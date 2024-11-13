@@ -35,7 +35,7 @@ class Database {
                "UNIQUE INDEX grp_place_id (`place_id`)".
                ") " . $charset_collate . ";";
 
-        dbDelta($sql);
+        $this->execsql($sql);
 
         $sql = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . self::REVIEW_TABLE . " (".
                "id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,".
@@ -45,7 +45,7 @@ class Database {
                "time INTEGER NOT NULL,".
                "language VARCHAR(10),".
                "author_name VARCHAR(255),".
-               "author_url VARCHAR(255),".
+               "author_url VARCHAR(127),".
                "profile_photo_url VARCHAR(255),".
                "hide VARCHAR(1) DEFAULT '' NOT NULL,".
                "PRIMARY KEY (`id`),".
@@ -53,7 +53,7 @@ class Database {
                "INDEX grp_google_place_id (`google_place_id`)".
                ") " . $charset_collate . ";";
 
-        dbDelta($sql);
+        $this->execsql($sql);
 
         $sql = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . self::STATS_TABLE . " (".
                "id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,".
@@ -65,7 +65,18 @@ class Database {
                "INDEX grp_google_place_id (`google_place_id`)".
                ") " . $charset_collate . ";";
 
+        $this->execsql($sql);
+    }
+
+    private function execsql($sql) {
+        global $wpdb;
+
         dbDelta($sql);
+        $last_error = $wpdb->last_error;
+        if (isset($last_error) && strlen($last_error) > 0) {
+            $now = floor(microtime(true) * 1000);
+            update_option('grw_last_error', $now . ': ' . $last_error);
+        }
     }
 
     public function drop() {
