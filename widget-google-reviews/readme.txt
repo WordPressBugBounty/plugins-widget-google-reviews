@@ -4,7 +4,7 @@ Donate link: https://richplugins.com/business-reviews-bundle-wordpress-plugin
 Tags: google reviews, google map reviews, reviews, slider, google rating
 Requires at least: 3.0.1
 Tested up to: 6.7
-Stable tag: 4.8.1
+Stable tag: 4.8.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -102,8 +102,15 @@ To find out more about who we are and what we do, here are some useful links:
 
 * Test-feature: weekly reviews auto-updates
 * Get 10 reviews with own Google API key reviews refreshing
+* slider breakpoints
+* show first character in the lastname (GDPR)
 
 == Changelog ==
+
+= 4.8.2 =
+* Bugfix: slider prev and next buttons for RTL in the right directions
+* Bugfix: Google reCaptcha fix in the connection popup
+* Improve: added Arabic language
 
 = 4.8.1 =
 * Bugfix: very important bugfix, reduced author_url length to 127 characters coz it causes a database error for old MySQL versions

@@ -527,6 +527,7 @@ function grw_connect_ajax($, el, params, authcode, attempt) {
         local_img   : params.local_img || false,
         token       : params.token,
         feed_id     : $('input[name="grw_feed[post_id]"]').val(),
+        authcode    : authcode,
         grw_wpnonce : $('#grw_nonce').val(),
         action      : 'grw_connect_google',
         v           : new Date().getTime()
@@ -563,7 +564,7 @@ function grw_connect_ajax($, el, params, authcode, attempt) {
             grw_connect_error($, res.result.error_message, function() {
                 if (attempt > 1) return;
                 grw_popup('https://app.richplugins.com/gpaw/botcheck?authcode=' + authcode, 640, 480, function() {
-                    grw_connect_ajax($, el, params, authcode, attempt + 1);
+                    window.gpidc.contentWindow.postMessage({params: params, action: 'connect'}, '*');
                 });
             });
         }

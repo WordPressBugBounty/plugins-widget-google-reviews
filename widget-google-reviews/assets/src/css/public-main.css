@@ -558,6 +558,11 @@
     margin-right: -5px!important;
 }
 
+[dir="rtl"] .wp-gr .grw-next,
+[dir="rtl"] .wp-gr .grw-prev {
+    transform: rotate(180deg);
+}
+
 /*-------------------------------- Slider dots --------------------------------*/
 /*.wp-gr .grw-dots {
     position: absolute!important;
