@@ -12,6 +12,7 @@ class Core {
             'view_mode'                 => 'list',
             'pagination'                => '10',
             'text_size'                 => '',
+            'min_letter'                => '',
             'disable_user_link'         => false,
             'hide_based_on'             => false,
             'hide_writereview'          => false,
@@ -20,6 +21,7 @@ class Core {
             'hide_backgnd'              => false,
             'show_round'                => false,
             'show_shadow'               => false,
+            'short_last_name'           => false,
 
             'slider_autoplay'           => true,
             'slider_hide_border'        => false,
@@ -132,10 +134,11 @@ class Core {
 
             foreach ($google_business as $biz) {
 
-                $result = $this->get_google_reviews($biz, $is_admin);
+                $result = $this->get_google_reviews($biz, $options, $is_admin);
                 array_push($google_biz, $result['business']);
                 $google_reviews = array_merge($google_reviews, $result['reviews']);
 
+                //TODO: check and remove
                 if (isset($biz->refresh) && $biz->refresh) {
                     $args = array($biz->id);
                     if (isset($biz->lang) && strlen($biz->lang) > 0) {
@@ -190,7 +193,7 @@ class Core {
         return array('businesses' => $businesses, 'reviews' => $reviews, 'options' => $options);
     }
 
-    public function get_google_reviews($google_biz, $is_admin = false) {
+    public function get_google_reviews($google_biz, $options, $is_admin = false) {
         global $wpdb;
 
         $rating = 0;
@@ -263,6 +266,9 @@ class Core {
 
         $google_reviews = array();
         foreach ($reviews as $rev) {
+            if (isset($options->min_letter) && isset($rev->text) && strlen($rev->text) < $options->min_letter) {
+                continue;
+            }
             $review = json_decode(json_encode(
                 array(
                     'id'            => $rev->id,
@@ -273,7 +279,8 @@ class Core {
                     'text'          => wp_encode_emoji($rev->text),
                     'author_avatar' => $rev->profile_photo_url,
                     'author_url'    => $rev->author_url,
-                    'author_name'   => $rev->author_name,
+                    'author_name'   => isset($options->short_last_name) && $options->short_last_name ?
+                                       $this->get_short_name($rev->author_name) : $rev->author_name,
                     'time'          => $rev->time,
                     'provider'      => 'google',
                 )
@@ -431,6 +438,33 @@ class Core {
         }
         $biz_merge->platform = array_unique($business_platform);
         return $biz_merge;
+    }
+
+    private function get_short_name($author_name){
+        $names = explode(" ", $author_name);
+        if (count($names) > 1) {
+            $last_index = count($names) - 1;
+            $last_name = $names[$last_index];
+            if ($this->_strlen($last_name) > 1) {
+                $last_char = $this->_substr($last_name, 0, 1);
+                $last_name = $this->_strtoupper($last_char) . ".";
+                $names[$last_index] = $last_name;
+                return implode(" ", $names);
+            }
+        }
+        return $author_name;
+    }
+
+    private function _strlen($str) {
+        return function_exists('mb_strlen') ? mb_strlen($str, 'UTF-8') : strlen($str);
+    }
+
+    private function _substr($str, $start, $length = NULL) {
+        return function_exists('mb_substr') ? mb_substr($str, $start, $length, 'UTF-8') : substr($str, $start, $length);
+    }
+
+    private function _strtoupper($str) {
+        return function_exists('mb_strtoupper') ? mb_strtoupper($str, 'UTF-8') : strtoupper($str);
     }
 
 }

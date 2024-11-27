@@ -79,10 +79,11 @@
 
 @media (min-width: 601px) {
     .grw-tophead {
-        -ms-flex-align: stretch;
-        -webkit-align-items: stretch;
-        -webkit-box-align: stretch;
-        align-items: stretch;
+        -ms-flex-align: center;
+        -webkit-align-items: center;
+        -webkit-box-align: center;
+        align-items: center;
+        justify-content: space-between;
         display: -webkit-box;
         display: -webkit-flex;
         display: -ms-flexbox;
@@ -113,9 +114,6 @@
 }
 
 .grw-version {
-    position: absolute;
-    top: 0px;
-    left: 16px;
     text-align: center;
 }
 
@@ -124,7 +122,7 @@
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
-    margin: 12px 0 3px;
+    margin: 0;
     padding: 4px 10px;
     font-size: 12px;
     line-height: 14px;
@@ -135,7 +133,11 @@
     background-color: #999;
 }
 
-.grw-version-upgrade span {
+.grw-version-upgrade {
+    padding: 4px 4px 2px;
+}
+
+.grw-version-upgrade .grw-upgrade-text {
     color: #4ea2e7;
     font-size: 11px;
     font-weight: 600;
@@ -145,7 +147,7 @@
     text-transform: uppercase;
 }
 
-.grw-version-upgrade span:hover {
+.grw-version-upgrade .grw-upgrade-text:hover {
     color: #157cd1;
 }
 
@@ -161,7 +163,7 @@
     border-radius: 5px;
     padding: 10px 12px;
     margin: 2px 0 0;
-    z-index: 5;
+    z-index: 9999999;
     background: #fff;
     width: 256px;
     text-align: right;
@@ -173,7 +175,7 @@
 }
 
 #grw-upgrade-tips:hover,
-.grw-version-upgrade span:hover + #grw-upgrade-tips {
+.grw-version-upgrade:hover > #grw-upgrade-tips {
     opacity: 1;
     visibility: visible;
 }
@@ -193,6 +195,45 @@
 
 #grw-upgrade-tips > a:hover {
     color: #f70e0e;
+}
+
+/*-------------------------------- BF --------------------------------*/
+.grw-bf {
+    display: flex;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    justify-content: center;
+    text-transform: uppercase;
+}
+
+.grw-b {
+    color: #ffffff;
+    padding: 0 2px;
+    background: #000000;
+}
+
+.grw-f {
+    color: #ffffff;
+    padding: 0 2px;
+    background: #ff0000;
+}
+
+.grw-m {
+    color: #ffffff;
+    padding: 0 2px;
+    background: #4e86fd;
+}
+
+.grw-s {
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0 2px;
+    background: #ffb111;
+}
+
+.grw-bf + #grw-upgrade-tips {
+    text-align: center;
 }
 
 /*-------------------------------- Builder page --------------------------------*/

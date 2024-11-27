@@ -4,7 +4,7 @@ Donate link: https://richplugins.com/business-reviews-bundle-wordpress-plugin
 Tags: google reviews, google map reviews, reviews, slider, google rating
 Requires at least: 3.0.1
 Tested up to: 6.7
-Stable tag: 4.8.2
+Stable tag: 5.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -103,9 +103,14 @@ To find out more about who we are and what we do, here are some useful links:
 * Test-feature: weekly reviews auto-updates
 * Get 10 reviews with own Google API key reviews refreshing
 * slider breakpoints
-* show first character in the lastname (GDPR)
 
 == Changelog ==
+
+= 5.0 =
+* New option: short last name (show only first name and first letter of last name, GDPR)
+* New option: hide reviews without text
+* New option: reset to default style
+* Bugfix: color style inputs editable
 
 = 4.8.2 =
 * Bugfix: slider prev and next buttons for RTL in the right directions

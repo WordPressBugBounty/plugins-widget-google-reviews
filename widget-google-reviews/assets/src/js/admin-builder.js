@@ -127,6 +127,20 @@ var GRW_HTML_CONTENT = '' +
             '</div>' +
             '<div class="grw-builder-option">' +
                 '<label>' +
+                    '<input type="checkbox" name="short_last_name" value="">' +
+                    'Short last name (GDPR)' +
+                '</label>' +
+                '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
+                '<div class="grw-quest-help" style="display:none;">Show only first name and first letter of last name</div>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<label>' +
+                    '<input type="checkbox" name="min_letter" value="">' +
+                    'Hide reviews without text' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<label>' +
                     '<input type="checkbox" name="header_hide_social" value="">' +
                     'Hide rating header, leave only reviews' +
                 '</label>' +
@@ -198,6 +212,11 @@ var GRW_HTML_CONTENT = '' +
                 '<input type="color" name="--text-color" value="#222222" data-val="#222222" data-defval="#222222"/>' +
                 '<input type="text" value="#222222"/>' +
                 'Reviews text color' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<a href="javascript:void(0)" onclick="stylereset(this.parentNode.parentNode);grw_serialize_connections()">' +
+                    'Reset to default style' +
+                '</a>' +
             '</div>' +
             '<div class="grw-builder-option">' +
                 '<label>' +
@@ -339,6 +358,39 @@ function grw_stylechange2(target) {
     window.style_vars.value = rp.getAttribute('style');
 }
 
+function stylereset(parentEl, style_var) {
+    let rp = document.getElementsByClassName('wp-gr')[0];
+    if (rp) {
+        let inputs = (parentEl ? parentEl : document).querySelectorAll('input[name^="--"]');
+
+        for (let i = 0; i < inputs.length; i++) {
+            let defval = inputs[i].getAttribute('data-defval'),
+                pf = inputs[i].getAttribute('data-postfix') || '',
+                val = inputs[i].value + pf;
+
+            inputs[i].value = defval;
+            inputs[i].setAttribute('data-val', defval + pf);
+
+            // if color input put color to the next text input
+            if (inputs[i].type == 'color') {
+                inputs[i].nextSibling.value = defval + pf;
+            } else if (inputs[i].type == 'checkbox' || inputs[i].type == 'radio') {
+                let vars = inputs[i].getAttribute('data-vars');
+                if (vars) {
+                    let arr = vars.split(';');
+                    for (let i = 0; i < arr.length; i++) {
+                        let pair = arr[i].split(':');
+                        rp.style.removeProperty(pair[0].trim());
+                    }
+                }
+                inputs[i].checked = inputs[i].getAttribute('data-checked') == '1';
+            }
+            rp.style.removeProperty(inputs[i].name);
+        }
+        window.style_vars.value = rp.getAttribute('style');
+    }
+}
+
 function grw_builder_init($, data) {
 
     var el = document.querySelector(data.el);
@@ -401,9 +453,11 @@ function grw_builder_init($, data) {
         clearTimeout(GRW_AUTOSAVE_TIMEOUT);
         GRW_AUTOSAVE_TIMEOUT = setTimeout(grw_serialize_connections, GRW_AUTOSAVE_KEYUP_TIMEOUT);
     });
-    $('.grw-connect-options input[type="color"][name^="--"] + input[type="text"]').change(function() {
-        this.previousElementSibling.value = this.value;
-        this.previousElementSibling.dispatchEvent(new Event('change'));
+    $('.grw-connect-options input[type="color"][name^="--"] + input[type="text"]').keyup(function() {
+        if (this.value.indexOf('#') == 0 && this.value.length == 7) {
+            this.previousElementSibling.value = this.value;
+            this.previousElementSibling.dispatchEvent(new Event('input'));
+        }
     });
 
     $('.grw-toggle', el).unbind('click').click(function () {
@@ -911,9 +965,43 @@ function grw_deserialize_connections($, el, data) {
                     if (opt.indexOf('_photo') > -1 && control.value) {
                         control.parentNode.querySelector('img').src = control.value;
                     }
+                    if (opt == 'style_vars') {
+                        rplg_sv_parse(el, control.value);
+                    }
                 }
             }
         }
+    }
+}
+
+function rplg_sv_parse(el, val) {
+    if (val) {
+        let sv = val.split(';');
+        for (let i = 0; i < sv.length; i++) {
+            if (sv[i]) {
+                let svp = sv[i].split(':'),
+                    svcs = el.querySelectorAll('input[name="' + svp[0].trim() + '"]');
+               for (let j = 0; j < svcs.length; j++) {
+                   let svc = svcs[j];
+                    if (svc.type == 'checkbox') {
+                        let off = svc.getAttribute('data-off'),
+                            on = svc.getAttribute('data-on');
+                        svc.checked = svp[1].trim() != off ? (svp[1].trim() == on) : false;
+                    } else {
+                        let da = svc.getAttribute('data-postfix');
+                        svc.setAttribute('data-val', svp[1].trim());
+                        svc.value = svp[1].trim().replace(da, '');
+
+                        // if color input put color to the next text input
+                        if (svc.type == 'color') {
+                            svc.nextSibling.value = svp[1].trim();
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        stylereset();
     }
 }
 

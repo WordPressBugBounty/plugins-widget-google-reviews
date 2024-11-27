@@ -19,6 +19,12 @@ class Admin_Tophead {
 
             $current_screen->render_screen_meta();
 
+            $now = time();
+            $bfs = strtotime('2024-11-28 00:01:10');
+            $bfe = strtotime('2024-12-02 00:01:15');
+            $cms = strtotime('2024-12-02 00:01:20');
+            $cme = strtotime('2024-12-04 00:01:10');
+
             ?>
             <div class="grw-tophead">
                 <div class="grw-tophead-title">
@@ -42,13 +48,39 @@ class Admin_Tophead {
                 <div class="grw-version">
                     <div class="grw-version-free">Free Version: <?php echo GRW_VERSION; ?></div>
                     <div class="grw-version-upgrade">
-                        <span>Upgrade to business</span>
+                        <?php if ($now > $bfs && $now < $bfe) { ?>
+                        <span class="grw-bf">
+                            <span class="grw-b">black</span>
+                            <span class="grw-f">friday</span>
+                            <span class="grw-s">%</span>
+                        </span>
+                        <div id="grw-upgrade-tips">
+                            <div class="grw-upgrade-head">Incredible sales, only on <span class="grw-b">Black</span><span class="grw-f">Friday</span></div>
+                            Hurry up and buy the business version with a <span class="grw-s">50% OFF</span>!<br>
+                            <p style="font-size:15px">The business version displays all reviews, constantly synchronizes and receives new ones automatically, works without an API key, billing and contains a huge number of features!</p>
+                            <a href="https://richplugins.com/business-reviews-bundle-wordpress-plugin?promo=BF2024K7D4T#pricing" target="_blank">Upgrade today with 50% OFF!</a>
+                        </div>
+                        <?php } elseif ($now > $cms && $now < $cme) { ?>
+                        <span class="grw-bf">
+                            <span class="grw-b">cyber</span>
+                            <span class="grw-m">monday</span>
+                            <span class="grw-s">%</span>
+                        </span>
+                        <div id="grw-upgrade-tips">
+                            <div class="grw-upgrade-head">Incredible sales, only on <span class="grw-b">Cyber</span><span class="grw-m">Monday</span></div>
+                            Hurry up and buy the business version with a <span class="grw-s">50% OFF</span>!<br>
+                            <p style="font-size:15px">The business version displays all reviews, constantly synchronizes and receives new ones automatically, works without an API key, billing and contains a huge number of features!</p>
+                            <a href="https://richplugins.com/business-reviews-bundle-wordpress-plugin?promo=BF2024K7D4T#pricing" target="_blank">Upgrade today with 50% OFF!</a>
+                        </div>
+                        <?php } else { ?>
+                        <span class="grw-upgrade-text">Upgrade to business</span>
                         <div id="grw-upgrade-tips">
                             <div class="grw-upgrade-head">Most easiest way to show all G reviews with business version</div>
                             No Place ID, No API key, No Billing needed, only Google My Business (GMB) owner account to show all G reviews with constantly auto synced
                             <!--div>30% off with promo code: GRGROW23</div-->
                             <a href="https://richplugins.com/business-reviews-bundle-wordpress-plugin?promo=GRGROW23" target="_blank">Upgrade today with 30% off!</a>
                         </div>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
