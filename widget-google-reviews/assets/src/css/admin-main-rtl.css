@@ -1098,6 +1098,43 @@ img.grw-connect-photo {
     vertical-align: middle;
 }
 
+.grw-builder-inside input[type="range"] {
+    padding: 8px 0;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.grw-slider-br {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+.grw-slider-br label {
+    display: flex;
+    position: relative;
+    flex: 1;
+}
+
+.grw-slider-br .grw-quest {
+    position: relative;
+    top: auto;
+    width: 16px;
+    height: 16px;
+    line-height: 14px;
+}
+
+.grw-input-x {
+    position: absolute;
+    top: 4px;
+    left: 0;
+    padding: 2px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
 /*-------------------------------- G connection wizard --------------------------------*/
 #grw-connect-wizard p {
     color: #ef4e4e;

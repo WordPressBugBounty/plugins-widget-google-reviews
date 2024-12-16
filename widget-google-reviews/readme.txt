@@ -4,7 +4,7 @@ Donate link: https://richplugins.com/business-reviews-bundle-wordpress-plugin
 Tags: google reviews, google map reviews, reviews, slider, google rating
 Requires at least: 3.0.1
 Tested up to: 6.7
-Stable tag: 5.0
+Stable tag: 5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -105,6 +105,12 @@ To find out more about who we are and what we do, here are some useful links:
 * slider breakpoints
 
 == Changelog ==
+
+= 5.1 =
+* Improve: fixed issues reported on accessibe.com
+* Bugfix: multiple widgets on same page did not work correctly
+* Bugfix: color style options were not saved correctly
+* Preparing for custom number slider and grid columns
 
 = 5.0 =
 * New option: short last name (show only first name and first letter of last name, GDPR)

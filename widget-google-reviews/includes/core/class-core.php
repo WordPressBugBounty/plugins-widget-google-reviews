@@ -30,6 +30,7 @@ class Core {
             'slider_text_height'        => '',
             'slider_speed'              => 3,
             'slider_mousestop'          => true,
+            'slider_breakpoints'        => '',
 
             'header_merge_social'       => false,
             'header_hide_social'        => false,

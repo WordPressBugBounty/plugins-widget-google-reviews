@@ -190,6 +190,34 @@ var GRW_HTML_CONTENT = '' +
             '</div>' +
         '</div>' +
 
+        /* Breakpoints */
+        /*'<div class="grw-builder-top grw-toggle">Column Options</div>' +
+        '<div class="grw-builder-inside" style="display:none">' +
+            '<div class="grw-builder-option">' +
+                '<input type="text" name="slider_breakpoints">' +
+                '<label>' +
+                    'How many columns to show (for Slider & Grid)' +
+                '</label>' +
+                '<div class="grw-slider-br">' +
+                    '<label>' +
+                        '<select>' +
+                            '<option value="off">Disable</option>' +
+                            '<option value="3000">Large Desktop & TV</option>' +
+                            '<option value="1200">Desktop</option>' +
+                            '<option value="1024">Laptop</option>' +
+                            '<option value="768">Table</option>' +
+                            '<option value="480">Mobile</option>' +
+                            '<option value="">Custom</option>' +
+                        '</select>' +
+                    '</label>' +
+                    '<label>' +
+                        '<input type="range" name="" value="" min="1" max="12" step="1" oninput="this.nextSibling.value=this.value"/><span></span>' +
+                    '</label>' +
+                    '<span class="grw-quest" title="Click to add new breakpoints">+</span>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +*/
+
         /* Style Options */
         '<div class="grw-builder-top grw-toggle">Style Options</div>' +
         '<div class="grw-builder-inside" style="display:none">' +
@@ -355,7 +383,12 @@ function grw_stylechange2(target) {
         }
     }
 
-    window.style_vars.value = rp.getAttribute('style');
+    let style = rp.getAttribute('style'),
+        cssvars = style.match(/(--[a-z]+-?[a-z]*:\s*[#0-9a-z]+\s*;)+/g);
+
+    if (cssvars && cssvars.length) {
+        window.style_vars.value = cssvars.join('');
+    }
 }
 
 function stylereset(parentEl, style_var) {
@@ -440,6 +473,9 @@ function grw_builder_init($, data) {
             }
         }
     };
+
+    // Init slider breakpoints
+    //grw_sbs_init();
 
     $('.grw-connect-options input[type="text"],.grw-connect-options textarea').keyup(function() {
         clearTimeout(GRW_AUTOSAVE_TIMEOUT);
@@ -1077,4 +1113,102 @@ function grw_lang(defname, lang) {
                '<option value=""' + (lang ? '' : ' selected="selected"') + '>' + defname + '</option>' +
                html +
            '</select>';
+}
+
+/******************************** Breakpoints copy & paste ********************************/
+function grw_sbs_init() {
+    var inputs = document.querySelectorAll('.grw-slider-br input,.grw-slider-br select'),
+        span = document.querySelector('.grw-slider-br .grw-quest');
+
+    inputs[0].addEventListener('change', grw_sbs_keyup);
+    inputs[1].addEventListener('change', grw_sbs_keyup);
+
+    span.onclick = function() {
+        grw_sbs_clone(this.parentNode.parentNode.querySelector('.grw-slider-br:last-child')/*, ['', '']*/);
+        grw_sbs_keyup();
+    };
+}
+
+function grw_sbs_parse(sbs) {
+    var brs, inputs = document.querySelectorAll('.grw-slider-br input');
+
+    if (sbs && (brs = sbs.split(',')).length) {
+        var br_first = brs.shift(),
+            br_vals = br_first.split(':');
+        inputs[0].value = br_vals[0].replace('px', '');
+        inputs[1].value = br_vals[0];
+        inputs[2].value = br_vals[1];
+        inputs[3].value = br_vals[1];
+
+        while (brs.length) {
+            grw_sbs_clone(inputs[0].parentNode.parentNode);
+        }
+    }
+}
+
+function grw_sbs_clone(br) {
+    let clone = br.cloneNode(true),
+        prevSelect = br.querySelector('select'),
+        span = clone.querySelector('.grw-quest'),
+        select = clone.querySelector('select'),
+        range = clone.querySelector('input');
+
+    clearTimeout(window.grw_sbt);
+
+    if (select.options.length > prevSelect.selectedIndex + 1) {
+        select.selectedIndex = prevSelect.selectedIndex + 1;
+    }
+    span.innerHTML = '-';
+    br.parentNode.appendChild(clone);
+
+    select.addEventListener('change', grw_sbs_keyup);
+    range.addEventListener('change', grw_sbs_keyup);
+
+    span.onclick = function() {
+        clone.parentNode.removeChild(clone);
+        grw_sbs_keyup();
+    };
+}
+
+function grw_sbs_keyup() {
+    clearTimeout(window.grw_sbt);
+    let vals = [], brs = document.querySelectorAll('.grw-slider-br');
+    for (let i = 0; i < brs.length; i++) {
+        let select = brs[i].querySelector('select'),
+            input = brs[i].querySelector('input[type="text"]'),
+            range = brs[i].querySelector('input[type="range"]');
+            //inputs = brs[i].querySelectorAll('input,select');
+
+        if (select.value == 'off') {
+            continue;
+        } else if ((select.value || (input && input.value)) && range.value) {
+            let reslt;
+            if (select.value) {
+                reslt = select.value;
+                rpi.Utils.rm(input);
+            } else {
+                reslt = input.value;
+            }
+            vals.push([reslt, range.value].join(':'));
+        } else if (!input) {
+            let custom = document.createElement('input');
+            custom.type = 'text';
+            custom.addEventListener('keyup', grw_sbs_keyup);
+            select.after(custom);
+            custom.focus();
+        }
+    }
+    if (vals.length) {
+        grw_sbs_set(vals.join(','));
+    } else {
+        grw_sbs_set('');
+    }
+}
+
+function grw_sbs_set(val) {
+    let input = document.querySelector('input[name="slider_breakpoints"]');
+    if (input.value != val) {
+        input.value = val;
+        window.grw_sbt = setTimeout(grw_serialize_connections, 3000);
+    }
 }
