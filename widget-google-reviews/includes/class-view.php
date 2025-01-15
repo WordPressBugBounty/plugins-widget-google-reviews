@@ -74,9 +74,10 @@ class View {
         <div class="grw-row grw-row-m" data-count="<?php echo $count; ?>" data-offset="<?php echo $count; ?>" data-options='<?php
             echo json_encode(
                 array(
-                    'speed'     => $options->slider_speed ? $options->slider_speed : 3,
-                    'autoplay'  => $options->slider_autoplay,
-                    'mousestop' => $options->slider_mousestop
+                    'speed'       => $options->slider_speed ? $options->slider_speed : 3,
+                    'autoplay'    => $options->slider_autoplay,
+                    'mousestop'   => $options->slider_mousestop,
+                    'breakpoints' => $options->slider_breakpoints
                 )
             ); ?>'>
             <?php if (count($businesses) > 0) { ?>
@@ -99,21 +100,22 @@ class View {
             if (count($reviews) > 0) { ?>
             <div class="grw-content">
                 <div class="grw-content-inner">
+                    <?php if (!$options->slider_hide_prevnext) { ?>
+                    <div class="grw-btns grw-prev" tabindex="0">
+                        <svg viewBox="0 0 24 24" role="none"><path d="M14.6,18.4L8.3,12l6.4-6.4l0.7,0.7L9.7,12l5.6,5.6L14.6,18.4z"></path></svg>
+                    </div>
+                    <?php } ?>
                     <div class="grw-reviews">
                         <?php foreach ($reviews as $review) { $this->grw_slider_review($review, false, $options, $is_admin); } ?>
                     </div>
                     <?php if (!$options->slider_hide_prevnext) { ?>
-                    <div class="grw-controls">
-                        <div class="grw-btns grw-prev" tabindex="0">
-                            <svg viewBox="0 0 24 24" role="none"><path d="M14.6,18.4L8.3,12l6.4-6.4l0.7,0.7L9.7,12l5.6,5.6L14.6,18.4z"></path></svg>
-                        </div>
-                        <div class="grw-btns grw-next" tabindex="0">
-                            <svg viewBox="0 0 24 24" role="none"><path d="M9.4,18.4l-0.7-0.7l5.6-5.6L8.6,6.4l0.7-0.7l6.4,6.4L9.4,18.4z"></path></svg>
-                        </div>
+                    <div class="grw-btns grw-next" tabindex="0">
+                        <svg viewBox="0 0 24 24" role="none"><path d="M9.4,18.4l-0.7-0.7l5.6-5.6L8.6,6.4l0.7-0.7l6.4,6.4L9.4,18.4z"></path></svg>
                     </div>
                     <?php } ?>
+                    <?php if (!$options->slider_hide_dots) { ?><div class="rpi-dots-wrap"><div class="rpi-dots"></div></div><?php } ?>
                 </div>
-                <?php if (!$options->slider_hide_dots) { ?><div class="rpi-dots-wrap"><div class="rpi-dots"></div></div><?php } ?>
+
             </div>
             <?php } ?>
         </div>
@@ -141,8 +143,7 @@ class View {
         <div class="grw-row grw-row-m" data-options='<?php
             echo json_encode(
                 array(
-                    'speed'    => $options->slider_speed ? $options->slider_speed : 5,
-                    'autoplay' => $options->slider_autoplay
+                    'breakpoints' => $options->slider_breakpoints
                 )
             ); ?>'>
             <?php if (count($reviews) > 0) { ?>
@@ -268,18 +269,16 @@ class View {
                     <?php $this->grw_place_reviews($reviews, $options); ?>
                 </div>
             </div>
-            <div class="wp-google-footer">
-                <img src="<?php echo GRW_ASSETS_URL; ?>img/powered_by_google_on_<?php if ($options->dark_theme) { ?>non_<?php } ?>white.png" alt="powered by Google" width="144" height="18" title="powered by Google">
-            </div>
+            <?php $this->grw_powered(); ?>
         </div>
         <?php $this->js_loader('grw_badge_init');
     }
 
     function grw_place($rating, $place, $place_img, $reviews, $options, $show_powered = true, $show_writereview = false) {
-        ?>
-        <?php if (!$options->header_hide_photo) { ?>
+        if (!$options->header_hide_photo) {
+            $img_alt = $options->header_hide_name ? $place->name : ''; ?>
         <div class="wp-google-left">
-            <img src="<?php echo $place_img; ?>" alt="<?php echo $place->name; ?>" width="50" height="50" title="<?php echo $place->name; ?>">
+            <img src="<?php echo $place_img; ?>" alt="<?php echo $img_alt; ?>" width="50" height="50">
         </div>
         <?php } ?>
         <div class="wp-google-right">
@@ -287,18 +286,13 @@ class View {
             <div class="wp-google-name">
                 <?php $place_name_content = '<span>' . $place->name . '</span>';
                 echo $this->grw_anchor($place->url, '', $place_name_content, $options, 'Google place profile'); ?>
-            </div>
-            <?php } ?>
-
-            <?php $this->grw_place_rating($rating, $place->review_count, $options->hide_based_on); ?>
-
-            <?php if ($show_powered) { ?>
-            <div class="wp-google-powered">
-                <img src="<?php echo GRW_ASSETS_URL; ?>img/powered_by_google_on_<?php if ($options->dark_theme) { ?>non_<?php } ?>white.png" alt="powered by Google" width="144" height="18" title="powered by Google">
-            </div>
-            <?php } ?>
-
-            <?php if (!$options->hide_writereview) { ?>
+            </div><?php
+            }
+            $this->grw_place_rating($rating, $place->review_count, $options->hide_based_on);
+            if ($show_powered) {
+                $this->grw_powered();
+            }
+            if (!$options->hide_writereview) { ?>
             <div class="wp-google-wr">
                 <?php echo $this->grw_anchor(
                     'https://search.google.com/local/writereview?placeid=' . $place->id,
@@ -321,8 +315,12 @@ class View {
             <span class="wp-google-stars"><?php $this->grw_stars($rating); ?></span>
         </div>
         <?php if (!$hide_based_on && isset($review_count)) { ?>
-        <div class="wp-google-powered"><?php echo vsprintf(__('Based on %s reviews', 'widget-google-reviews'), $this->grw_array($review_count)); ?></div>
+        <div class="wp-google-based"><?php echo vsprintf(__('Based on %s reviews', 'widget-google-reviews'), $this->grw_array($review_count)); ?></div>
         <?php }
+    }
+
+    function grw_powered() {
+        ?><div class="wp-google-powered">powered by <span><span style="color:#6186ec!important">G</span><span style="color:#cd523f!important">o</span><span style="color:#eabe43!important">o</span><span style="color:#6186ec!important">g</span><span style="color:#63a45d!important">l</span><span style="color:#cd523f!important">e</span></span></div><?php
     }
 
     function grw_place_reviews($reviews, $options, $is_admin = false) {
@@ -375,7 +373,7 @@ class View {
                     $author_avatar = str_replace('s128', 's' . $options->reviewer_avatar_size, $author_avatar);
                     $default_avatar = str_replace('s128', 's' . $options->reviewer_avatar_size, $default_avatar);
                 }
-                $this->grw_image($author_avatar, $review->author_name, $options->lazy_load_img, $default_avatar);
+                $this->grw_image($author_avatar, '', $options->lazy_load_img, $default_avatar);
                 ?>
             </div>
             <?php } ?>
@@ -426,7 +424,7 @@ class View {
                         $author_avatar = str_replace('s128', 's' . $options->reviewer_avatar_size, $author_avatar);
                         $default_avatar = str_replace('s128', 's' . $options->reviewer_avatar_size, $default_avatar);
                     }
-                    $this->grw_image($author_avatar, $review->author_name, $options->lazy_load_img, $default_avatar);
+                    $this->grw_image($author_avatar, '', $options->lazy_load_img, $default_avatar);
 
                     // Google reviewer name
                     if (strlen($review->author_url) > 0) {
@@ -479,7 +477,7 @@ class View {
     }
 
     function grw_image($src, $alt, $lazy, $def_ava = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', $atts = '') {
-        ?><img src="<?php echo $src; ?>"<?php if ($lazy) { ?> loading="lazy"<?php } ?> class="grw-review-avatar" alt="<?php echo $alt; ?>" width="50" height="50" title="<?php echo $alt; ?>" onerror="if(this.src!='<?php echo $def_ava; ?>')this.src='<?php echo $def_ava; ?>';" <?php echo $atts; ?>><?php
+        ?><img src="<?php echo $src; ?>"<?php if ($lazy) { ?> loading="lazy"<?php } ?> class="grw-review-avatar" alt="<?php echo $alt; ?>" width="50" height="50" onerror="if(this.src!='<?php echo $def_ava; ?>')this.src='<?php echo $def_ava; ?>';" <?php echo $atts; ?>><?php
     }
 
     function js_loader($func, $data = '') {

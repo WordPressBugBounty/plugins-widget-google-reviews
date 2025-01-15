@@ -52,18 +52,17 @@ function grw_init(el, layout) {
         text     : 'wp-google-text',
         readmore : 'wp-more-toggle'
     });
-    const column = rpi.Column(rootEl, options, {
-        cnt      : 'grw-row',
-        col      : 'grw-row',
-        card     : 'grw-review'
-    });
-
     common.init();
 
     if (layout == 'slider' || layout == 'grid') {
         // Init Slider or Grid
         const row = rootEl.getElementsByClassName('grw-row')[0];
         const opt = JSON.parse(row.getAttribute('data-options'));
+        const column = rpi.Column(rootEl, opt, {
+            cnt      : 'grw-row',
+            col      : 'grw-row',
+            card     : 'grw-review'
+        });
         const slider = rpi.Slider(rootEl, opt, {
             cnt      : 'grw-row',
             col      : 'grw-row',
@@ -84,10 +83,10 @@ function grw_init(el, layout) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const elems = document.querySelectorAll('.wp-gr[data-exec="false"]');
-    for (let i = 0; i < elems.length; i++) {
+    const els = document.querySelectorAll('.wp-gr[data-exec="false"]');
+    for (let i = 0; i < els.length; i++) {
         (function(elem) {
             grw_init(elem, elem.getAttribute('data-layout'));
-        })(elems[i]);
+        })(els[i]);
     }
 });

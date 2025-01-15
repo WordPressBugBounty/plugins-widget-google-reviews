@@ -1116,6 +1116,11 @@ img.grw-connect-photo {
     display: flex;
     position: relative;
     flex: 1;
+    align-items: center;
+}
+
+.grw-slider-br label > span {
+    margin: 0 2px;
 }
 
 .grw-slider-br .grw-quest {

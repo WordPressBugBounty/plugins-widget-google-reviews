@@ -191,10 +191,10 @@ var GRW_HTML_CONTENT = '' +
         '</div>' +
 
         /* Breakpoints */
-        /*'<div class="grw-builder-top grw-toggle">Column Options</div>' +
+        '<div class="grw-builder-top grw-toggle">Column Options</div>' +
         '<div class="grw-builder-inside" style="display:none">' +
             '<div class="grw-builder-option">' +
-                '<input type="text" name="slider_breakpoints">' +
+                '<input type="hidden" name="slider_breakpoints">' +
                 '<label>' +
                     'How many columns to show (for Slider & Grid)' +
                 '</label>' +
@@ -211,12 +211,12 @@ var GRW_HTML_CONTENT = '' +
                         '</select>' +
                     '</label>' +
                     '<label>' +
-                        '<input type="range" name="" value="" min="1" max="12" step="1" oninput="this.nextSibling.value=this.value"/><span></span>' +
+                        '<input type="range" name="" value="3" min="1" max="12" step="1" oninput="this.nextSibling.innerHTML=this.value"/><span></span>' +
                     '</label>' +
                     '<span class="grw-quest" title="Click to add new breakpoints">+</span>' +
                 '</div>' +
             '</div>' +
-        '</div>' +*/
+        '</div>' +
 
         /* Style Options */
         '<div class="grw-builder-top grw-toggle">Style Options</div>' +
@@ -475,7 +475,7 @@ function grw_builder_init($, data) {
     };
 
     // Init slider breakpoints
-    //grw_sbs_init();
+    grw_sbs_init();
 
     $('.grw-connect-options input[type="text"],.grw-connect-options textarea').keyup(function() {
         clearTimeout(GRW_AUTOSAVE_TIMEOUT);
@@ -551,6 +551,8 @@ function grw_feed_save_ajax() {
         grw_nonce : jQuery('#grw_nonce').val()
 
     }, function(res) {
+
+        rpi.Utils.clear();
 
         var wpgr = document.querySelectorAll('.wp-gr');
         for (var i = 0; i < wpgr.length; i++) {
@@ -985,7 +987,7 @@ function grw_deserialize_connections($, el, data) {
     }
 
     for (var opt in options) {
-        if (Object.prototype.hasOwnProperty.call(options, opt)) {
+        if (Object.prototype.hasOwnProperty.call(options, opt) && opt) {
             var control = el.querySelector('input[name="' + opt + '"],select[name="' + opt + '"],textarea[name="' + opt + '"]');
             if (control) {
                 var name = control.getAttribute('name');
@@ -1003,6 +1005,9 @@ function grw_deserialize_connections($, el, data) {
                     }
                     if (opt == 'style_vars') {
                         rplg_sv_parse(el, control.value);
+                    }
+                    if (opt == 'slider_breakpoints') {
+                        grw_sbs_parse(control.value);
                     }
                 }
             }
@@ -1117,54 +1122,81 @@ function grw_lang(defname, lang) {
 
 /******************************** Breakpoints copy & paste ********************************/
 function grw_sbs_init() {
-    var inputs = document.querySelectorAll('.grw-slider-br input,.grw-slider-br select'),
+    var select = document.querySelector('.grw-slider-br select'),
+        range = document.querySelector('.grw-slider-br input[type="range"]'),
         span = document.querySelector('.grw-slider-br .grw-quest');
 
-    inputs[0].addEventListener('change', grw_sbs_keyup);
-    inputs[1].addEventListener('change', grw_sbs_keyup);
+    select.addEventListener('change', grw_sbs_keyup);
+    range.addEventListener('input', grw_sbs_keyup);
 
     span.onclick = function() {
-        grw_sbs_clone(this.parentNode.parentNode.querySelector('.grw-slider-br:last-child')/*, ['', '']*/);
+        grw_sbs_clone(document.querySelector('.grw-slider-br:last-child'));
         grw_sbs_keyup();
     };
 }
 
 function grw_sbs_parse(sbs) {
-    var brs, inputs = document.querySelectorAll('.grw-slider-br input');
+    var brs,
+        select = document.querySelector('.grw-slider-br select'),
+        range = document.querySelector('.grw-slider-br input[type="range"]'),
+        span = document.querySelector('.grw-slider-br input[type="range"] + span');
 
     if (sbs && (brs = sbs.split(',')).length) {
         var br_first = brs.shift(),
             br_vals = br_first.split(':');
-        inputs[0].value = br_vals[0].replace('px', '');
-        inputs[1].value = br_vals[0];
-        inputs[2].value = br_vals[1];
-        inputs[3].value = br_vals[1];
+        select.value = br_vals[0].replace('px', '').trim();
+        range.value = parseInt(br_vals[1]);
+        span.innerHTML = br_vals[1];
 
         while (brs.length) {
-            grw_sbs_clone(inputs[0].parentNode.parentNode);
+            grw_sbs_clone(document.querySelector('.grw-slider-br:last-child'), brs.shift().split(':'));
         }
     }
 }
 
-function grw_sbs_clone(br) {
+function grw_sbs_clone(br, vals) {
     let clone = br.cloneNode(true),
         prevSelect = br.querySelector('select'),
-        span = clone.querySelector('.grw-quest'),
+        quest = clone.querySelector('.grw-quest'),
         select = clone.querySelector('select'),
-        range = clone.querySelector('input');
+        input = clone.querySelector('input[type="text"]')
+        range = clone.querySelector('input[type="range"]'),
+        span = clone.querySelector('input[type="range"] + span');
 
     clearTimeout(window.grw_sbt);
 
     if (select.options.length > prevSelect.selectedIndex + 1) {
         select.selectedIndex = prevSelect.selectedIndex + 1;
     }
-    span.innerHTML = '-';
+    if (select.selectedIndex == 0) {
+        select.selectedIndex = 1;
+    }
+
+    quest.innerHTML = '-';
     br.parentNode.appendChild(clone);
 
-    select.addEventListener('change', grw_sbs_keyup);
-    range.addEventListener('change', grw_sbs_keyup);
+    if (vals) {
+        select.value = vals[0];
+        if (!select.value) {
+            select.value = '';
+            if (!input) {
+                input = document.createElement('input');
+                input.type = 'text';
+                select.after(input);
+            }
+            input.value = vals[0];
+            input.addEventListener('keyup', grw_sbs_keyup);
+        } else if (input) {
+            input.parentNode.removeChild(input);
+        }
+        range.value = vals[1];
+        span.innerHTML = vals[1];
+    }
 
-    span.onclick = function() {
+    select.addEventListener('change', grw_sbs_keyup);
+    range.addEventListener('input', grw_sbs_keyup);
+
+    quest.onclick = function() {
         clone.parentNode.removeChild(clone);
         grw_sbs_keyup();
     };
@@ -1180,6 +1212,7 @@ function grw_sbs_keyup() {
             //inputs = brs[i].querySelectorAll('input,select');
 
         if (select.value == 'off') {
+            rpi.Utils.rm(input);
             continue;
         } else if ((select.value || (input && input.value)) && range.value) {
             let reslt;
@@ -1198,11 +1231,9 @@ function grw_sbs_keyup() {
             custom.focus();
         }
     }
-    if (vals.length) {
-        grw_sbs_set(vals.join(','));
-    } else {
-        grw_sbs_set('');
-    }
+    const bp = vals.join(',');
+    rpi.Instances[0].setBreakpoints(bp);
+    grw_sbs_set(bp);
 }
 
 function grw_sbs_set(val) {

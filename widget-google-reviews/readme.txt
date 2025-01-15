@@ -1,10 +1,10 @@
 === Plugin for Google Reviews ===
 Contributors: richplugins
 Donate link: https://richplugins.com/business-reviews-bundle-wordpress-plugin
-Tags: google reviews, google map reviews, reviews, slider, google rating
+Tags: google reviews, google business reviews, reviews, slider, google rating
 Requires at least: 3.0.1
 Tested up to: 6.7
-Stable tag: 5.1
+Stable tag: 5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,7 +18,7 @@ Display **Google Rating** and Reviews on your site in less than a minute. This i
 
 By the way, with the <a href="https://richplugins.com/business-reviews-bundle-wordpress-plugin">Business version</a>, you can get better results, because it shows all reviews with a constantly auto synced, works absolutely without Google API key (not necessary enable billing), supports other platforms like Facebook, Yelp which you can mix and has many other cool features to grow your customer trust and sales!
 
-[youtube https://www.youtube.com/watch?v=11JAfRta1iA]
+[youtube https://www.youtube.com/watch?v=rMbwqCjDc80]
 
 [Online demo](https://richplugins.com/demos/)
 
@@ -105,6 +105,11 @@ To find out more about who we are and what we do, here are some useful links:
 * slider breakpoints
 
 == Changelog ==
+
+= 5.2 =
+* Improve: custom number of columns for slider and grid
+* Improve: changed 'powered by Google' logo from image to text
+* Improve: made compatible with WAVE (Web Accessibility Evaluation)
 
 = 5.1 =
 * Improve: fixed issues reported on accessibe.com
