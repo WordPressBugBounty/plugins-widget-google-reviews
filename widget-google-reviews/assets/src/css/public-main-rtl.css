@@ -65,12 +65,12 @@
 
 .wp-gr .wp-google-based,
 .wp-gr .wp-google-powered {
-    color: #555!important;
+    color: var(--head-based-color, #555555)!important;
     margin: 6px 0 0!important
 }
 
 .wp-gr .wp-google-powered {
-    color: #777!important;
+    color: var(--powered-color, #777777)!important;
     font-size: 15px!important
 }
 
@@ -323,7 +323,7 @@
 }
 
 .wp-gr.wpac.wp-dark .wp-google-name a {
-    color: #eee!important
+    color: var(--head-based-color, #eeeeee)!important
 }
 
 .wp-gr.wp-dark .wp-google-time {
@@ -335,11 +335,11 @@
 }
 
 .wp-gr.wp-dark .wp-google-powered {
-    color: #fff!important
+    color: var(--powered-color, #ffffff)!important
 }
 
 .wp-gr.wp-dark .wp-google-based {
-    color: #999!important
+    color: var(--head-based-color, #999999)!important
 }
 
 .wp-gr:not(.wp-dark) .grw-review-inner.grw-backgnd {
@@ -356,7 +356,7 @@
 }
 
 .wp-gr.wpac .wp-google-name a {
-    color: #333!important;
+    color: var(--head-name-color, #333333)!important;
     font-size: 100%!important;
     text-decoration: none!important
 }

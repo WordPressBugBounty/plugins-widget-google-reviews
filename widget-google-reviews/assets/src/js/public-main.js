@@ -54,7 +54,7 @@ function grw_init(el, layout) {
     });
     common.init();
 
-    if (layout == 'slider' || layout == 'grid') {
+    if (rootEl.getElementsByClassName('grw-review')[0] && (layout == 'slider' || layout == 'grid')) {
         // Init Slider or Grid
         const row = rootEl.getElementsByClassName('grw-row')[0];
         const opt = JSON.parse(row.getAttribute('data-options'));

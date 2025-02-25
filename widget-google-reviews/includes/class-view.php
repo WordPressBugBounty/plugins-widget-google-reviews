@@ -70,8 +70,8 @@ class View {
     }
 
     private function render_slider($businesses, $reviews, $options, $is_admin = false) {
-        $count = count($reviews); ?>
-        <div class="grw-row grw-row-m" data-count="<?php echo $count; ?>" data-offset="<?php echo $count; ?>" data-options='<?php
+        ?>
+        <div class="grw-row grw-row-m" data-options='<?php
             echo json_encode(
                 array(
                     'speed'       => $options->slider_speed ? $options->slider_speed : 3,
@@ -97,7 +97,8 @@ class View {
                 </div>
             </div>
             <?php }
-            if (count($reviews) > 0) { ?>
+            $count = count($reviews);
+            if ($count > 0) { ?>
             <div class="grw-content">
                 <div class="grw-content-inner">
                     <?php if (!$options->slider_hide_prevnext) { ?>
@@ -105,7 +106,7 @@ class View {
                         <svg viewBox="0 0 24 24" role="none"><path d="M14.6,18.4L8.3,12l6.4-6.4l0.7,0.7L9.7,12l5.6,5.6L14.6,18.4z"></path></svg>
                     </div>
                     <?php } ?>
-                    <div class="grw-reviews">
+                    <div class="grw-reviews" data-count="<?php echo $count; ?>" data-offset="<?php echo $count; ?>">
                         <?php foreach ($reviews as $review) { $this->grw_slider_review($review, false, $options, $is_admin); } ?>
                     </div>
                     <?php if (!$options->slider_hide_prevnext) { ?>

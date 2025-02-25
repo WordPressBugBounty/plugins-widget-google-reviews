@@ -227,6 +227,21 @@ var GRW_HTML_CONTENT = '' +
                 'Stars color' +
             '</div>' +
             '<div class="grw-builder-option">' +
+                '<input type="color" name="--head-name-color" value="#333333" data-val="#333333" data-defval="#333333"/>' +
+                '<input type="text" value="#333333"/>' +
+                'Business name color' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<input type="color" name="--head-based-color" value="#555555" data-val="#555555" data-defval="#555555"/>' +
+                '<input type="text" value="#555555"/>' +
+                'Based on color' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<input type="color" name="--powered-color" value="#777777" data-val="#777777" data-defval="#777777"/>' +
+                '<input type="text" value="#777777"/>' +
+                'Powered color' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
                 '<input type="color" name="--btn-color" value="#1f67e7" data-val="#1f67e7" data-defval="#1f67e7"/>' +
                 '<input type="text" value="#1f67e7"/>' +
                 'Button color' +
@@ -384,7 +399,7 @@ function grw_stylechange2(target) {
     }
 
     let style = rp.getAttribute('style'),
-        cssvars = style.match(/(--[a-z]+-?[a-z]*:\s*[#0-9a-z]+\s*;)+/g);
+        cssvars = style.match(/(--[a-z]+(-[a-z]+)*:\s*[#0-9a-z]+\s*;)+/g);
 
     if (cssvars && cssvars.length) {
         window.style_vars.value = cssvars.join('');

@@ -1,10 +1,10 @@
 === Plugin for Google Reviews ===
 Contributors: richplugins
 Donate link: https://richplugins.com/business-reviews-bundle-wordpress-plugin
-Tags: google reviews, google business reviews, reviews, slider, google rating
+Tags: google reviews, business reviews, reviews, slider, google rating
 Requires at least: 3.0.1
 Tested up to: 6.7
-Stable tag: 5.2
+Stable tag: 5.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -105,6 +105,14 @@ To find out more about who we are and what we do, here are some useful links:
 * slider breakpoints
 
 == Changelog ==
+
+= 5.3 =
+* Improve: new color options for business name, based on and powered messages
+* Improve: reviews connection wizard has been adapted for table and mobile screens
+* Improve: assets (js/css) updated for the recent changes
+* Bugfix: undefined error if Slider layout has no reviews
+* Minor style fixes
+* Translation fixes
 
 = 5.2 =
 * Improve: custom number of columns for slider and grid
