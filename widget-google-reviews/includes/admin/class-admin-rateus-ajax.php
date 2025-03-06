@@ -10,6 +10,8 @@ class Admin_Rateus_Ajax {
     }
 
     public function rateus_ajax() {
+        $this->check_nonce();
+
         $rate = trim(sanitize_text_field(wp_unslash($_POST['rate'])));
         update_option('grw_rate_us', time() . ':' . $rate);
         echo json_encode(array('rate' => $rate));
@@ -18,6 +20,8 @@ class Admin_Rateus_Ajax {
     }
 
     public function rateus_ajax_feedback() {
+        $this->check_nonce();
+
         $rate  = trim(sanitize_text_field(wp_unslash($_POST['rate'])));
         $email = trim(sanitize_text_field(wp_unslash($_POST['email'])));
         $msg   = trim(sanitize_text_field(wp_unslash($_POST['msg'])));
@@ -35,5 +39,12 @@ class Admin_Rateus_Ajax {
         echo json_encode(array('rate' => $rate, 'email' => $email, 'msg' => $msg));
 
         die();
+    }
+
+    private function check_nonce() {
+        if (!current_user_can('manage_options')) {
+            die('The account you\'re logged in to doesn\'t have permission to access this page.');
+        }
+        check_admin_referer('grw_wpnonce', 'grw_nonce');
     }
 }

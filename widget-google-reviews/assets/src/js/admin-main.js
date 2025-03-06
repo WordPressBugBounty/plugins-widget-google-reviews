@@ -26,7 +26,11 @@ jQuery(document).ready(function($) {
                     url      : ajaxurl,
                     type     : 'POST',
                     dataType : 'json',
-                    data     : {action: 'grw_rateus_ajax', rate: rate},
+                    data     : {
+                        rate      : rate,
+                        action    : 'grw_rateus_ajax',
+                        grw_nonce : $('#grw_nonce').val()
+                    },
                     success  : function(res) {
                         console.log(res);
                     }
@@ -56,10 +60,11 @@ jQuery(document).ready(function($) {
                 type     : 'POST',
                 dataType : 'json',
                 data     : {
-                    action : 'grw_rateus_ajax_feedback',
-                    rate   : $rateus_stars.attr('data-rate'),
-                    email  : $('input', $rateus_dlg).val(),
-                    msg    : $('textarea', $rateus_dlg).val(),
+                    rate      : $rateus_stars.attr('data-rate'),
+                    email     : $('input', $rateus_dlg).val(),
+                    msg       : $('textarea', $rateus_dlg).val(),
+                    action    : 'grw_rateus_ajax_feedback',
+                    grw_nonce : $('#grw_nonce').val()
                 },
                 success  : function(res) {
                     $rateus_dlg.dialog({'title': 'Feedback sent'})
@@ -121,7 +126,10 @@ jQuery(document).ready(function($) {
         });
 
         function ajax(pid, cb) {
-            var data = {action: 'grw_overview_ajax'};
+            var data = {
+                action    : 'grw_overview_ajax',
+                grw_nonce : jQuery('#grw_nonce').val()
+            };
 
             if (pid) {
                 data.place_id = pid;
