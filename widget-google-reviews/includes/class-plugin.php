@@ -11,6 +11,8 @@ use WP_Rplg_Google_Reviews\Includes\Admin\Admin_Rateus_Ajax;
 
 use WP_Rplg_Google_Reviews\Includes\Core\Core;
 use WP_Rplg_Google_Reviews\Includes\Core\Connect_Google;
+use WP_Rplg_Google_Reviews\Includes\Core\Connect_Google_New;
+use WP_Rplg_Google_Reviews\Includes\Core\Connect_Helper;
 use WP_Rplg_Google_Reviews\Includes\Core\Database;
 
 final class Plugin {
@@ -41,8 +43,6 @@ final class Plugin {
     }
 
     public function register_services() {
-        $this->init_language();
-
         $database = new Database();
 
         $activator = new Activator($database);
@@ -85,7 +85,9 @@ final class Plugin {
         $feed_block = new Feed_Block($feed_deserializer, $core, $view, $assets);
         $feed_block->register();
 
-        $connect_google = new Connect_Google();
+        $connect_helper = new Connect_Helper();
+        $connect_google_new = new Connect_Google_New($connect_helper);
+        $connect_google = new Connect_Google($connect_google_new, $connect_helper);
 
         $reviews_cron = new Reviews_Cron($connect_google, $feed_deserializer);
         $reviews_cron->register();
@@ -94,7 +96,7 @@ final class Plugin {
 
         if (is_admin()) {
             $feed_serializer = new Feed_Serializer();
-            $feed_ajax = new Feed_Ajax($connect_google, $feed_serializer, $feed_deserializer, $core, $view);
+            $feed_ajax = new Feed_Ajax($connect_google_new, $feed_serializer, $feed_deserializer, $core, $view);
 
             $admin_notice = new Admin_Notice();
             $admin_notice->register();
@@ -126,10 +128,6 @@ final class Plugin {
 
             $rateus_ajax = new Admin_Rateus_Ajax();
         }
-    }
-
-    public function init_language() {
-        load_plugin_textdomain('widget-google-reviews', false, basename(dirname(GRW_PLUGIN_FILE)) . '/languages');
     }
 
     public function activate($network_wide = false) {

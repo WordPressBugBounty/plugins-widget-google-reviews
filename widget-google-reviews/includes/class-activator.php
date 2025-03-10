@@ -17,6 +17,7 @@ class Activator {
             'grw_version',
             'grw_active',
             'grw_async_css',
+            'grw_freq_revs_upd',
             'grw_google_api_key',
             'grw_language',
             'grw_activation_time',
@@ -39,9 +40,18 @@ class Activator {
     }
 
     public function register() {
-        add_action('init', array($this, 'check_version'));
+        add_action('init', array($this, 'init'));
         add_filter('https_ssl_verify', '__return_false');
         add_filter('block_local_requests', '__return_false');
+    }
+
+    public function init() {
+        $this->init_language();
+        $this->check_version();
+    }
+
+    public function init_language() {
+        load_plugin_textdomain('widget-google-reviews', false, basename(dirname(GRW_PLUGIN_FILE)) . '/languages');
     }
 
     public function check_version() {

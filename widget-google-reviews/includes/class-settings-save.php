@@ -45,7 +45,7 @@ class Settings_Save {
 
         if (isset($_POST['save'])) {
             $notice_code = 'settings_save';
-            $fields = array('grw_async_css', 'grw_demand_assets', 'grw_minified_assets', 'grw_google_api_key');
+            $fields = array('grw_async_css', 'grw_demand_assets', 'grw_freq_revs_upd', 'grw_google_api_key');
             foreach ($fields as $field) {
 
                 if (isset($_POST[$field])) {
@@ -57,14 +57,20 @@ class Settings_Save {
                         update_option('grw_revupd_cron', '1');
 
                         // Test Google API key
-                        $res = wp_remote_get('https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJ3TH9CwFZwokRIvNO1SP0WLg&key=' . $value);
+                        $res = wp_remote_get(GRW_GOOGLE_PLACE_API_NEW . 'ChIJ3TH9CwFZwokRIvNO1SP0WLg?fields=rating&key=' . $value);
                         $body = wp_remote_retrieve_body($res);
                         $body_json = json_decode($body);
-                        if (!$body_json || isset($body_json->error_message)) {
-                            update_option('grw_notice_msg', $body_json ? $body_json->error_message : 'Test Google API key request failed');
+                        if (!$body_json || isset($body_json->error)) {
+                            update_option('grw_notice_msg', isset($body_json->error) ? $body_json->error->message : 'Test Google API key request failed');
                             update_option('grw_notice_type', 'error');
                             $notice_code = 'custom_msg';
                         }
+                    }
+
+                    // Change reviews update cron frequency
+                    if ($field == 'grw_freq_revs_upd' && strlen($value) > 0) {
+                        $this->reviews_cron->deactivate();
+                        $this->reviews_cron->activate();
                     }
                 }
             }
@@ -86,7 +92,7 @@ class Settings_Save {
         }
 
         if (isset($_POST['reset_all'])) {
-            $reset_all_multisite = sanitize_text_field(wp_unslash($_POST['reset_all_multisite']));
+            $reset_all_multisite = isset($_POST['reset_all_multisite']) ? sanitize_text_field(wp_unslash($_POST['reset_all_multisite'])) : false;
             $this->activator->drop_db($reset_all_multisite);
             $this->activator->delete_all_options($reset_all_multisite);
             $this->activator->delete_all_feeds($reset_all_multisite);

@@ -42,7 +42,7 @@ class Plugin_Settings {
         $grw_enabled         = get_option('grw_active') == '1';
         $async_css           = get_option('grw_async_css');
         $grw_demand_assets   = get_option('grw_demand_assets');
-        $grw_minified_assets = get_option('grw_minified_assets');
+        $grw_freq_revs_upd   = get_option('grw_freq_revs_upd');
         $grw_google_api_key  = get_option('grw_google_api_key');
         $grw_activation_time = get_option('grw_activation_time');
         ?>
@@ -109,6 +109,19 @@ class Plugin_Settings {
                     <h3>Google</h3>
                     <form method="post" action="<?php echo esc_url(admin_url('admin-post.php?action=grw_settings_save&grw_tab=google')); ?>">
                         <?php wp_nonce_field('grw-wpnonce_save', 'grw-form_nonce_save'); ?>
+                        <div class="grw-field">
+                            <div class="grw-field-label">
+                                <label>Frequency of review updates</label>
+                            </div>
+                            <div class="wp-review-field-option">
+                                <select name="grw_freq_revs_upd">
+                                    <option value="daily" <?php selected('daily', $grw_freq_revs_upd); ?>>Daily</option>
+                                    <option value="weekly" <?php selected('weekly', $grw_freq_revs_upd); ?>>Once weekly</option>
+                                    <option value="fortnightly " <?php selected('fortnightly', $grw_freq_revs_upd); ?>>Every two weeks </option>
+                                    <option value="monthly" <?php selected('monthly', $grw_freq_revs_upd); ?>>Once monthly</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="grw-field">
                             <div class="grw-field-label">
                                 <label>Google Places API key</label>

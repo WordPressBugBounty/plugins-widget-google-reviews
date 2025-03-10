@@ -15,18 +15,40 @@ class Reviews_Cron {
     }
 
     public function register() {
+        add_filter('cron_schedules', array($this, 'add_schedules'));
         add_action('grw_revupd_schedule', array($this, 'update_schedule'));
 
+        $this->activate();
+    }
+
+    public function activate() {
         $revupd_cron = get_option('grw_revupd_cron');
         $next_cron_run = wp_next_scheduled('grw_revupd_schedule');
 
         if ($revupd_cron !== '0' && !$next_cron_run) {
             $start_at = rand(0, 60 * 60 * 12);
-            wp_schedule_event($start_at, 'daily', 'grw_revupd_schedule');
+            $freq = get_option('grw_freq_revs_upd', 'daily');
+            wp_schedule_event(time(), $freq, 'grw_revupd_schedule');
         } elseif ($next_cron_run) {
             update_option('grw_revupd_cron_timeout', $next_cron_run - time());
         }
     }
+
+    public function add_schedules($schedules = array()) {
+		$schedules['weekly'] = array(
+			'interval' => 60 * 60 * 24 * 7,
+			'display'  => __('Once Weekly', 'widget-google-reviews'),
+		);
+        $schedules['fortnightly'] = array(
+			'interval' => 60 * 60 * 24 * 14,
+			'display'  => __('Every two weeks', 'widget-google-reviews'),
+		);
+        $schedules['monthly'] = array(
+			'interval' => 60 * 60 * 24 * 30,
+			'display'  => __('Once Monthly', 'widget-google-reviews'),
+		);
+		return $schedules;
+	}
 
     public function update_schedule() {
 

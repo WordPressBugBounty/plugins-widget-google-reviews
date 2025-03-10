@@ -3,7 +3,7 @@
 Plugin Name: Plugin for Google Reviews
 Plugin URI: https://richplugins.com/business-reviews-bundle-wordpress-plugin
 Description: Instantly Google Places Reviews on your website to increase user confidence and sales.
-Version: 5.4
+Version: 5.5
 Author: RichPlugins <support@richplugins.com>
 Author URI: https://richplugins.com
 Text Domain: widget-google-reviews
@@ -18,14 +18,14 @@ if (!defined('ABSPATH')) {
 
 require(ABSPATH . 'wp-includes/version.php');
 
-define('GRW_VERSION'          , '5.4');
-define('GRW_PLUGIN_FILE'      , __FILE__);
-define('GRW_PLUGIN_PATH'      , plugin_dir_path(GRW_PLUGIN_FILE));
-define('GRW_PLUGIN_URL'       , plugins_url(basename(GRW_PLUGIN_PATH), basename(__FILE__)));
-define('GRW_ASSETS_URL'       , GRW_PLUGIN_URL . '/assets/');
-
-define('GRW_GOOGLE_BIZ'       , GRW_ASSETS_URL . 'img/gmblogo.svg');
-define('GRW_GOOGLE_PLACE_API' , 'https://maps.googleapis.com/maps/api/place/');
+define('GRW_VERSION'              , '5.5');
+define('GRW_PLUGIN_FILE'          , __FILE__);
+define('GRW_PLUGIN_PATH'          , plugin_dir_path(GRW_PLUGIN_FILE));
+define('GRW_PLUGIN_URL'           , plugins_url(basename(GRW_PLUGIN_PATH), basename(__FILE__)));
+define('GRW_ASSETS_URL'           , GRW_PLUGIN_URL . '/assets/');
+define('GRW_GOOGLE_BIZ'           , GRW_ASSETS_URL . 'img/gmblogo.svg');
+define('GRW_GOOGLE_PLACE_API'     , 'https://maps.googleapis.com/maps/api/place/');
+define('GRW_GOOGLE_PLACE_API_NEW' , 'https://places.googleapis.com/v1/places/');
 
 require_once __DIR__ . '/autoloader.php';
 

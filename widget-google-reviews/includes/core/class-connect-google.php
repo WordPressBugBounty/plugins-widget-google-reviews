@@ -4,7 +4,13 @@ namespace WP_Rplg_Google_Reviews\Includes\Core;
 
 class Connect_Google {
 
-    public function __construct() {
+    private $cgn;
+    private $helper;
+
+    public function __construct(Connect_Google_New $cgn, Connect_Helper $helper) {
+        $this->cgn = $cgn;
+        $this->helper = $helper;
+
         add_action('wp_ajax_grw_hide_review', array($this, 'hide_review'));
         add_action('wp_ajax_grw_connect_google', array($this, 'connect_google'));
     }
@@ -72,18 +78,21 @@ class Connect_Google {
 
                 if ($google_api_key && strlen($google_api_key) > 0) {
 
-                    $url = $this->api_url($id, $google_api_key, $lang);
+                    $response = $this->cgn->call_google($id, $google_api_key, $lang, $local_img);
+
+                    /*$url = $this->api_url($id, $google_api_key, $lang);
                     $response = $this->call_google($url, $local_img, $google_api_key);
 
                     $url = $this->api_url($id, $google_api_key, $lang, 'newest');
+                    $response = $this->call_google($url, $local_img, $google_api_key);*/
 
                 } else {
                     $url = 'https://app.richplugins.com/gpaw2/get/json?pid=' . $id . '&token=' . $token .
                            '&siteurl=' . get_option('siteurl') . '&authcode=' . get_option('grw_auth_code') .
                            ($lang && strlen($lang) > 0 ? '&lang=' . $lang : '');
-                }
 
-                $response = $this->call_google($url, $local_img, $google_api_key);
+                    $response = $this->call_google($url, $local_img, $google_api_key);
+                }
 
                 if ($_POST['feed_id']) {
                     delete_transient('grw_feed_' . GRW_VERSION . '_' . $_POST['feed_id'] . '_reviews', false);
@@ -132,17 +141,15 @@ class Connect_Google {
         $reviews_lang = $args[1];
         $local_img = isset($args[2]) ? $args[2] : 'false';
 
-        $url = '';
         $google_api_key = get_option('grw_google_api_key');
-        $api_key_filled = $google_api_key && strlen($google_api_key) > 0;
 
-        if ($api_key_filled) {
+        if ($google_api_key && strlen($google_api_key) > 0) {
 
-            $url = $this->api_url($place_id, $google_api_key, $reviews_lang, 'newest');
+            $this->cgn->refresh_reviews($place_id, $google_api_key, $reviews_lang, $local_img);
 
         } else {
 
-            $url = 'https://app.richplugins.com/gpaw/update/json' .
+            /*$url = 'https://app.richplugins.com/gpaw/update/json' .
                    '?siteurl=' . get_option('siteurl') .
                    '&authcode=' . get_option('grw_auth_code') .
                    '&pid=' . $place_id .
@@ -150,22 +157,13 @@ class Connect_Google {
             if ($reviews_lang && strlen($reviews_lang) > 0) {
                 $url = $url . '&lang=' . $reviews_lang;
             }
-        }
 
-        if (strlen($url) > 0) {
             $res = wp_remote_get($url);
             $body = wp_remote_retrieve_body($res);
             $body_json = json_decode($body);
-
             if ($body_json && isset($body_json->result) && isset($body_json->result->rating)) {
-
-                if ($api_key_filled) {
-                    $photo = $this->business_avatar($body_json->result, $google_api_key);
-                    $body_json->result->business_photo = $photo;
-                }
-
                 $this->save_reviews($body_json->result, $local_img);
-            }
+            }*/
         }
     }
 
@@ -298,7 +296,7 @@ class Connect_Google {
                 if (isset($review->profile_photo_url)) {
                     if ($local_img === true || $local_img == 'true') {
                         $img_name = $place->place_id . '_' . md5($review->profile_photo_url);
-                        $author_img = $this->upload_image($review->profile_photo_url, $img_name);
+                        $author_img = $this->helper->upload_image($review->profile_photo_url, $img_name);
                     } else {
                         $author_img = $review->profile_photo_url;
                     }
@@ -351,30 +349,8 @@ class Connect_Google {
                 ),
                 'https://maps.googleapis.com/maps/api/place/photo'
             );
-            return $this->upload_image($url, $response_result_json->place_id);
+            return $this->helper->upload_image($url, $response_result_json->place_id);
         }
         return null;
     }
-
-    function upload_image($url, $name) {
-        $res = wp_remote_get($url, array('timeout' => 8));
-
-        if(is_wp_error($res)) {
-            // LOG
-            return null;
-        }
-
-        $bits = wp_remote_retrieve_body($res);
-        $filename = $name . '.jpg';
-
-        $upload_dir = wp_upload_dir();
-        $full_filepath = $upload_dir['path'] . '/' . $filename;
-        if (file_exists($full_filepath)) {
-            wp_delete_file($full_filepath);
-        }
-
-        $upload = wp_upload_bits($filename, null, $bits);
-        return $upload['url'];
-    }
-
 }

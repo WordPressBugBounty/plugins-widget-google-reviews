@@ -3,7 +3,7 @@
 namespace WP_Rplg_Google_Reviews\Includes;
 
 use WP_Rplg_Google_Reviews\Includes\Core\Core;
-use WP_Rplg_Google_Reviews\Includes\Core\Connect_Google;
+use WP_Rplg_Google_Reviews\Includes\Core\Connect_Google_New;
 
 class Feed_Ajax {
 
@@ -11,10 +11,10 @@ class Feed_Ajax {
     private $view;
     private $feed_serializer;
     private $feed_deserializer;
-    private $connect_google;
+    private $cgn;
 
-    public function __construct(Connect_Google $connect_google, Feed_Serializer $feed_serializer, Feed_Deserializer $feed_deserializer, Core $core, View $view) {
-        $this->connect_google = $connect_google;
+    public function __construct(Connect_Google_New $cgn, Feed_Serializer $feed_serializer, Feed_Deserializer $feed_deserializer, Core $core, View $view) {
+        $this->cgn = $cgn;
         $this->feed_serializer = $feed_serializer;
         $this->feed_deserializer = $feed_deserializer;
         $this->core = $core;
@@ -51,13 +51,13 @@ class Feed_Ajax {
                 check_admin_referer('grw_wpnonce', 'grw_nonce');
 
                 $pid = sanitize_text_field(wp_unslash($_POST['pid']));
-                $lang = sanitize_text_field(wp_unslash($_POST['lang']));
+                $lang = isset($_POST['lang']) ? sanitize_text_field(wp_unslash($_POST['lang'])) : null;
                 $token = sanitize_text_field(wp_unslash($_POST['token']));
 
                 $google_api_key = get_option('grw_google_api_key');
 
                 if ($google_api_key && strlen($google_api_key) > 0) {
-                    $url = $this->api_url($pid, $google_api_key, $lang);
+                    $response = $this->cgn->place($pid, $google_api_key);
                 } else {
                     $url = 'https://app.richplugins.com/gpaw2/place/json?pid=' . $pid . '&token=' . $token .
                            '&siteurl=' . get_option('siteurl') . '&authcode=' . get_option('grw_auth_code');
@@ -65,31 +65,31 @@ class Feed_Ajax {
                     if ($lang && strlen($lang) > 0) {
                         $url = $url . '&lang=' . $lang;
                     }
-                }
 
-                $res = wp_remote_get($url);
-                $body = wp_remote_retrieve_body($res);
-                $body_json = json_decode($body);
+                    $res = wp_remote_get($url);
+                    $body = wp_remote_retrieve_body($res);
+                    $body_json = json_decode($body);
 
-                if (!$body_json || !isset($body_json->result)) {
-                    $result = $body_json;
-                    $status = 'failed';
-                } elseif (!isset($body_json->result->rating)) {
-                    $error_msg = 'Google place <a href="' . $body_json->result->url . '" target="_blank">which you try to connect</a> ' .
-                                 'does not have a rating and reviews, it seems it\'s a street address, not a business locations. ' .
-                                 'Please read manual how to find ' .
-                                 '<a href="' . admin_url('admin.php?page=grw-support&grw_tab=fig#place_id') . '" target="_blank">right Place ID</a>.';
-                    $result = array('error_message' => $error_msg);
-                    $status = 'failed';
-                } else {
-                    if ($google_api_key && strlen($google_api_key) > 0) {
-                        $photo = $this->business_avatar($body_json->result, $google_api_key);
-                        $body_json->result->business_photo = $photo;
+                    if (!$body_json || !isset($body_json->result)) {
+                        $result = $body_json;
+                        $status = 'failed';
+                    } elseif (!isset($body_json->result->rating)) {
+                        $error_msg = 'Google place <a href="' . $body_json->result->url . '" target="_blank">which you try to connect</a> ' .
+                                     'does not have a rating and reviews, it seems it\'s a street address, not a business locations. ' .
+                                     'Please read manual how to find ' .
+                                     '<a href="' . admin_url('admin.php?page=grw-support&grw_tab=fig#place_id') . '" target="_blank">right Place ID</a>.';
+                        $result = array('error_message' => $error_msg);
+                        $status = 'failed';
+                    } else {
+                        if ($google_api_key && strlen($google_api_key) > 0) {
+                            $photo = $this->business_avatar($body_json->result, $google_api_key);
+                            $body_json->result->business_photo = $photo;
+                        }
+                        $result = $body_json->result;
+                        $status = 'success';
                     }
-                    $result = $body_json->result;
-                    $status = 'success';
+                    $response = compact('status', 'result');
                 }
-                $response = compact('status', 'result');
             }
             header('Content-type: text/json');
             echo json_encode($response);
