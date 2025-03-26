@@ -43,6 +43,7 @@ class Plugin_Settings {
         $async_css           = get_option('grw_async_css');
         $grw_demand_assets   = get_option('grw_demand_assets');
         $grw_freq_revs_upd   = get_option('grw_freq_revs_upd');
+        $gpa_old             = get_option('grw_gpa_old');
         $grw_google_api_key  = get_option('grw_google_api_key');
         $grw_activation_time = get_option('grw_activation_time');
         ?>
@@ -120,6 +121,18 @@ class Plugin_Settings {
                                     <option value="fortnightly " <?php selected('fortnightly', $grw_freq_revs_upd); ?>>Every two weeks </option>
                                     <option value="monthly" <?php selected('monthly', $grw_freq_revs_upd); ?>>Once monthly</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="grw-field">
+                            <div class="grw-field-label">
+                                <label>Use old Places API</label>
+                            </div>
+                            <div class="wp-review-field-option">
+                                <label>
+                                    <input type="hidden" name="grw_gpa_old" value="false">
+                                    <input type="checkbox" id="grw_gpa_old" name="grw_gpa_old" value="true" <?php checked('true', $gpa_old); ?>>
+                                    Applies to API keys created before March 1, 2025,<br>provided that the Places API (New) has not been enabled in Google Console.
+                                </label>
                             </div>
                         </div>
                         <div class="grw-field">

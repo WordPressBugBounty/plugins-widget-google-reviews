@@ -12,7 +12,6 @@
     ],
     "icon": "star-filled",
     "textdomain": "widget-google-reviews",
-    "editorScript": "file:./build/index.js",
     "attributes": {
         "id": {
             "type": "string"

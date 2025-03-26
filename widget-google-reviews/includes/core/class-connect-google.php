@@ -78,13 +78,16 @@ class Connect_Google {
 
                 if ($google_api_key && strlen($google_api_key) > 0) {
 
-                    $response = $this->cgn->call_google($id, $google_api_key, $lang, $local_img);
+                    $gpa_old = get_option('grw_gpa_old');
+                    if ($gpa_old === 'true') {
+                        $url = $this->api_url($id, $google_api_key, $lang);
+                        $response = $this->call_google($url, $local_img, $google_api_key);
 
-                    /*$url = $this->api_url($id, $google_api_key, $lang);
-                    $response = $this->call_google($url, $local_img, $google_api_key);
-
-                    $url = $this->api_url($id, $google_api_key, $lang, 'newest');
-                    $response = $this->call_google($url, $local_img, $google_api_key);*/
+                        $url = $this->api_url($id, $google_api_key, $lang, 'newest');
+                        $response = $this->call_google($url, $local_img, $google_api_key);
+                    } else {
+                        $response = $this->cgn->call_google($id, $google_api_key, $lang, $local_img);
+                    }
 
                 } else {
                     $url = 'https://app.richplugins.com/gpaw2/get/json?pid=' . $id . '&token=' . $token .

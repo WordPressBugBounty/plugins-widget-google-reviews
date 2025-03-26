@@ -764,6 +764,7 @@
 
 .wp-gr .rpi-dots {
     display: flex!important;
+    gap: 12px!important;
     flex-wrap: nowrap!important;
     overflow-x: scroll!important;
     scrollbar-width: none!important;
@@ -776,7 +777,7 @@
     display: inline-block!important;
     width: var(--slider-dot-size)!important;
     height: var(--slider-dot-size)!important;
-    margin: 1px 5px!important;
+    margin: 1px 0!important;
     background-color: var(--slider-dot-color, #999999)!important;
     border-radius: 20px!important;
     cursor: pointer!important;

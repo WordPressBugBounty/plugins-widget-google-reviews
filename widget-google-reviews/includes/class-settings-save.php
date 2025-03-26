@@ -45,7 +45,7 @@ class Settings_Save {
 
         if (isset($_POST['save'])) {
             $notice_code = 'settings_save';
-            $fields = array('grw_async_css', 'grw_demand_assets', 'grw_freq_revs_upd', 'grw_google_api_key');
+            $fields = array('grw_async_css', 'grw_demand_assets', 'grw_freq_revs_upd', 'grw_gpa_old', 'grw_google_api_key');
             foreach ($fields as $field) {
 
                 if (isset($_POST[$field])) {
@@ -57,13 +57,21 @@ class Settings_Save {
                         update_option('grw_revupd_cron', '1');
 
                         // Test Google API key
-                        $res = wp_remote_get(GRW_GOOGLE_PLACE_API_NEW . 'ChIJ3TH9CwFZwokRIvNO1SP0WLg?fields=rating&key=' . $value);
+                        $gpa_old = get_option('grw_gpa_old');
+                        if ($gpa_old === 'true') {
+                            $res = wp_remote_get(GRW_GOOGLE_PLACE_API . 'details/json?placeid=ChIJ3TH9CwFZwokRIvNO1SP0WLg&key=' . $value);
+                        } else {
+                            $res = wp_remote_get(GRW_GOOGLE_PLACE_API_NEW . 'ChIJ3TH9CwFZwokRIvNO1SP0WLg?fields=rating&key=' . $value);
+                        }
                         $body = wp_remote_retrieve_body($res);
                         $body_json = json_decode($body);
-                        if (!$body_json || isset($body_json->error)) {
-                            update_option('grw_notice_msg', isset($body_json->error) ? $body_json->error->message : 'Test Google API key request failed');
-                            update_option('grw_notice_type', 'error');
-                            $notice_code = 'custom_msg';
+                        if ($body_json) {
+                            $error = isset($body_json->error) ? $body_json->error->message : (isset($body_json->error_message) ? $body_json->error_message : '');
+                            if (!empty($error)) {
+                                update_option('grw_notice_msg', $error);
+                                update_option('grw_notice_type', 'error');
+                                $notice_code = 'custom_msg';
+                            }
                         }
                     }
 
