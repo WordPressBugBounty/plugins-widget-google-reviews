@@ -19,6 +19,7 @@ class Activator {
             'grw_async_css',
             'grw_freq_revs_upd',
             'grw_google_api_key',
+            'grw_gpa_old',
             'grw_language',
             'grw_activation_time',
             'grw_auth_code',

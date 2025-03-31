@@ -55,33 +55,38 @@ class Feed_Ajax {
                 $token = sanitize_text_field(wp_unslash($_POST['token']));
 
                 $google_api_key = get_option('grw_google_api_key');
+                $api_key_filled = $google_api_key && strlen($google_api_key) > 0;
+                $gpa_old = get_option('grw_gpa_old');
 
-                if ($google_api_key && strlen($google_api_key) > 0) {
+                if ($api_key_filled && $gpa_old !== 'true') {
                     $response = $this->cgn->place($pid, $google_api_key);
                 } else {
-                    $url = 'https://app.richplugins.com/gpaw2/place/json?pid=' . $pid . '&token=' . $token .
+                    if ($api_key_filled && $gpa_old === 'true') {
+                        $url = $this->api_url($pid, $google_api_key, $lang);
+                    } else {
+                        $url = 'https://app.richplugins.com/gpaw2/place/json?pid=' . $pid . '&token=' . $token .
                            '&siteurl=' . get_option('siteurl') . '&authcode=' . get_option('grw_auth_code');
 
-                    if ($lang && strlen($lang) > 0) {
-                        $url = $url . '&lang=' . $lang;
+                        if ($lang && strlen($lang) > 0) {
+                            $url = $url . '&lang=' . $lang;
+                        }
                     }
 
                     $res = wp_remote_get($url);
                     $body = wp_remote_retrieve_body($res);
                     $body_json = json_decode($body);
 
-                    if (!$body_json || !isset($body_json->result)) {
+                    if (!$body_json) {
                         $result = $body_json;
                         $status = 'failed';
-                    } elseif (!isset($body_json->result->rating)) {
-                        $error_msg = 'Google place <a href="' . $body_json->result->url . '" target="_blank">which you try to connect</a> ' .
-                                     'does not have a rating and reviews, it seems it\'s a street address, not a business locations. ' .
-                                     'Please read manual how to find ' .
-                                     '<a href="' . admin_url('admin.php?page=grw-support&grw_tab=fig#place_id') . '" target="_blank">right Place ID</a>.';
-                        $result = array('error_message' => $error_msg);
+                    } elseif (isset($body_json->error_message)) {
+                        $result = array('error_message' => $body_json->error_message);
+                        $status = 'failed';
+                    } elseif (isset($body_json->result) && !isset($body_json->result->rating)) {
+                        $result = array('error_message' => 'The place you are trying to connect to does not have a rating yet.');
                         $status = 'failed';
                     } else {
-                        if ($google_api_key && strlen($google_api_key) > 0) {
+                        if ($api_key_filled) {
                             $photo = $this->business_avatar($body_json->result, $google_api_key);
                             $body_json->result->business_photo = $photo;
                         }

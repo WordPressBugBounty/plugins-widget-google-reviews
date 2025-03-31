@@ -22,9 +22,11 @@ class Connect_Google_New {
         if (!$body_json) {
             $result = $body_json;
             $status = 'failed';
+        } elseif (isset($body_json->error)) {
+            $result = array('error_message' => $body_json->error->message);
+            $status = 'failed';
         } elseif (!isset($body_json->rating)) {
-            $error_msg = 'Google place <a href="' . $body_json->googleMapsUri . '" target="_blank">which you try to connect</a> does not have a rating and reviews, it seems it\'s a street address, not a business locations. Please read manual how to find <a href="' . admin_url('admin.php?page=grw-support&grw_tab=fig#place_id') . '" target="_blank">right Place ID</a>.';
-            $result = array('error_message' => $error_msg);
+            $result = array('error_message' => 'The place you are trying to connect to does not have a rating yet.');
             $status = 'failed';
         } else {
             $photo = $this->business_avatar($body_json, $google_api_key);
@@ -270,19 +272,18 @@ class Connect_Google_New {
         if (!$body_json) {
             $result = $body_json;
             $status = 'failed';
+        } elseif (isset($body_json->error)) {
+            $result = array('error_message' => $body_json->error->message);
+            $status = 'failed';
         } elseif (!isset($body_json->rating)) {
-            $error_msg = 'Google place <a href="' . $body_json->googleMapsUri . '" target="_blank">which you try to connect</a> ' .
-                         'does not have a rating and reviews, it seems it\'s a street address, not a business locations. ' .
-                         'Please read manual how to find ' .
-                         '<a href="' . admin_url('admin.php?page=grw-support&grw_tab=fig#place_id') . '" target="_blank">right Place ID</a>.';
-            $result = array('error_message' => $error_msg);
+            $result = array('error_message' => 'The place you are trying to connect to does not have a rating yet.');
             $status = 'failed';
         } else {
             $photo = $this->business_avatar($body_json, $google_api_key);
             $body_json->business_photo = $photo;
             $body_json->name = $body_json->displayName->text;
             $body_json->url = $body_json->googleMapsUri;
-            $body_json->website = $body_json->websiteUri;
+            $body_json->website = isset($body_json->websiteUri) ? $body_json->websiteUri : null;
             $body_json->user_ratings_total = $body_json->userRatingCount;
             $result = $body_json;
             $status = 'success';
