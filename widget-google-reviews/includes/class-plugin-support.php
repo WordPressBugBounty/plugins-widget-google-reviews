@@ -23,7 +23,8 @@ class Plugin_Support {
 
         $tab = isset($_GET['grw_tab']) && strlen($_GET['grw_tab']) > 0 ? sanitize_text_field(wp_unslash($_GET['grw_tab'])) : 'welcome';
 
-        $grw_google_api_key  = get_option('grw_google_api_key');
+        $gpa_old = get_option('grw_gpa_old');
+        $grw_google_api_key = get_option('grw_google_api_key');
 
         ?>
         <div class="grw-page-title">
@@ -93,6 +94,18 @@ class Plugin_Support {
                     <?php include_once(dirname(GRW_PLUGIN_FILE) . '/includes/page-setting-advance.php'); ?>
                     <form method="post" action="<?php echo esc_url(admin_url('admin-post.php?action=grw_settings_save&grw_tab=advance')); ?>">
                         <?php wp_nonce_field('grw-wpnonce_save', 'grw-form_nonce_save'); ?>
+                        <div class="grw-field">
+                            <div class="grw-field-label">
+                                <label>Use old Places API</label>
+                            </div>
+                            <div class="wp-review-field-option">
+                                <label>
+                                    <input type="hidden" name="grw_gpa_old" value="false">
+                                    <input type="checkbox" id="grw_gpa_old" name="grw_gpa_old" value="true" <?php checked('true', $gpa_old); ?>>
+                                    Applies to API keys created before March 1, 2025,<br>provided that the Places API (New) has not been enabled in Google Console.
+                                </label>
+                            </div>
+                        </div>
                         <div class="grw-field">
                             <div class="grw-field-label">
                                 <label>Google Places API key</label>
