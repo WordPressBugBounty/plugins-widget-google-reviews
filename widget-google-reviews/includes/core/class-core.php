@@ -22,6 +22,8 @@ class Core {
             'show_round'                => false,
             'show_shadow'               => false,
             'short_last_name'           => false,
+            'media'                     => true,
+            'reply'                     => true,
 
             'slider_autoplay'           => true,
             'slider_hide_border'        => false,
@@ -283,6 +285,9 @@ class Core {
                     'author_name'   => isset($options->short_last_name) && $options->short_last_name ?
                                        $this->get_short_name($rev->author_name) : $rev->author_name,
                     'time'          => $rev->time,
+                    'images'        => isset($rev->images) ? $rev->images : null,
+                    'reply'         => isset($rev->reply) ? $rev->reply : null,
+                    'reply_time'    => isset($rev->reply_time) ? $rev->reply_time : null,
                     'provider'      => 'google',
                 )
             ));

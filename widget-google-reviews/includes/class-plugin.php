@@ -31,8 +31,13 @@ final class Plugin {
         register_activation_hook(GRW_PLUGIN_FILE, array($this, 'activate'));
         register_deactivation_hook(GRW_PLUGIN_FILE, array($this, 'deactivate'));
 
+        add_action('init', array($this, 'init'));
         add_action('admin_init', array($this, 'admin_init'));
         add_action('plugins_loaded', array($this, 'register_services'));
+    }
+
+    public function init() {
+        $this->init_language();
     }
 
     public function admin_init() {
@@ -128,6 +133,10 @@ final class Plugin {
 
             $rateus_ajax = new Admin_Rateus_Ajax();
         }
+    }
+
+    public function init_language() {
+        load_plugin_textdomain('widget-google-reviews', false, basename(dirname(GRW_PLUGIN_FILE)) . '/languages');
     }
 
     public function activate($network_wide = false) {

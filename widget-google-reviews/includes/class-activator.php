@@ -47,12 +47,7 @@ class Activator {
     }
 
     public function init() {
-        $this->init_language();
         $this->check_version();
-    }
-
-    public function init_language() {
-        load_plugin_textdomain('widget-google-reviews', false, basename(dirname(GRW_PLUGIN_FILE)) . '/languages');
     }
 
     public function check_version() {
@@ -186,6 +181,11 @@ class Activator {
 
             case version_compare($last_active_version, '4.8.1', '<'):
                 $wpdb->query("ALTER TABLE `" . $wpdb->prefix . Database::REVIEW_TABLE . "` MODIFY COLUMN `author_url` VARCHAR(127)");
+
+            case version_compare($last_active_version, '5.8', '<'):
+                $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD images TEXT");
+                $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD reply TEXT");
+                $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD reply_time INTEGER");
         }
 
         if (!empty($wpdb->last_error)) {

@@ -47,9 +47,12 @@ class Database {
                "author_name VARCHAR(255),".
                "author_url VARCHAR(127),".
                "profile_photo_url VARCHAR(255),".
+               "images TEXT,".
+               "reply TEXT,".
+               "reply_time INTEGER,".
                "hide VARCHAR(1) DEFAULT '' NOT NULL,".
                "PRIMARY KEY (`id`),".
-               "UNIQUE INDEX grp_author_url_lang (`author_url`, `language`),".
+               "UNIQUE INDEX grp_author_url_lang (`google_place_id`, `author_url`, `language`),".
                "INDEX grp_google_place_id (`google_place_id`)".
                ") " . $charset_collate . ";";
 

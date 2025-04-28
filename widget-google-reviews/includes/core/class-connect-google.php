@@ -36,7 +36,7 @@ class Connect_Google {
                 $wpdb->update($wpdb->prefix . Database::REVIEW_TABLE, array('hide' => $hide), array('id' => $_POST['id']));
 
                 // Cache clear
-                if ($_POST['feed_id']) {
+                if (isset($_POST['feed_id'])) {
                     delete_transient('grw_feed_' . GRW_VERSION . '_' . $_POST['feed_id'] . '_reviews', false);
                 } else {
                     $feed_ids = get_option('grw_feed_ids');
@@ -132,7 +132,8 @@ class Connect_Google {
             $result = array(
                 'id'      => $body_json->result->place_id,
                 'name'    => $body_json->result->name,
-                'photo'   => strlen($body_json->result->business_photo) ? $body_json->result->business_photo : GRW_GOOGLE_BIZ,
+                'photo'   => isset($body_json->result->business_photo) && strlen($body_json->result->business_photo) ?
+                             $body_json->result->business_photo : GRW_GOOGLE_BIZ,
                 'reviews' => $body_json->result->reviews
             );
             $status = 'success';
@@ -238,9 +239,9 @@ class Connect_Google {
             $wpdb->insert($wpdb->prefix . Database::BUSINESS_TABLE, array(
                 'place_id'     => $place->place_id,
                 'name'         => $place->name,
-                'photo'        => $place->business_photo,
-                'icon'         => $place->icon,
-                'address'      => $place->formatted_address,
+                'photo'        => isset($place->business_photo) ? $place->business_photo : null,
+                'icon'         => isset($place->icon) ? $place->icon : null,
+                'address'      => isset($place->formatted_address) ? $place->formatted_address : null,
                 'rating'       => $place_rating,
                 'url'          => isset($place->url)     ? $place->url     : null,
                 'website'      => isset($place->website) ? $place->website : null,
@@ -308,6 +309,18 @@ class Connect_Google {
                     }
                 }
 
+                $images = null;
+                if (isset($review->images) && count($review->images) > 0) {
+                    $images = implode(';', $review->images);
+                }
+
+                $reply = null;
+                $reply_time = null;
+                if (isset($review->reply) && strlen($review->reply) > 0) {
+                    $reply = $review->reply;
+                    $reply_time = $review->reply_time;
+                }
+
                 if ($google_review_id) {
                     $update_params = array(
                         'rating' => $review->rating,
@@ -315,6 +328,13 @@ class Connect_Google {
                     );
                     if ($author_img) {
                         $update_params['profile_photo_url'] = $author_img;
+                    }
+                    if ($images) {
+                        $update_params['images'] = $images;
+                    }
+                    if ($reply) {
+                        $update_params['reply'] = $reply;
+                        $update_params['reply_time'] = $reply_time;
                     }
                     $wpdb->update($wpdb->prefix . Database::REVIEW_TABLE, $update_params, array('id' => $google_review_id));
                 } else {
@@ -326,8 +346,17 @@ class Connect_Google {
                         'language'          => $review_lang,
                         'author_name'       => $review->author_name,
                         'author_url'        => isset($review->author_url) ? $review->author_url : null,
-                        'profile_photo_url' => $author_img
+                        'profile_photo_url' => $author_img,
+                        'images'            => $images,
+                        'reply'             => $reply,
+                        'reply_time'        => $reply_time
                     ));
+                }
+
+                $last_error = $wpdb->last_error;
+                if (isset($last_error) && strlen($last_error) > 0) {
+                    $now = floor(microtime(true) * 1000);
+                    update_option('grw_last_error', $now . ': ' . $last_error);
                 }
             }
         }

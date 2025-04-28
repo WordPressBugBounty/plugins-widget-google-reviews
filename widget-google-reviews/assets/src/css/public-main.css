@@ -1,3 +1,7 @@
+.wp-gr {
+    --rev-gap: 4px;
+}
+
 .wp-gr .wp-google-badge {
     display: inline-block;
     font-family: Helvetica Neue, Helvetica, Arial, sans-serif!important;
@@ -150,6 +154,12 @@
 
 .wp-gr .wp-star svg path {
     fill: var(--star-color, #fb8e28);
+}
+
+.wp-gr .wp-google-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rev-gap);
 }
 
 .wp-gr .wp-google-name {
@@ -533,6 +543,13 @@
     align-items: center!important;
 }
 
+.wp-gr .grw-review-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rev-gap);
+    height: 100%!important;
+}
+
 .wp-gr .grw-header-inner,
 .wp-gr .grw-review-inner {
     position: relative!important;
@@ -654,7 +671,7 @@
 }
 
 .wp-gr .grw-review .wp-google-stars {
-    margin: 15px 0 7px!important;
+    margin: 12px 0 var(--rev-gap)!important;
 }
 
 .wp-gr .grw-review .wp-google-feedback {
@@ -663,24 +680,24 @@
     /*padding-right: 10px!important;*/
 }
 
-.wp-gr .grw-review .wp-google-feedback::-webkit-scrollbar {
+.wp-gr .grw-scroll::-webkit-scrollbar {
     width: 4px!important;
 }
 
-.wp-gr .grw-review .wp-google-feedback::-webkit-scrollbar-track {
+.wp-gr .grw-scroll::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)!important;
     -webkit-border-radius: 4px!important;
     border-radius: 4px!important;
 }
 
-.wp-gr .grw-review .wp-google-feedback::-webkit-scrollbar-thumb {
+.wp-gr .grw-scroll::-webkit-scrollbar-thumb {
     -webkit-border-radius: 10px!important;
     border-radius: 10px!important;
     background: #ccc!important;
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5)!important;
 }
 
-.wp-gr .grw-review .wp-google-feedback::-webkit-scrollbar-thumb:window-inactive {
+.wp-gr .grw-scroll::-webkit-scrollbar-thumb:window-inactive {
     background: #ccc!important;
 }
 
@@ -820,3 +837,44 @@
     margin: 0 10px!important;
     padding: 0!important;
 }*/
+
+.wp-gr .grw-b {
+    font-weight: bold!important;
+}
+
+.wp-gr .wp-google-reply {
+    font-size: 14px !important;
+    margin-top: auto !important;
+    margin-left: 6px !important;
+    padding-left: 6px !important;
+    border-left: 1px solid #999 !important;
+    overflow: hidden !important;
+    overflow-y: auto !important;
+    line-height: 20px !important;
+    max-height: 44px !important;
+}
+
+.wp-gr .wp-google-reply > div {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.wp-gr .wp-google-reply .wp-google-time {
+    font-size: 11px !important;
+    white-space: nowrap !important;
+}
+
+.wp-gr .wp-google-img {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.wp-gr .wp-google-img img {
+    display: flex;
+    width: 40px !important;
+    height: 40px !important;
+    cursor: pointer !important;
+    box-shadow: 0 0 2px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .24) !important;
+}

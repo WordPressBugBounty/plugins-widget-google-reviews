@@ -141,6 +141,18 @@ var GRW_HTML_CONTENT = '' +
             '</div>' +
             '<div class="grw-builder-option">' +
                 '<label>' +
+                    '<input type="checkbox" name="media" value="" checked>' +
+                    'Show review images' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<label>' +
+                    '<input type="checkbox" name="reply" value="" checked>' +
+                    'Show owner responses' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<label>' +
                     '<input type="checkbox" name="header_hide_social" value="">' +
                     'Hide rating header, leave only reviews' +
                 '</label>' +
@@ -706,6 +718,9 @@ function grw_connect_error($, error_message, cb) {
                 error_el.innerHTML = '<b>Error</b>: ' + error_message;
             }
     }
+
+    window.grw_save.innerText = 'Save & Update';
+    window.grw_save.disabled = false;
 }
 
 function grw_connection_add($, el, conn, authcode, checked, append) {
@@ -762,17 +777,17 @@ function grw_connection_add($, el, conn, authcode, checked, append) {
             conn.lang = this.value;
             connected_el.id = grw_connection_id(conn);
             connected_el.setAttribute('data-lang', this.value);
-            window.gpidc.contentWindow.postMessage({params: conn, action: 'connect'}, '*');
+            grw_reconnect(conn);
             return false;
         });
 
         $('input[name="local_img"]', connected_el).unbind('click').click(function() {
             conn.local_img = this.checked;
-            window.gpidc.contentWindow.postMessage({params: conn, action: 'connect'}, '*');
+            grw_reconnect(conn);
         });
 
         $('.grw-connect-reconnect', connected_el).click(function() {
-            window.gpidc.contentWindow.postMessage({params: conn, action: 'connect'}, '*');
+            grw_reconnect(conn);
             return false;
         });
 
@@ -784,6 +799,12 @@ function grw_connection_add($, el, conn, authcode, checked, append) {
             return false;
         });
     }
+}
+
+function grw_reconnect(conn) {
+    window.grw_save.disabled = true;
+    window.grw_save.innerText = 'Updating...';
+    window.gpidc.contentWindow.postMessage({params: conn, action: 'connect'}, '*');
 }
 
 function grw_connection_id(conn) {
@@ -875,7 +896,7 @@ function grw_connection_render(conn, checked) {
                 '</label>' +
             '</div>' +
             '<div class="grw-builder-option">' +
-                '<button class="grw-connect-reconnect">Reconnect</button>' +
+                '<button class="grw-connect-reconnect">Update reviews</button>' +
             '</div>' +
             '<div class="grw-builder-option">' +
                 '<button class="grw-connect-delete">Delete connection</button>' +

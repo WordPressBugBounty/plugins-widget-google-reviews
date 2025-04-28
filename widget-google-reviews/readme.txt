@@ -1,10 +1,10 @@
 === Plugin for Google Reviews ===
 Contributors: richplugins
 Donate link: https://richplugins.com/business-reviews-bundle-wordpress-plugin
-Tags: google reviews, google maps, reviews, slider, google rating
+Tags: google, reviews, google reviews, google maps, rating
 Requires at least: 3.0.1
-Tested up to: 6.7
-Stable tag: 5.7.1
+Tested up to: 6.8
+Stable tag: 5.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -105,6 +105,13 @@ To find out more about who we are and what we do, here are some useful links:
 * slider breakpoints
 
 == Changelog ==
+
+= 5.8 =
+* Added photo in reviews
+* Added owner replies in reviews
+* Fixed database error for duplicate author_url
+* Some minor styles improvements
+* Updated to WordPress 6.8
 
 = 5.7.1 =
 * The option 'Use old Places API' is duplicated on the Advance tab
