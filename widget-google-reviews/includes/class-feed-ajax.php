@@ -21,6 +21,7 @@ class Feed_Ajax {
         $this->view = $view;
 
         add_action('wp_ajax_grw_feed_save_ajax', array($this, 'save_ajax'));
+        add_action('wp_ajax_grw_place_autocomplete', array($this, 'place_autocomplete'));
         add_action('wp_ajax_grw_get_place', array($this, 'get_place'));
     }
 
@@ -42,6 +43,29 @@ class Feed_Ajax {
         wp_die();
     }
 
+    public function place_autocomplete() {
+        if (current_user_can('manage_options')) {
+            if (isset($_POST['grw_nonce']) === false) {
+                $error = __('Unable to call request. Make sure you are accessing this page from the Wordpress dashboard.', 'widget-google-reviews');
+                $result = compact('error');
+            } else {
+                check_admin_referer('grw_wpnonce', 'grw_nonce');
+
+                $google_api_key = get_option('grw_google_api_key');
+                if (strlen($google_api_key) > 0) {
+                    $input = sanitize_text_field(wp_unslash($_POST['input']));
+                    $url = GRW_GOOGLE_PLACE_API . 'autocomplete/json?input=' . $input . '&types=establishment&key=' . $google_api_key;
+                    $res = wp_remote_get($url);
+                    $body = wp_remote_retrieve_body($res);
+                    $result = json_decode($body);
+                }
+            }
+            header('Content-type: text/json');
+            echo json_encode($result);
+            wp_die();
+        }
+    }
+
     public function get_place() {
         if (current_user_can('manage_options')) {
             if (isset($_POST['grw_nonce']) === false) {
@@ -52,7 +76,7 @@ class Feed_Ajax {
 
                 $pid = sanitize_text_field(wp_unslash($_POST['pid']));
                 $lang = isset($_POST['lang']) ? sanitize_text_field(wp_unslash($_POST['lang'])) : null;
-                $token = sanitize_text_field(wp_unslash($_POST['token']));
+                $token = isset($_POST['token']) ? sanitize_text_field(wp_unslash($_POST['token'])) : null;
 
                 $google_api_key = get_option('grw_google_api_key');
                 $api_key_filled = $google_api_key && strlen($google_api_key) > 0;

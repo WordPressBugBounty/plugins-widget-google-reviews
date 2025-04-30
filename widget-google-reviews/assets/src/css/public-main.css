@@ -840,6 +840,7 @@
 
 .wp-gr .grw-b {
     font-weight: bold!important;
+    white-space: nowrap !important;
 }
 
 .wp-gr .wp-google-reply {

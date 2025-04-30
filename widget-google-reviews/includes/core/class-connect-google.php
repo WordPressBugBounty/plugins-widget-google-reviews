@@ -73,7 +73,7 @@ class Connect_Google {
                 $id = sanitize_text_field(wp_unslash($_POST['id']));
                 $lang = sanitize_text_field(wp_unslash($_POST['lang']));
                 $local_img = sanitize_text_field(wp_unslash($_POST['local_img']));
-                $token = sanitize_text_field(wp_unslash($_POST['token']));
+                $token = isset($_POST['token']) ? sanitize_text_field(wp_unslash($_POST['token'])) : null;
                 $google_api_key = get_option('grw_google_api_key');
 
                 if ($google_api_key && strlen($google_api_key) > 0) {

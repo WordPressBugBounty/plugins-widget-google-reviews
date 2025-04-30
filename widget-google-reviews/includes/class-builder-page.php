@@ -53,6 +53,7 @@ class Builder_Page {
 
         $rate_us = get_option('grw_rate_us');
         $authcode = get_option('grw_auth_code');
+        $api_key = get_option('grw_google_api_key');
 
         if ($feed != null) {
             $feed_id = $feed->ID;
@@ -163,8 +164,8 @@ class Builder_Page {
                     }
                     grw_builder_init($, {
                         el       : '#grw-builder-option',
-                        use_gpa  : true,
                         authcode : '<?php echo $authcode; ?>',
+                        <?php if (isset($api_key) && strlen($api_key) > 0) { echo 'key: true,'; } ?>
                         <?php if (strlen($feed_content) > 0) { echo 'conns: ' . $feed_content; } ?>
                     });
                 }

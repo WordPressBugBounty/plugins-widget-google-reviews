@@ -144,8 +144,8 @@ class Plugin_Settings {
                                 <?php if (!$grw_google_api_key && time() - $grw_activation_time > 60 * 60 * 48) { ?>
                                 <div class="grw-warn">Your Google API key is not set for this reason, reviews are not automatically updated daily.<br>Please create your own Google API key and save here.</div>
                                 <?php } ?>
-                                <p>Own API key is mandatory to make the reviews automatically updated and new ones are added.<br>With your own API key, there's no limit to collecting reviews, you can connect more than 10 and collect them daily.</p>
-                                <p>After you created your own API key, it's required to add your bank card to confirm usage of this Key.<br>Please do not worry <b>Google gives $200 free credits monthly</b> and<br>it's enough for automatically updated up to 3-5 connected your Google places absolutly for free.</p>
+                                <p>Google API key is required to automatically update and fetch new reviews.<br>With your own API key, there's no limit to collecting reviews, you can connect more than 10 and collect them daily.</p>
+                                <p>After you created your own API key, it's required to add your bank card to confirm usage of this Key.<br>Please do not worry <b>Google gives 1000 free API requests monthly</b> and<br>it's enough for automatically updated up to 2-3 connected your Google places.</p>
                                 <p>Here is extrimy complete guide on <a href="<?php echo admin_url('admin.php?page=grw-support&grw_tab=fig#fig_api_key'); ?>" target="_blank">how to create your own API key</a>.</p>
                                 <div style="padding-top:15px">
                                     <input type="submit" value="Save" name="save" class="button" />

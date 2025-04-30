@@ -56,15 +56,12 @@ const GRW_LANGS = [
     ['zh-Hant', 'Chinese (Traditional)']
 ];
 
-var GRW_HTML_CONTENT = '' +
+const GRW_HTML_CONTENT =
 
     '<div class="grw-builder-platforms grw-builder-inside">' +
 
         '<div class="grw-builder-connect grw-connect-google">Google Connection</div>' +
-        '<div id="grw-connect-wizard" title="Google reviews connection" style="display:none;">' +
-            '<iframe id="gpidc" src="https://app.richplugins.com/gpidc?authcode={{authcode}}" style="width:100%;height:400px"></iframe>' +
-            '<small class="grw-connect-error"></small>' +
-        '</div>' +
+        '<div id="grw-connect-wizard" title="Google reviews" style="display:none;">{{wizard}}</div>' +
         '<div class="grw-connections"></div>' +
     '</div>' +
 
@@ -373,6 +370,41 @@ var GRW_HTML_CONTENT = '' +
 
     '</div>';
 
+const GRW_WIZARD =
+    '<iframe id="gpidc" src="https://app.richplugins.com/gpidc?authcode={{authcode}}" style="width:100%;height:400px"></iframe>' +
+    '<small class="grw-connect-error"></small>';
+
+const GRW_WIZARD2 =
+    '<h3>Connection Wizard</h3>' +
+    '<p>Please start typing your business name or address in the search field below.<br>Alternatively, you can paste your Google Place ID if you know it.</p>' +
+    '<div style="position:relative">' +
+      '<input id="grw_place_autocomplete" type="text" placeholder="Start typing here your business place address and name" autofocus/>' +
+      '<svg id="grw_place_spin_svg" style="display:none" viewBox="0 0 16 16"><path fill="#999999" d="M12.9 3.1c1.3 1.2 2.1 3 2.1 4.9 0 3.9-3.1 7-7 7s-7-3.1-7-7c0-1.9 0.8-3.7 2.1-4.9l-0.8-0.8c-1.4 1.5-2.3 3.5-2.3 5.7 0 4.4 3.6 8 8 8s8-3.6 8-8c0-2.2-0.9-4.2-2.3-5.7l-0.8 0.8z"/></svg>' +
+      '<ul id="grw_place_list" role="listbox"></ul>' +
+    '</div>' +
+    '<div id="grw_place" style="display:none;margin-top:12px">' +
+        '<div class="wp-google-place" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">' +
+            '<div class="wp-google-left">' +
+                '<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="g business img" width="50" height="50" title="g business img" style="border-radius:50%">' +
+            '</div>' +
+            '<div class="wp-google-right">' +
+                '<b class="wp-google-name"></b>' +
+                '<div style="display:flex;align-items:center;gap:2px">' +
+                    '<span class="wp-google-rating"></span>' +
+                    '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
+                    '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
+                    '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
+                    '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
+                    '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
+                '</div>' +
+                '<small class="wp-google-powered">Based on <span class="wp-google-based"></span> reviews</small>' +
+            '</div>' +
+            '<select id="grw_place_lang"></select>' +
+            '<button id="grw_place_btn">Connect</button>' +
+        '</div>' +
+    '</div>' +
+    '<p id="grw_place_error" class="grw-connect-error"></p>';
+
 function grw_stylechange2(target) {
     let rp = document.getElementsByClassName('wp-gr')[0];
 
@@ -456,7 +488,7 @@ function grw_builder_init($, data) {
     var el = document.querySelector(data.el);
     if (!el) return;
 
-    el.innerHTML = GRW_HTML_CONTENT.replace('{{authcode}}', data.authcode);
+    el.innerHTML = GRW_HTML_CONTENT.replace('{{wizard}}', data.key ? GRW_WIZARD2 : GRW_WIZARD.replace('{{authcode}}', data.authcode));
 
     var $connect_wizard_el = $('#grw-connect-wizard');
 
@@ -467,6 +499,7 @@ function grw_builder_init($, data) {
         $connect_wizard_el.dialog({
             modal: false,
             width: '50%',
+            height: 500,
             maxWidth: '600px',
             closeOnEscape: false,
             open: function() { $(".ui-dialog-titlebar-close").hide() }
@@ -477,17 +510,17 @@ function grw_builder_init($, data) {
     window.onmessage = function(e) {
         if (e.origin !== 'https://app.richplugins.com') return;
         if (e.data) {
-            let data = e.data;
-            switch (data.action) {
+            let gdata = e.data;
+            switch (gdata.action) {
                 case 'get_place':
                     $.post(ajaxurl, {
-                        pid       : data.pid,
-                        token     : data.token,
+                        pid       : gdata.pid,
+                        token     : gdata.token,
                         action    : 'grw_get_place',
                         grw_nonce : jQuery('#grw_nonce').val()
                     }, function(res) {
                         if (res.status == 'success') {
-                            res.result.place_id = data.pid;
+                            res.result.place_id = gdata.pid;
                             window.gpidc.contentWindow.postMessage({data: res, action: 'set_place'}, '*');
                         } else {
                             grw_connect_error($, res.result.error_message);
@@ -495,7 +528,7 @@ function grw_builder_init($, data) {
                     });
                     break;
                 case 'connect':
-                    grw_connect_ajax($, el, data, data.authcode, 1);
+                    grw_connect_ajax($, el, gdata, data.authcode, 1);
                     break;
             }
         }
@@ -529,7 +562,7 @@ function grw_builder_init($, data) {
     });
 
     $('.grw-builder-connect.grw-connect-google').click(function () {
-        $connect_wizard_el.dialog({modal: true, width: '50%', maxWidth: '600px'});
+        $connect_wizard_el.dialog({modal: true, width: '50%', height: 500, maxWidth: '600px'});
     });
 
     if ($('.grw-connections').sortable) {
@@ -558,6 +591,132 @@ function grw_builder_init($, data) {
         (e || window.event).returnValue = msg;
         return msg;
     });
+
+    if (data.key) {
+        let lang, opts = '<option value="" selected="selected">Choose language if needed</option>';
+        for (var i = 0; i < GRW_LANGS.length; i++) {
+            opts += '<option value="' + GRW_LANGS[i][0] + '"' + (lang == GRW_LANGS[i][0] ? ' selected="selected"' : '') + '>' + GRW_LANGS[i][1] + '</option>';
+        }
+        window.grw_place_lang.innerHTML = opts;
+        window.grw_place_autocomplete.focus();
+        window.grw_place_autocomplete.addEventListener('keyup', grw_input_keyup);
+    }
+}
+
+function grw_input_keyup(e) {
+    clearTimeout(window.keyupTimeout);
+
+    if (e.keyCode === 13) return;
+
+    let val = this.value.trim();
+    if (val && /^(\s+|\S+)+$/giu.test(val)) {
+        grw_place_spin(1);
+        if (/^ChIJ\S+$/giu.test(val)) {
+            grw_get_place(val);
+        } else {
+            keyupTimeout = setTimeout(grw_on_keyup, 1000, e, this.value.trim());
+        }
+    } else {
+        grw_place_spin();
+    }
+}
+
+function grw_on_keyup(e, val) {
+    if (val && val != window.grw_keyup_val) {
+        grw_keyup_val = val;
+        e.preventDefault();
+
+        jQuery.post(ajaxurl, {
+            input: val,
+            action: 'grw_place_autocomplete',
+            grw_nonce: jQuery('#grw_nonce').val()
+        }, function(res) {
+            grw_place_spin();
+            window.grw_place_list.innerHTML = '';
+            if (res && res.error_message) {
+                window.grw_place_error.innerHTML = res.error_message;
+                return;
+            }
+
+            for (let i = 0; i < res.predictions.length; i++) {
+                (function(pred) {
+                    let a       = document.createElement('a');
+                    a.href      = '#';
+                    a.className = 'dropdown-item';
+                    a.role      = 'option';
+                    a.innerHTML = '<div class="location-name">' + pred.structured_formatting.main_text + '</div>';
+                    if (pred.structured_formatting.secondary_text) {
+                        a.innerHTML += '<small class="location-address">' + pred.structured_formatting.secondary_text + '</small>';
+                    }
+                    a.onclick = function(e) {
+                        e.preventDefault();
+                        grw_get_place(pred.place_id);
+                        grw_place_spin(1);
+                    };
+
+                    let li = document.createElement('li');
+                    li.appendChild(a);
+                    window.grw_place_list.appendChild(li);
+                })(res.predictions[i]);
+            }
+            window.grw_place_list.style.display = 'block';
+        });
+    } else {
+        grw_place_spin();
+    }
+}
+
+function grw_get_place(pid) {
+    jQuery.post(ajaxurl, {
+        pid       : pid,
+        action    : 'grw_get_place',
+        grw_nonce : jQuery('#grw_nonce').val()
+    }, function(res) {
+        grw_place_spin();
+        window.grw_place_list.innerHTML = '';
+        if (res && res.result.error_message) {
+            window.grw_place_error.innerHTML = res.result.error_message;
+            return;
+        }
+        grw_set_place(pid, res.result);
+    });
+}
+
+function grw_set_place(pid, place) {
+    let img    = window.grw_place.getElementsByTagName('img')[0],
+        name   = window.grw_place.getElementsByClassName('wp-google-name')[0],
+        rating = window.grw_place.getElementsByClassName('wp-google-rating')[0],
+        based  = window.grw_place.getElementsByClassName('wp-google-based')[0];
+
+    img.src          = place.business_photo || place.icon;
+    name.innerHTML   = place.name;
+    rating.innerHTML = place.rating;
+    based.innerHTML  = place.user_ratings_total;
+
+    window.grw_place_list.style.display = 'none';
+    window.grw_place.style.display = 'block';
+
+    window.grw_place_btn.onclick = function(e) {
+        e.preventDefault();
+
+        let btn = e.target;
+        btn.disabled = true;
+
+        const params = {
+            id: pid,
+            lang: window.grw_place_lang.value
+        };
+        grw_connect_ajax(jQuery, document, params, null, 1, function() {
+            btn.disabled = false;
+            grw_place_spin();
+            grw_wizard_close();
+        });
+        grw_place_spin(1);
+    }
+}
+
+function grw_place_spin(s) {
+    window.grw_place_spin_svg.style.display = s ? 'block' : 'none';
 }
 
 function grw_feed_save_ajax() {
@@ -631,7 +790,7 @@ function grw_review_hide($this) {
     }, 'json');
 }
 
-function grw_connect_ajax($, el, params, authcode, attempt) {
+function grw_connect_ajax($, el, params, authcode, attempt, cb) {
 
     var platform = 'google',
         connect_btn = el.querySelector('.grw-connect-btn');
@@ -646,7 +805,6 @@ function grw_connect_ajax($, el, params, authcode, attempt) {
         local_img   : params.local_img || false,
         token       : params.token,
         feed_id     : $('input[name="grw_feed[post_id]"]').val(),
-        authcode    : authcode,
         grw_wpnonce : $('#grw_nonce').val(),
         action      : 'grw_connect_google',
         v           : new Date().getTime()
@@ -661,7 +819,7 @@ function grw_connect_ajax($, el, params, authcode, attempt) {
 
             error_el.innerHTML = '';
 
-            try { $('#grw-connect-wizard').dialog('close'); } catch (e) {}
+            grw_wizard_close();
 
             var connection_params = {
                 id        : res.result.id,
@@ -676,19 +834,29 @@ function grw_connect_ajax($, el, params, authcode, attempt) {
                 }
             };
 
-            grw_connection_add($, el, connection_params, authcode);
+            grw_connection_add($, el, connection_params);
             grw_serialize_connections();
 
         } else {
             grw_connect_error($, res.result.error_message, function() {
                 if (attempt > 1) return;
-                grw_popup('https://app.richplugins.com/gpaw/botcheck?authcode=' + authcode, 640, 480, function() {
-                    window.gpidc.contentWindow.postMessage({params: params, action: 'connect'}, '*');
-                });
+                if (window.gpidc) {
+                    grw_popup('https://app.richplugins.com/gpaw/botcheck?authcode=' + authcode, 640, 480, function() {
+                        window.gpidc.contentWindow.postMessage({params: params, action: 'connect'}, '*');
+                    });
+                }
             });
         }
 
+        cb && cb(res);
+
     }, 'json');
+}
+
+function grw_wizard_close() {
+    try {
+        jQuery('#grw-connect-wizard').dialog('close');
+    } catch (e) {}
 }
 
 function grw_connect_error($, error_message, cb) {
@@ -723,7 +891,7 @@ function grw_connect_error($, error_message, cb) {
     window.grw_save.disabled = false;
 }
 
-function grw_connection_add($, el, conn, authcode, checked, append) {
+function grw_connection_add($, el, conn, checked, append) {
 
     var connected_id = grw_connection_id(conn),
         connected_el = $('#' + connected_id);
@@ -777,17 +945,17 @@ function grw_connection_add($, el, conn, authcode, checked, append) {
             conn.lang = this.value;
             connected_el.id = grw_connection_id(conn);
             connected_el.setAttribute('data-lang', this.value);
-            grw_reconnect(conn);
+            grw_reconnect($, el, conn);
             return false;
         });
 
         $('input[name="local_img"]', connected_el).unbind('click').click(function() {
             conn.local_img = this.checked;
-            grw_reconnect(conn);
+            grw_reconnect($, el, conn);
         });
 
         $('.grw-connect-reconnect', connected_el).click(function() {
-            grw_reconnect(conn);
+            grw_reconnect($, el, conn);
             return false;
         });
 
@@ -801,10 +969,14 @@ function grw_connection_add($, el, conn, authcode, checked, append) {
     }
 }
 
-function grw_reconnect(conn) {
+function grw_reconnect($, el, conn) {
     window.grw_save.disabled = true;
     window.grw_save.innerText = 'Updating...';
-    window.gpidc.contentWindow.postMessage({params: conn, action: 'connect'}, '*');
+    if (window.gpidc) {
+        window.gpidc.contentWindow.postMessage({params: conn, action: 'connect'}, '*');
+    } else {
+        grw_connect_ajax($, el, conn, null, 1);
+    }
 }
 
 function grw_connection_id(conn) {
@@ -1019,7 +1191,7 @@ function grw_deserialize_connections($, el, data) {
 
     let $bp = el.querySelector('.grw-builder-platforms');
     for (var i = 0; i < connections.length; i++) {
-        grw_connection_add($, $bp, connections[i], data.authcode, true, true);
+        grw_connection_add($, $bp, connections[i], true, true);
     }
 
     for (var opt in options) {
