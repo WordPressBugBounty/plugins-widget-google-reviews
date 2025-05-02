@@ -1,65 +1,50 @@
-=== Plugin for Google Reviews ===
+=== Widgets for Google Reviews ===
 Contributors: widgetpack
-Donate link: https://richplugins.com/business-reviews-bundle-wordpress-plugin
 Tags: google, reviews, google reviews, google maps, rating
 Requires at least: 3.0.1
+Requires PHP: 7.2
 Tested up to: 6.8
-Stable tag: 5.9
+Stable tag: 5.9.1
 License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Display up to 10 Google reviews on your site in less than a minute and continue collecting new reviews without limits to increase trust and sales!
+Display up to 10 Google reviews in less than a minute. Continue collecting new reviews. No limits on connected places, widgets and shortcodes.
 
 == Description ==
 
-This plugin displays **Google Business Reviews** on your WordPress website through a public and approved by Google API without crawling and other unofficial methods. With this plugin, you can be sure of the right way for showing up to 10 **Google Reviews** instantly and continue collecting new reviews without limits with your own Google API key.
+This plugin allows you to display up to 10 **Google Business reviews** and immediately show them on your WordPress website. The setup process is extremely simple and takes less than a minute.
 
-Display **Google Rating** and Reviews on your site in less than a minute. This is the easiest and most effective way to increase your customer confidence and, as a result, increase sales!
+There are no limits on how many Google business locations you can connect, and you can create as many widgets or shortcodes as needed to place reviews across your site. The plugin is easy to use and helps build trust with your visitors by displaying real Google reviews and your overall rating.
 
-By the way, with the <a href="https://richplugins.com/business-reviews-bundle-wordpress-plugin">Business version</a>, you can get better results, because it shows all reviews with a constantly auto synced, works absolutely without Google API key (not necessary enable billing), supports other platforms like Facebook, Yelp which you can mix and has many other cool features to grow your customer trust and sales!
+It’s already trusted by over a thousand WordPress users who use it daily to show their best customer feedback.
+
+Want to see how it works? Watch the short demo below to see how quickly you can get started - or simply try it in the Live Preview.
 
 [youtube https://www.youtube.com/watch?v=rMbwqCjDc80]
 
-[Online demo](https://richplugins.com/demos/)
+### ⚡ Plugin highlights
 
-### Free plugin features
+* **No limits on created widgets or shortcodes**
+* **Show up to 10 Google reviews on initial setup**
+* **Connect multiple Google business places**
+* Display customer photos and owner replies inside reviews
+* **Fully GDPR-compliant** — no external requests, all data loads from your own website
+* **Automatically updates reviews** and ratings (when using your own API key)
+* Option to hide reviews without text
+* Responsive layouts: Slider, Grid, List, and Rating
+* '**review us on Google**' button to collect new reviews
+* Choose which reviews to display or hide
+* Display reviews using shortcode, widget, block, or page builders (Elementor, Gutenberg, etc.)
+* Upload a custom business photo
+* Trim long reviews with a "read more" link
+* Pagination support for List and Grid layouts
+* Optimized for performance: small CSS/JS files and lazy loading
+* **UI options to customize star, text, rating, and review colors**
+* Additional styling with your own CSS
+* Supports multiple languages
+* Works with dark themes
 
-* Unlimited connections **Widgets and Google Places**, not just one like in other similar plugins
-* **Full GDPR support** (no third-party calls)
-* All connected Google ratings and reviews are **automatically updated**
-* Awesome, responsive and really cool **Slider, Grid and List layouts** which works anywhere - mobile, table, desktops and HD
-* **Collect new Google Reviews** and increase your Google Rating with a **'review us on G'** button
-* Slider don't fit? You can use a List or Grid layout or hide the reviews and show just a rating badge
-* Monthly statistics displaying an increase in the number of reviews
-* Display the reviews through a shortcode, widget or any page builder: Gutenberg, Elementor, Page Origin, Beaver Builder, WPBakery, Divi and others
-* Hide certain reviews from displaying, sometimes it may not only be a negatively rated review
-* Upload your own Google business photo
-* Use Pagination to hide some of the reviews
-* Trim long reviews with "read more" link
-* Works on a dark websites
-* Multi language support
-* Ability to customize layout with additional CSS
-* Zero load time: SVG, lazy load images and **the smallest size of assets** (css: **3kb**, js: **8kb**)
-
-### Get More Features with Business version
-
-[Upgrade to Business](https://richplugins.com/business-reviews-bundle-wordpress-plugin)
-
-The business version of the plugin uses another Google API to show all reviews. It's also official and approved by Google like in the free plugin, but can uses only for business owners and show all reviews. To connect reviews, just log in through your Google My Business (GMB) owner account and that's it.
-
-* Shows **ALL Google reviews** with constant **automatic updates** through official Google My Business (GMB) API without any unofficial workarounds like crawling
-* Connecting and showing reviews is easier than ever, just log in through your GMB owner account
-* Flash theme: increase user trust, social proof and sales via beautiful popups with your real recent reviews
-* Ability to connect one, several or all your Google locations just through one log in
-* Mix ratings and reviews between each other from the same or different platforms: Google, Facebook, Yelp
-* Awesome and beautiful layouts: list, grid, slider, float and embedded badges
-* Absolutely unique feature: a custom rating and reviews template will allow to create your own layout
-* Lift important reviews to the top
-* Show/hide any elements (business photo, name, rating, reviews, avatars, names, time and etc)
-* Any Sorting: recent, oldest, rating, striped, random
-* Include/Exclude words filter to show or hide certain reviews
-* Minimum rating filter
-* Priority support
+⭐ [Live demo](https://richplugins.com/demos/)
 
 == Screenshots ==
 
@@ -69,42 +54,25 @@ The business version of the plugin uses another Google API to show all reviews. 
 4. Google Reviews shortcode builder
 5. Google Reviews sidebar widget
 
-== Additional Free Reviews Plugins ==
-
-Why limit your reviews to just Google Reviews? Check out our other free reviews plugins to add to your site as well:
-
-* <a href="https://wordpress.org/plugins/fb-reviews-widget/" target="_blank">Facebook Reviews Widget</a>
-* <a href="https://wordpress.org/plugins/widget-yelp-reviews/" target="_blank">Yelp Reviews Widget</a>
-
 == Support ==
 
-If you have any questions regarding this plugin or business version, you can contact us directly.
+If you have any questions or need help using the plugin, we recommend the following steps:
 
-We offer 24/5 email support in English.
+1. Check the plugin's support page in your WordPress admin under "Google Reviews / Support".
+2. Visit the [Support Forum](https://wordpress.org/support/plugin/widget-google-reviews/) to browse existing topics or ask a new question.
 
-We recommend the following order when searching for answers:
-1. Plugin's support page in wp-admin: Google Reviews / Support.
-2. Check topics or ask a new question here: [Support Forum](https://wordpress.org/support/plugin/widget-google-reviews/)
-3. Try to find similar question/answer on our [Live Chat page](https://richplugins.com/forum)
-4. If you still can't find the answer, feel free to email us: support@richplugins.com
-
-To find out more about who we are and what we do, here are some useful links:
-
-* [RichPlugins Website](https://richplugins.com/)
-* [Our Blog](https://richplugins.com/blog/)
+Email support in English is also available on weekdays: support@richplugins.com
 
 == Installation ==
 
-1. Unpack archive to the 'wp-content/plugins/' directory or install the plugin through the WordPress plugins screen directly
-2. Activate the plugin through the 'Plugins' menu in WordPress
-
-== Roadmap ==
-
-* Test-feature: weekly reviews auto-updates
-* Get 10 reviews with own Google API key reviews refreshing
-* slider breakpoints
+1. Upload the plugin files to the '/wp-content/plugins/' directory, or install the plugin through the WordPress Plugins screen directly.
+2. Activate the plugin through the **Plugins** menu in the WordPress admin panel.
 
 == Changelog ==
+
+= 5.9.1 =
+* Fixed Google reviews connection wizard dialog for mobile
+* Update readme
 
 = 5.9 =
 * Added Google reviews connection wizard with autocomplete search, available for Google API key owners

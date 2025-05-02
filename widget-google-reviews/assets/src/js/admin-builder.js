@@ -375,35 +375,37 @@ const GRW_WIZARD =
     '<small class="grw-connect-error"></small>';
 
 const GRW_WIZARD2 =
-    '<h3>Connection Wizard</h3>' +
-    '<p>Please start typing your business name or address in the search field below.<br>Alternatively, you can paste your Google Place ID if you know it.</p>' +
-    '<div style="position:relative">' +
-      '<input id="grw_place_autocomplete" type="text" placeholder="Start typing here your business place address and name" autofocus/>' +
-      '<svg id="grw_place_spin_svg" style="display:none" viewBox="0 0 16 16"><path fill="#999999" d="M12.9 3.1c1.3 1.2 2.1 3 2.1 4.9 0 3.9-3.1 7-7 7s-7-3.1-7-7c0-1.9 0.8-3.7 2.1-4.9l-0.8-0.8c-1.4 1.5-2.3 3.5-2.3 5.7 0 4.4 3.6 8 8 8s8-3.6 8-8c0-2.2-0.9-4.2-2.3-5.7l-0.8 0.8z"/></svg>' +
-      '<ul id="grw_place_list" role="listbox"></ul>' +
-    '</div>' +
-    '<div id="grw_place" style="display:none;margin-top:12px">' +
-        '<div class="wp-google-place" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">' +
-            '<div class="wp-google-left">' +
-                '<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="g business img" width="50" height="50" title="g business img" style="border-radius:50%">' +
-            '</div>' +
-            '<div class="wp-google-right">' +
-                '<b class="wp-google-name"></b>' +
-                '<div style="display:flex;align-items:center;gap:2px">' +
-                    '<span class="wp-google-rating"></span>' +
-                    '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
-                    '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
-                    '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
-                    '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
-                    '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
-                '</div>' +
-                '<small class="wp-google-powered">Based on <span class="wp-google-based"></span> reviews</small>' +
-            '</div>' +
-            '<select id="grw_place_lang"></select>' +
-            '<button id="grw_place_btn">Connect</button>' +
+    '<div style="width:100%;height:400px">' +
+        '<h3>Connection Wizard</h3>' +
+        '<p>Please start typing your business name or address in the search field below.<br>Alternatively, you can paste your Google Place ID if you know it.</p>' +
+        '<div style="position:relative">' +
+          '<input id="grw_place_autocomplete" type="text" placeholder="Start typing here your business place address and name" autofocus/>' +
+          '<svg id="grw_place_spin_svg" style="display:none" viewBox="0 0 16 16"><path fill="#999999" d="M12.9 3.1c1.3 1.2 2.1 3 2.1 4.9 0 3.9-3.1 7-7 7s-7-3.1-7-7c0-1.9 0.8-3.7 2.1-4.9l-0.8-0.8c-1.4 1.5-2.3 3.5-2.3 5.7 0 4.4 3.6 8 8 8s8-3.6 8-8c0-2.2-0.9-4.2-2.3-5.7l-0.8 0.8z"/></svg>' +
+          '<ul id="grw_place_list" role="listbox"></ul>' +
         '</div>' +
-    '</div>' +
-    '<p id="grw_place_error" class="grw-connect-error"></p>';
+        '<div id="grw_place" style="display:none;margin-top:12px">' +
+            '<div class="wp-google-place" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">' +
+                '<div class="wp-google-left">' +
+                    '<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="g business img" width="50" height="50" title="g business img" style="border-radius:50%">' +
+                '</div>' +
+                '<div class="wp-google-right">' +
+                    '<b class="wp-google-name"></b>' +
+                    '<div style="display:flex;align-items:center;gap:2px">' +
+                        '<span class="wp-google-rating"></span>' +
+                        '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
+                        '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
+                        '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
+                        '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
+                        '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
+                    '</div>' +
+                    '<small class="wp-google-powered">Based on <span class="wp-google-based"></span> reviews</small>' +
+                '</div>' +
+                '<select id="grw_place_lang"></select>' +
+                '<button id="grw_place_btn">Connect</button>' +
+            '</div>' +
+        '</div>' +
+        '<p id="grw_place_error" class="grw-connect-error"></p>' +
+    '</div>';
 
 function grw_stylechange2(target) {
     let rp = document.getElementsByClassName('wp-gr')[0];
@@ -499,7 +501,6 @@ function grw_builder_init($, data) {
         $connect_wizard_el.dialog({
             modal: false,
             width: '50%',
-            height: 500,
             maxWidth: '600px',
             closeOnEscape: false,
             open: function() { $(".ui-dialog-titlebar-close").hide() }
@@ -562,7 +563,7 @@ function grw_builder_init($, data) {
     });
 
     $('.grw-builder-connect.grw-connect-google').click(function () {
-        $connect_wizard_el.dialog({modal: true, width: '50%', height: 500, maxWidth: '600px'});
+        $connect_wizard_el.dialog({modal: true, width: '50%', maxWidth: '600px'});
     });
 
     if ($('.grw-connections').sortable) {
