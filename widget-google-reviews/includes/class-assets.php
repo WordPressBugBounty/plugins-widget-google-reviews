@@ -11,7 +11,9 @@ class Assets {
     private static $css_assets = array(
         'grw-admin-main-css'      => 'css/admin-main',
         'grw-public-clean-css'    => 'css/public-clean',
-        'grw-public-main-css'     => 'css/public-main'
+        'grw-public-main-css'     => 'css/public-main',
+
+        'rpi-lightbox-css'        => 'https://cdn.reviewsplugin.com/assets/css/lightbox.css'
     );
 
     private static $js_assets = array(
@@ -19,10 +21,12 @@ class Assets {
         'grw-admin-builder-js'    => 'js/admin-builder',
         'grw-admin-apexcharts-js' => 'js/admin-apexcharts',
         'grw-public-main-js'      => 'js/public-main',
+
         'rpi-time-js'             => 'https://cdn.reviewsplugin.com/assets/js/time.js',
         'rpi-utils-js'            => 'https://cdn.reviewsplugin.com/assets/js/utils.js',
         'rpi-column-js'           => 'https://cdn.reviewsplugin.com/assets/js/column.js',
         'rpi-common-js'           => 'https://cdn.reviewsplugin.com/assets/js/common.js',
+        'rpi-media-js'            => 'https://cdn.reviewsplugin.com/assets/js/media.js',
         'rpi-slider-js'           => 'https://cdn.reviewsplugin.com/assets/js/slider.js'
     );
 
@@ -90,7 +94,7 @@ class Assets {
     }
 
     public function register_styles() {
-        $styles = array('grw-admin-main-css', 'grw-public-main-css');
+        $styles = array('grw-admin-main-css', 'grw-public-main-css', 'rpi-lightbox-css');
         if ($this->debug) {
             array_push($styles, 'grw-public-clean-css');
         }
@@ -105,6 +109,7 @@ class Assets {
             array_push($scripts, 'rpi-utils-js');
             array_push($scripts, 'rpi-column-js');
             array_push($scripts, 'rpi-common-js');
+            array_push($scripts, 'rpi-media-js');
             array_push($scripts, 'rpi-slider-js');
         }
         $this->register_scripts_loop($scripts);
@@ -146,6 +151,7 @@ class Assets {
         if ($this->debug) {
             wp_enqueue_style('grw-public-clean-css');
             wp_style_add_data('grw-public-clean-css', 'rtl', 'replace');
+            wp_enqueue_style('rpi-lightbox-css');
         }
         wp_enqueue_style('grw-public-main-css');
         wp_style_add_data('grw-public-main-css', 'rtl', 'replace');
@@ -157,6 +163,7 @@ class Assets {
             wp_enqueue_script('rpi-utils-js');
             wp_enqueue_script('rpi-column-js');
             wp_enqueue_script('rpi-common-js');
+            wp_enqueue_script('rpi-media-js');
             wp_enqueue_script('rpi-slider-js');
         }
         wp_enqueue_script('grw-public-main-js');
@@ -175,7 +182,8 @@ class Assets {
     }
 
     public function get_css_asset($asset) {
-        return $this->url . ($this->debug ? 'src/' : '') . self::$css_assets[$asset] . '.css';
+        $css = self::$css_assets[$asset];
+        return strpos($css, 'https:') === 0 ? $css : $this->url . ($this->debug ? 'src/' : '') . $css . '.css';
     }
 
     public function get_js_asset($asset) {

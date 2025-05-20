@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.4.2\n"
 
 msgid "Google Rating"
 msgstr "Ocena Google"
@@ -34,3 +34,6 @@ msgstr "Na podstawie %s opinii"
 
 msgid "review us on"
 msgstr "oceń nas w"
+
+msgid "Response from the owner"
+msgstr "Odpowiedź od właściciela"

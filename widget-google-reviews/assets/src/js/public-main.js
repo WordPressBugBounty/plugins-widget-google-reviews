@@ -54,6 +54,11 @@ function grw_init(el, layout) {
     });
     common.init();
 
+    const media = rpi.Media(rootEl, {}, {
+        root : 'wp-gr',
+        card : 'grw-review'
+    }).init();
+
     if (rootEl.getElementsByClassName('grw-review')[0] && (layout == 'slider' || layout == 'grid')) {
         // Init Slider or Grid
         const row = rootEl.getElementsByClassName('grw-row')[0];

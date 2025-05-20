@@ -37,15 +37,15 @@ class Reviews_Cron {
     public function add_schedules($schedules = array()) {
 		$schedules['weekly'] = array(
 			'interval' => 60 * 60 * 24 * 7,
-			'display'  => __('Once Weekly', 'widget-google-reviews'),
+			'display'  => 'Once Weekly'
 		);
         $schedules['fortnightly'] = array(
 			'interval' => 60 * 60 * 24 * 14,
-			'display'  => __('Every two weeks', 'widget-google-reviews'),
+			'display'  => 'Every two weeks'
 		);
         $schedules['monthly'] = array(
 			'interval' => 60 * 60 * 24 * 30,
-			'display'  => __('Once Monthly', 'widget-google-reviews'),
+			'display'  => 'Once Monthly'
 		);
 		return $schedules;
 	}

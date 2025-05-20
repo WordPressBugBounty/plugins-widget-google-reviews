@@ -394,7 +394,7 @@ class View {
                 <div class="wp-google-time" data-time="<?php echo $review->time; ?>"><?php echo gmdate("H:i d M y", $review->time); ?></div>
                 <div class="wp-google-feedback">
                     <span class="wp-google-stars"><?php echo $this->grw_stars($review->rating); ?></span>
-                    <span class="wp-google-text" tabindex="0"><?php echo $review->text; ?></span>
+                    <span class="wp-google-text"><?php echo $review->text; ?></span>
                 </div>
                 <?php if ($is_admin) {
                     echo '<a href="#" class="wp-review-hide" data-id=' . $review->id . '>' . ($review->hide == '' ? 'Hide' : 'Show') . ' review</a>';
@@ -445,14 +445,14 @@ class View {
                 <div class="wp-google-wrap">
                     <div class="wp-google-feedback grw-scroll" <?php if (strlen($options->slider_text_height) > 0) {?> style="height:<?php echo $options->slider_text_height; ?>!important"<?php } ?>>
                         <?php if (strlen($review->text) > 0) { ?>
-                        <span class="wp-google-text" tabindex="0"><?php echo $review->text; ?></span>
+                        <span class="wp-google-text"><?php echo $review->text; ?></span>
                         <?php } ?>
                     </div><?php
                     if (isset($options->media) && $options->media && isset($review->images) && strlen($review->images) > 0) {
                     ?><div class="wp-google-img"><?php
                         $images = explode(';', $review->images);
                         foreach ($images as $img) {
-                            ?><div onclick="rpi.Utils.popup('<?php echo $img; ?>', 620, 500)"><img src="<?php echo $img; ?>" loading="lazy"></div><?php
+                            ?><img class="rpi-thumb" src="<?php echo preg_replace('/\=s[0-9]{1,3}|$/', '=s50', $img); ?>" onclick="rpi.Utils.popup(this.src.replace('=s50', '=s500'), 620, 500)" alt="" loading="lazy"><?php
                         }
                     ?></div><?php
                     }
@@ -460,7 +460,7 @@ class View {
                 if (isset($options->reply) && $options->reply && isset($review->reply) && strlen($review->reply) > 0) {
                 ?><div class="wp-google-reply grw-scroll">
                     <div>
-                        <span class="grw-b">Response from the owner</span>
+                        <span class="grw-b"><?php echo __('Response from the owner', 'widget-google-reviews'); ?></span>
                         <span class="wp-google-time" data-time="<?php echo $review->reply_time; ?>">
                             <?php echo gmdate("H:i d M y", $review->reply_time); ?>
                         </span>

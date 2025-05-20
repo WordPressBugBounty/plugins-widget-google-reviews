@@ -31,3 +31,6 @@ msgstr "Na základe %s recenzií"
 
 msgid "review us on"
 msgstr "ohodnoťte nás na"
+
+msgid "Response from the owner"
+msgstr "Odpoveď od majiteľa"

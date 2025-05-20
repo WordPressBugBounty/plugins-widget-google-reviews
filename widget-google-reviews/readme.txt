@@ -1,10 +1,10 @@
 === Widgets for Google Reviews ===
 Contributors: widgetpack
-Tags: google, reviews, google reviews, google maps, rating
+Tags: google, reviews, google reviews, google business, rating
 Requires at least: 3.0.1
 Requires PHP: 7.2
 Tested up to: 6.8
-Stable tag: 5.9.1
+Stable tag: 5.9.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,6 +69,15 @@ Email support in English is also available on weekdays: support@richplugins.com
 2. Activate the plugin through the **Plugins** menu in the WordPress admin panel.
 
 == Changelog ==
+
+= 5.9.3 =
+* Fixed update failed error (due function _load_textdomain was called incorrectly issue)
+
+= 5.9.2 =
+* Added lightbox modal for displaying review photos
+* Removed tabindex=0 from review text element to prevent it from receiving keyboard focus
+* Updated localization files
+* Fixed some style issues
 
 = 5.9.1 =
 * Fixed Google reviews connection wizard dialog for mobile
