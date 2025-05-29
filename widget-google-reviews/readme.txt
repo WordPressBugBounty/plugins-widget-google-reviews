@@ -1,10 +1,10 @@
 === Widgets for Google Reviews ===
 Contributors: widgetpack
-Tags: google, reviews, google reviews, google business, rating
+Tags: google, reviews, google reviews, google places reviews, rating
 Requires at least: 3.0.1
 Requires PHP: 7.2
 Tested up to: 6.8
-Stable tag: 5.9.3
+Stable tag: 5.9.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,7 +68,21 @@ Email support in English is also available on weekdays: support@richplugins.com
 1. Upload the plugin files to the '/wp-content/plugins/' directory, or install the plugin through the WordPress Plugins screen directly.
 2. Activate the plugin through the **Plugins** menu in the WordPress admin panel.
 
+== Roadmap ==
+
+= 6.0 =
+* New feature: minimal rating layout (rating, stars and total reviews)
+* New feature: possibility to hide (or delete) the connected place to exclude from Overview page
+* Improve: predefined SVG DOM elements for better HTML size optimization
+* Improve: add shortcode into each record in the widgets list
+
 == Changelog ==
+
+= 5.9.7 =
+* Bugfix: fixed star rendering for ratings (for instance 4.9 now shows 5 full stars to match Google display style)
+* Bugfix: fixed navigation inside the media lightbox when clicking on photos
+* Bugfix: image size of reviewer avatars fixed
+* Some style fixes
 
 = 5.9.3 =
 * Fixed update failed error (due function _load_textdomain was called incorrectly issue)

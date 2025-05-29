@@ -4,6 +4,8 @@ namespace WP_Rplg_Google_Reviews\Includes;
 
 class View {
 
+    const G_AVA_SIZE = 's120';
+
     public function render($feed_id, $businesses, $reviews, $options, $is_admin = false) {
         ob_start();
 
@@ -371,8 +373,8 @@ class View {
                     $author_avatar = $default_avatar;
                 }
                 if (isset($options->reviewer_avatar_size)) {
-                    $author_avatar = str_replace('s128', 's' . $options->reviewer_avatar_size, $author_avatar);
-                    $default_avatar = str_replace('s128', 's' . $options->reviewer_avatar_size, $default_avatar);
+                    $author_avatar = str_replace(self::G_AVA_SIZE, 's' . $options->reviewer_avatar_size, $author_avatar);
+                    $default_avatar = str_replace(self::G_AVA_SIZE, 's' . $options->reviewer_avatar_size, $default_avatar);
                 }
                 $this->grw_image($author_avatar, '', $options->lazy_load_img, $default_avatar);
                 ?>
@@ -422,8 +424,8 @@ class View {
                         $author_avatar = $default_avatar;
                     }
                     if (isset($options->reviewer_avatar_size)) {
-                        $author_avatar = str_replace('s128', 's' . $options->reviewer_avatar_size, $author_avatar);
-                        $default_avatar = str_replace('s128', 's' . $options->reviewer_avatar_size, $default_avatar);
+                        $author_avatar = str_replace(self::G_AVA_SIZE, 's' . $options->reviewer_avatar_size, $author_avatar);
+                        $default_avatar = str_replace(self::G_AVA_SIZE, 's' . $options->reviewer_avatar_size, $default_avatar);
                     }
                     $this->grw_image($author_avatar, '', $options->lazy_load_img, $default_avatar);
 
@@ -452,7 +454,7 @@ class View {
                     ?><div class="wp-google-img"><?php
                         $images = explode(';', $review->images);
                         foreach ($images as $img) {
-                            ?><img class="rpi-thumb" src="<?php echo preg_replace('/\=s[0-9]{1,3}|$/', '=s50', $img); ?>" onclick="rpi.Utils.popup(this.src.replace('=s50', '=s500'), 620, 500)" alt="" loading="lazy"><?php
+                            ?><img class="rpi-thumb" src="<?php echo preg_replace('/(=.*)s\d{2,3}/', '$1s50', $img); ?>" onclick="rpi.Utils.popup(this.src.replace('=s50', '=s500'), 620, 500)" alt="" loading="lazy"><?php
                         }
                     ?></div><?php
                     }
@@ -479,17 +481,35 @@ class View {
 
     function grw_stars($rating) {
         ?><span class="wp-stars"><?php
-        foreach (array(1,2,3,4,5) as $val) {
-            $score = $rating - $val;
-            if ($score >= 0) {
-                ?><span class="wp-star"><svg width="17" height="17" viewBox="0 0 1792 1792" role="none"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg></span><?php
-            } else if ($score > -1 && $score < 0) {
-                ?><span class="wp-star"><svg width="17" height="17" viewBox="0 0 1792 1792" role="none"><path d="M1250 957l257-250-356-52-66-10-30-60-159-322v963l59 31 318 168-60-355-12-66zm452-262l-363 354 86 500q5 33-6 51.5t-34 18.5q-17 0-40-12l-449-236-449 236q-23 12-40 12-23 0-34-18.5t-6-51.5l86-500-364-354q-32-32-23-59.5t54-34.5l502-73 225-455q20-41 49-41 28 0 49 41l225 455 502 73q45 7 54 34.5t-24 59.5z" fill="#fb8e28"></path></svg></span><?php
+        for ($i = 0; $i < 5; $i++) {
+            $score = $rating - $i;
+            if ($score <= 0) {
+                $this->star_o();
+            } elseif ($score > 0 && $score < 1) {
+                if ($score < 0.25) {
+                    $this->star_o();
+                } elseif ($score > 0.75) {
+                    $this->star();
+                } else {
+                    $this->star_h();
+                }
             } else {
-                ?><span class="wp-star"><svg width="17" height="17" viewBox="0 0 1792 1792" role="none"><path d="M1201 1004l306-297-422-62-189-382-189 382-422 62 306 297-73 421 378-199 377 199zm527-357q0 22-26 48l-363 354 86 500q1 7 1 20 0 50-41 50-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#ccc"></path></svg></span><?php
+                $this->star();
             }
         }
         ?></span><?php
+    }
+
+    function star() {
+        ?><span class="wp-star"><svg width="17" height="17" viewBox="0 0 1792 1792" role="none"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg></span><?php
+    }
+
+    function star_h() {
+        ?><span class="wp-star"><svg width="17" height="17" viewBox="0 0 1792 1792" role="none"><path d="M1250 957l257-250-356-52-66-10-30-60-159-322v963l59 31 318 168-60-355-12-66zm452-262l-363 354 86 500q5 33-6 51.5t-34 18.5q-17 0-40-12l-449-236-449 236q-23 12-40 12-23 0-34-18.5t-6-51.5l86-500-364-354q-32-32-23-59.5t54-34.5l502-73 225-455q20-41 49-41 28 0 49 41l225 455 502 73q45 7 54 34.5t-24 59.5z" fill="#fb8e28"></path></svg></span><?php
+    }
+
+    function star_o() {
+        ?><span class="wp-star"><svg width="17" height="17" viewBox="0 0 1792 1792" role="none"><path d="M1201 1004l306-297-422-62-189-382-189 382-422 62 306 297-73 421 378-199 377 199zm527-357q0 22-26 48l-363 354 86 500q1 7 1 20 0 50-41 50-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#ccc"></path></svg></span><?php
     }
 
     function grw_anchor($url, $class, $text, $options, $aria_label = '', $onclick = '') {
