@@ -1,5 +1,6 @@
 .wp-gr {
     --rev-gap: 4px;
+    --rev-padding: 4px;
 }
 
 .wp-gr .wp-google-badge {
@@ -63,8 +64,8 @@
 }
 
 .wp-gr .wp-google-stars .wp-star {
-    padding: 0 4px 0 0!important;
-    line-height: 22px!important
+    padding: 0 3px 0 0 !important;
+    line-height: normal !important;
 }
 
 .wp-gr .wp-google-based,
@@ -106,8 +107,8 @@
 .wp-gr .wp-google-left img {
     border: none!important;
     float: left!important;
-    height: 50px!important;
-    width: 50px!important;
+    height: 46px!important;
+    width: 46px!important;
     margin-right: 10px!important;
     overflow: hidden!important;
     border-radius: 50%!important;
@@ -124,15 +125,19 @@
     width: 10000px!important
 }
 
-.wp-gr .wp-google-place.wp-place-center {
+.wp-gr .grw-header.wp-place-center {
+    width: 100% !important;
+}
+
+.wp-gr .wp-place-center {
     text-align: center !important;
 }
 
-.wp-gr .wp-google-place.wp-place-center .wp-google-left {
+.wp-gr .wp-place-center .wp-google-left {
     display: block !important;
 }
 
-.wp-gr .wp-google-place.wp-place-center .wp-google-left img {
+.wp-gr .wp-place-center .wp-google-left img {
     float: none !important;
 }
 
@@ -147,8 +152,8 @@
 }
 
 .wp-gr .wp-star svg {
-    width: 19px!important;
-    height: 19px!important;
+    width: 18px!important;
+    height: 18px!important;
     vertical-align: middle!important
 }
 
@@ -372,8 +377,8 @@
 }
 
 .wp-gr.wpac .wp-google-left img {
-    width: 50px!important;
-    height: 50px!important;
+    width: 46px!important;
+    height: 46px!important;
     border-radius: 50%!important
 }
 
@@ -593,6 +598,7 @@
     align-items: center!important;
     flex-shrink: 0!important;
     width: 100%!important;
+    padding: var(--rev-padding)!important;
 }
 
 /*-------------------------------- Slider buttons --------------------------------*/
@@ -671,7 +677,7 @@
 }
 
 .wp-gr .grw-review .wp-google-stars {
-    margin: 12px 0 var(--rev-gap)!important;
+    margin: 8px 0 var(--rev-gap)!important;
 }
 
 .wp-gr .grw-review .wp-google-feedback {
@@ -747,7 +753,7 @@
 .wp-gr[data-layout="slider"] .grw-reviews {
     /*margin: 0 20px!important;
     padding: 10px 0 15px!important;*/
-    gap: var(--card-gap, 16px);
+    gap: calc(var(--card-gap, 16px) - var(--rev-padding));
     overflow-x: scroll!important;
     flex-wrap: nowrap!important;
     -ms-flex-wrap: nowrap!important;
@@ -824,7 +830,7 @@
 .wp-gr[data-layout="grid"] .grw-reviews {
     /*margin: 10px!important;
     padding: 0!important;*/
-    gap: var(--card-gap, 16px);
+    gap: calc(var(--card-gap, 16px) - var(--rev-padding));
     flex-wrap: wrap !important;
     -ms-flex-wrap: wrap!important;
 }

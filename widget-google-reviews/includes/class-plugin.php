@@ -10,10 +10,14 @@ use WP_Rplg_Google_Reviews\Includes\Admin\Admin_Rev;
 use WP_Rplg_Google_Reviews\Includes\Admin\Admin_Rateus_Ajax;
 
 use WP_Rplg_Google_Reviews\Includes\Core\Core;
-use WP_Rplg_Google_Reviews\Includes\Core\Connect_Google;
-use WP_Rplg_Google_Reviews\Includes\Core\Connect_Google_New;
-use WP_Rplg_Google_Reviews\Includes\Core\Connect_Helper;
 use WP_Rplg_Google_Reviews\Includes\Core\Database;
+
+use WP_Rplg_Google_Reviews\Includes\Core\Google_Dao;
+use WP_Rplg_Google_Reviews\Includes\Core\Connect_Helper;
+use WP_Rplg_Google_Reviews\Includes\Core\Google_Api_Old;
+use WP_Rplg_Google_Reviews\Includes\Core\Google_Api_New;
+use WP_Rplg_Google_Reviews\Includes\Core\Google_Utils;
+use WP_Rplg_Google_Reviews\Includes\Core\Google_Connect;
 
 final class Plugin {
 
@@ -91,17 +95,21 @@ final class Plugin {
         $feed_block->register();
 
         $connect_helper = new Connect_Helper();
-        $connect_google_new = new Connect_Google_New($connect_helper);
-        $connect_google = new Connect_Google($connect_google_new, $connect_helper);
+        $google_dao = new Google_Dao($connect_helper);
+        $google_api_old = new Google_Api_Old($google_dao, $connect_helper);
+        $google_api_new = new Google_Api_New($google_dao, $connect_helper);
+        $google_utils = new Google_Utils($google_api_old, $google_api_new);
 
-        $reviews_cron = new Reviews_Cron($connect_google, $feed_deserializer);
+        $reviews_cron = new Reviews_Cron($google_utils, $feed_deserializer);
         $reviews_cron->register();
 
         $this->deactivator = new Deactivator($reviews_cron);
 
         if (is_admin()) {
+            $google_connect = new Google_Connect($google_api_old, $google_api_new);
+
             $feed_serializer = new Feed_Serializer();
-            $feed_ajax = new Feed_Ajax($connect_google_new, $feed_serializer, $feed_deserializer, $core, $view);
+            $feed_ajax = new Feed_Ajax($feed_serializer, $feed_deserializer, $core, $view);
 
             $admin_notice = new Admin_Notice();
             $admin_notice->register();

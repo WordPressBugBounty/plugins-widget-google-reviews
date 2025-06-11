@@ -134,20 +134,10 @@ class Core {
         $google_reviews = array();
 
         if ($google_business != null) {
-
             foreach ($google_business as $biz) {
-
                 $result = $this->get_google_reviews($biz, $options, $is_admin);
                 array_push($google_biz, $result['business']);
                 $google_reviews = array_merge($google_reviews, $result['reviews']);
-
-                //TODO: check and remove
-                if (isset($biz->refresh) && $biz->refresh) {
-                    $args = array($biz->id);
-                    if (isset($biz->lang) && strlen($biz->lang) > 0) {
-                        array_push($args, $biz->lang);
-                    }
-                }
             }
         }
 
@@ -177,6 +167,9 @@ class Core {
             while (count($revs) > 0) {
                 foreach ($revs as $i => $value) {
                     $review = array_shift($revs[$i]);
+                    if (strlen($review->text) > 0) {
+                        $review->text = nl2br($review->text);
+                    }
                     array_push($reviews, $review);
                     if (count($revs[$i]) < 1) {
                         unset($revs[$i]);

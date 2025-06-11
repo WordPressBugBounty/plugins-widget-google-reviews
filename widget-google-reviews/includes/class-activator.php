@@ -30,6 +30,7 @@ class Activator {
             'grw_revupd_cron',
             'grw_revupd_cron_timeout',
             'grw_revupd_cron_log',
+            'grw_save_log',
             'grw_debug_refresh',
             'grw_notice_msg',
             'grw_notice_type',
@@ -114,10 +115,6 @@ class Activator {
 
             case version_compare($last_active_version, '1.8.2', '<'):
                 $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::BUSINESS_TABLE . " ADD review_count INTEGER");
-                $place_ids = $wpdb->get_col("SELECT place_id FROM " . $wpdb->prefix . Database::BUSINESS_TABLE . " WHERE rating > 0 LIMIT 5");
-                foreach($place_ids as $place_id) {
-                    //TODO: grw_refresh_reviews(array($place_id));
-                }
 
             case version_compare($last_active_version, '1.8.7', '<'):
                 $row = $wpdb->get_results(

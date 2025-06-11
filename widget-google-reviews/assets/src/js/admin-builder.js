@@ -689,7 +689,7 @@ function grw_set_place(pid, place) {
         rating = window.grw_place.getElementsByClassName('wp-google-rating')[0],
         based  = window.grw_place.getElementsByClassName('wp-google-based')[0];
 
-    img.src          = place.business_photo || place.icon;
+    img.src          = place.photo || place.icon;
     name.innerHTML   = place.name;
     rating.innerHTML = place.rating;
     based.innerHTML  = place.user_ratings_total;
@@ -814,15 +814,16 @@ function grw_connect_ajax($, el, params, authcode, attempt, cb) {
 
         console.log('grw_connect_debug:', res);
 
-        var error_el = document.querySelector('.grw-connect-error');
-
         if (res.status == 'success') {
 
-            error_el.innerHTML = '';
+            let error_els = document.querySelectorAll('.grw-connect-error');
+            for (let i = 0; i < error_els.length; i++) {
+                error_els[i].innerHTML = '';
+            }
 
             grw_wizard_close();
 
-            var connection_params = {
+            let connection_params = {
                 id        : res.result.id,
                 lang      : params.lang,
                 name      : res.result.name,
@@ -862,8 +863,10 @@ function grw_wizard_close() {
 
 function grw_connect_error($, error_message, cb) {
 
-    let error_el = document.querySelector('.grw-connect-error');
-    error_el.innerHTML = '';
+    let error_els = document.querySelectorAll('.grw-connect-error');
+    for (let i = 0; i < error_els.length; i++) {
+        error_els[i].innerHTML = '';
+    }
 
     switch (error_message) {
 
@@ -876,15 +879,8 @@ function grw_connect_error($, error_message, cb) {
             break;
 
         default:
-            if (error_message.indexOf('The provided Place ID is no longer valid') >= 0) {
-                error_el.innerHTML = 'It seems Google place which you are trying to connect ' +
-                    'does not have a physical address (it\'s virtual or service area), ' +
-                    'unfortunately, Google Places API does not support such locations, it\'s a limitation of Google, not the plugin.<br><br>' +
-                    'However, you can try to connect your Google reviews in our new cloud service ' +
-                    '<a href="https://trust.reviews" target="_blank">Trust.Reviews</a> ' +
-                    'and show it on your WordPress site through universal <b>HTML/JavaScript</b> code.';
-            } else {
-                error_el.innerHTML = '<b>Error</b>: ' + error_message;
+            for (let i = 0; i < error_els.length; i++) {
+                error_els[i].innerHTML = '<b>Error</b>: ' + error_message;
             }
     }
 
@@ -1052,14 +1048,14 @@ function grw_connection_render(conn, checked) {
             (conn.refresh != undefined ?
             '<div class="grw-builder-option">' +
                 '<label>' +
-                    '<input type="checkbox" name="refresh" ' + (conn.refresh ? 'checked' : '') + '>' +
-                    'Update reviews daily' +
+                    '<input type="checkbox" name="refresh" ' + (conn.refresh ? 'checked' : '') + '> Include in auto-update<br>' +
+                    '<small>Works only with your own Google API key</small>' +
                 '</label>' +
-                '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
+                /*'<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
                 '<div class="grw-quest-help">' +
                     (conn.platform == 'google' ? 'The plugin uses the Google Places API to get your reviews. <b>The API only returns the 5 most helpful reviews (it\'s a limitation of Google, not the plugin)</b>. This option calls the Places API once in 24 hours (to keep the plugin\'s free and avoid a Google Billing) to check for a new reviews and if there are, adds to the plugin. Thus slowly building up a database of reviews.<br><br>Also if you see the new reviews on Google map, but after some time it\'s not added to the plugin, it means that Google does not include these reviews to the API and the plugin can\'t get this.<br><br>If you need to show <b>all reviews</b>, please use <a href="https://richplugins.com/business-reviews-bundle-wordpress-plugin?promo=GRGROW23" target="_blank">Business plugin</a> which uses a Google My Business API without API key and billing.' : '') +
                     (conn.platform == 'yelp' ? 'The plugin uses the Yelp API to get your reviews. <b>The API only returns the 3 most helpful reviews without sorting possibility.</b> When Yelp changes the 3 most helpful the plugin will automatically add the new one to your database. Thus slowly building up a database of reviews.' : '') +
-                '</div>' +
+                '</div>' +*/
             '</div>'
             : '' ) +
             '<div class="grw-builder-option">' +
@@ -1073,6 +1069,9 @@ function grw_connection_render(conn, checked) {
             '</div>' +
             '<div class="grw-builder-option">' +
                 '<button class="grw-connect-delete">Delete connection</button>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<small class="grw-connect-error"></small>' +
             '</div>' +
         '</div>';
 }

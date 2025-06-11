@@ -127,9 +127,9 @@ class View {
 
     private function render_grid($businesses, $reviews, $options, $is_admin = false) {
         if (count($businesses) > 0) { ?>
-        <div class="grw-header">
+        <div class="grw-header<?php if ($options->header_center) { ?> wp-place-center<?php } ?>">
             <div class="grw-header-inner">
-                <div class="wp-google-place<?php if ($options->header_center) { ?> wp-place-center<?php } ?>">
+                <div class="wp-google-place">
                 <?php $this->grw_place(
                     $businesses[0]->rating,
                     $businesses[0],
@@ -410,9 +410,8 @@ class View {
         $addcls = $options->hide_backgnd ? "" : " grw-backgnd";
         $addcls .= $options->show_round ? " grw-round" : "";
         $addcls .= $options->show_shadow ? " grw-shadow" : "";
-        $addcls .= $is_admin && $review->hide != '' ? " wp-review-hidden" : "";
         ?>
-        <div class="grw-review<?php if ($hr) { echo ' grw-hide'; } ?>">
+        <div class="grw-review<?php if ($hr) { echo ' grw-hide'; } ?><?php if ($is_admin && $review->hide != '') { echo ' wp-review-hidden'; } ?>">
             <div class="grw-review-inner<?php echo $addcls; ?>">
                 <div class="wp-google-left">
                     <?php

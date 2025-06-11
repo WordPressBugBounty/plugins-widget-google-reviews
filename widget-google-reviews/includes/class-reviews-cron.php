@@ -2,15 +2,15 @@
 
 namespace WP_Rplg_Google_Reviews\Includes;
 
-use WP_Rplg_Google_Reviews\Includes\Core\Connect_Google;
+use WP_Rplg_Google_Reviews\Includes\Core\Google_Utils;
 
 class Reviews_Cron {
 
-    private $connect_google;
+    private $google_utils;
     private $feed_deserializer;
 
-    public function __construct(Connect_Google $connect_google, Feed_Deserializer $feed_deserializer) {
-        $this->connect_google = $connect_google;
+    public function __construct(Google_Utils $google_utils, Feed_Deserializer $feed_deserializer) {
+        $this->google_utils = $google_utils;
         $this->feed_deserializer = $feed_deserializer;
     }
 
@@ -81,16 +81,19 @@ class Reviews_Cron {
                         // Loop by all connectors without repeatable
                         foreach ($json->connections as $conn) {
 
-                            // Create pair 'place_id:lang' to update it
-                            $arg_local_img = isset($conn->local_img) ? $conn->local_img : 'false';
+                            if (isset($conn->refresh) && $conn->refresh) {
 
-                            $args = array($conn->id, $conn->lang, $arg_local_img);
-                            $args_key = implode(":", $args);
+                                // Create pair 'place_id:lang' to update it
+                                $arg_local_img = isset($conn->local_img) ? $conn->local_img : 'false';
 
-                            // If not met, update
-                            if (!in_array($args_key, $feed_conn_cache)) {
-                                $this->connect_google->grw_refresh_reviews($args);
-                                array_push($feed_conn_cache, $args_key);
+                                $args = array($conn->id, $conn->lang, $arg_local_img);
+                                $args_key = implode(":", $args);
+
+                                // If not met, update
+                                if (!in_array($args_key, $feed_conn_cache)) {
+                                    $this->google_utils->refresh($args);
+                                    array_push($feed_conn_cache, $args_key);
+                                }
                             }
                         }
 
