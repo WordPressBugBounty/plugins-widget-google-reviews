@@ -126,6 +126,7 @@ class View {
     }
 
     private function render_grid($businesses, $reviews, $options, $is_admin = false) {
+        $hr = false;
         if (count($businesses) > 0) { ?>
         <div class="grw-header<?php if ($options->header_center) { ?> wp-place-center<?php } ?>">
             <div class="grw-header-inner">
@@ -154,7 +155,6 @@ class View {
                 <div class="grw-content-inner">
                     <div class="grw-reviews">
                         <?php
-                        $hr = false;
                         if (count($reviews) > 0) {
                             $i = 0;
                             foreach ($reviews as $review) {
@@ -166,12 +166,12 @@ class View {
                         }
                         ?>
                     </div>
-                    <?php if ($options->pagination > 0 && $hr) { ?>
-                    <a class="wp-google-url" href="#" onclick="return rplg_next_reviews.call(this, 'grw', <?php echo $options->pagination; ?>);">
-                        <?php echo __('More reviews', 'widget-google-reviews'); ?>
-                    </a>
-                    <?php } ?>
                 </div>
+                <?php if ($options->pagination > 0 && $hr) { ?>
+                <a class="wp-google-url" href="#" onclick="return rplg_next_reviews.call(this, 'grw', <?php echo $options->pagination; ?>);">
+                    <?php echo __('More reviews', 'widget-google-reviews'); ?>
+                </a>
+                <?php } ?>
             </div>
             <?php } ?>
         </div>

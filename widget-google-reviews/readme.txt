@@ -4,7 +4,7 @@ Tags: google, reviews, google reviews, google places reviews, rating
 Requires at least: 3.0.1
 Requires PHP: 7.2
 Tested up to: 6.8
-Stable tag: 6.0
+Stable tag: 6.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,7 +70,7 @@ Email support in English is also available on weekdays: support@richplugins.com
 
 == Roadmap ==
 
-= 6.1 =
+= 6.2 =
 * New feature: minimal rating layout (rating, stars and total reviews)
 * New feature: possibility to hide (or delete) the connected place to exclude from Overview page
 * Improve: adapt review connection modal for mobile devices
@@ -78,6 +78,9 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: add shortcode into each record in the widgets list
 
 == Changelog ==
+
+= 6.1 =
+* Bugfix: Fixed pagination link (More reviews) for Grid layout
 
 = 6.0 =
 * Improve: Major refactoring of Google Connect API-related code
