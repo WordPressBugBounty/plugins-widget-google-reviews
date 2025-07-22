@@ -74,7 +74,7 @@ final class Plugin {
         $builder_page = new Builder_Page($feed_deserializer, $core, $view);
         $builder_page->register();
 
-        $feed_page = new Feed_Page($feed_deserializer, $builder_page);
+        $feed_page = new Feed_Page($builder_page);
         $feed_page->register();
 
         $feed_old = new Feed_Old();
@@ -124,13 +124,13 @@ final class Plugin {
             $admin_feed_columns->register();
 
             $plugin_overview_ajax = new Plugin_Overview_Ajax($core);
-            $plugin_overview = new Plugin_Overview($feed_deserializer, $builder_page);
+            $plugin_overview = new Plugin_Overview($builder_page);
             $plugin_overview->register();
 
             $settings_save = new Settings_Save($activator, $reviews_cron);
             $settings_save->register();
 
-            $plugin_settings = new Plugin_Settings($feed_deserializer, $builder_page, $debug_info);
+            $plugin_settings = new Plugin_Settings($builder_page, $debug_info);
             $plugin_settings->register();
 
             $plugin_support = new Plugin_Support($debug_info);

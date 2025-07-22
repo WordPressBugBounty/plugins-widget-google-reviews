@@ -26,11 +26,23 @@ msgstr "още..."
 msgid "More reviews"
 msgstr "Още отзиви"
 
-msgid "Write a review"
-msgstr "Напишете отзив"
+msgid "review us on Google"
+msgstr "Оставете отзив в Google"
 
 msgid "Based on %s reviews"
 msgstr "На база на %s отзива"
 
 msgid "Response from the owner"
 msgstr "Отговор от собственика"
+
+msgid "%s place profile"
+msgstr "Профил на %s в Google"
+
+msgid "All reviews"
+msgstr "Всички отзиви"
+
+msgid "%s user profile"
+msgstr "Профил на потребителя %s"
+
+msgid "opens in a new window"
+msgstr "Отваря се в нов прозорец"

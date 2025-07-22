@@ -183,6 +183,9 @@ class Activator {
                 $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD images TEXT");
                 $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD reply TEXT");
                 $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD reply_time INTEGER");
+
+            case version_compare($last_active_version, '6.2', '<'):
+                $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::BUSINESS_TABLE . " ADD map_url VARCHAR(512)");
         }
 
         if (!empty($wpdb->last_error)) {

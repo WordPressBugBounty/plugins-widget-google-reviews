@@ -34,3 +34,18 @@ msgstr "peržiūrėti vertinimus"
 
 msgid "Response from the owner"
 msgstr "Atsakymas iš savininko"
+
+msgid "%s place profile"
+msgstr "%s vietos profilis"
+
+msgid "review us on Google"
+msgstr "Palikite atsiliepimą Google"
+
+msgid "All reviews"
+msgstr "Visos apžvalgos"
+
+msgid "%s user profile"
+msgstr "%s naudotojo profilis"
+
+msgid "opens in a new window"
+msgstr "atsidaro naujame lange"

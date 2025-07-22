@@ -26,8 +26,8 @@ msgstr "lasīt vairāk"
 msgid "More reviews"
 msgstr "Nākamās atsauksmes"
 
-msgid "Write a review"
-msgstr "Rakstīt atsauksmi"
+msgid "review us on Google"
+msgstr "Atsauksme par mums Google"
 
 msgid "Based on %s reviews"
 msgstr "Balstīts uz %s atsauksmēm"
@@ -37,3 +37,15 @@ msgstr "Vēlies ierakstīt atsauksmi?"
 
 msgid "Response from the owner"
 msgstr "Atbilde no īpašnieka"
+
+msgid "%s place profile"
+msgstr "%s vietas profils"
+
+msgid "All reviews"
+msgstr "Visas atsauksmes"
+
+msgid "%s user profile"
+msgstr "%s lietotāja profils"
+
+msgid "opens in a new window"
+msgstr "atveras jaunā logā"

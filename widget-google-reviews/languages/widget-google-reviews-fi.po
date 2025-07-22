@@ -34,3 +34,18 @@ msgstr "arvostele meitä"
 
 msgid "Response from the owner"
 msgstr "Vastaus omistajalta"
+
+msgid "%s place profile"
+msgstr "%s paikkaprofiili"
+
+msgid "review us on Google"
+msgstr "Arvostele meidät Googlessa"
+
+msgid "All reviews"
+msgstr "Kaikki arvostelut"
+
+msgid "%s user profile"
+msgstr "%s käyttäjäprofiili"
+
+msgid "opens in a new window"
+msgstr "avaa uudessa ikkunassa"

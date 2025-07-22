@@ -6,11 +6,9 @@ use WP_Rplg_Google_Reviews\Includes\Core\Core;
 
 class Plugin_Overview {
 
-    private $feed_deserializer;
     private $builder_page;
 
-    public function __construct($feed_deserializer, $builder_page) {
-        $this->feed_deserializer = $feed_deserializer;
+    public function __construct($builder_page) {
         $this->builder_page = $builder_page;
     }
 
@@ -18,8 +16,8 @@ class Plugin_Overview {
         add_action('grw_admin_page_grw', array($this, 'init'));
 
         $render_function;
-        $feed_count = $this->feed_deserializer->get_feed_count();
-        if ($feed_count < 1) {
+        $feed_ids = get_option('grw_feed_ids');
+        if (empty($feed_ids)) {
             $render_function = array($this, 'connect');
         } else {
             $render_function = array($this, 'render');

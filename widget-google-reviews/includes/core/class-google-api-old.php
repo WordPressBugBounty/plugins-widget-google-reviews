@@ -63,6 +63,9 @@ class Google_Api_Old {
                 'photo'              => isset($data->business_photo) && strlen($data->business_photo) ? $data->business_photo : GRW_GOOGLE_BIZ,
                 'reviews'            => isset($data->reviews) ? $data->reviews : null
             );
+            if (isset($data->map_url) && strlen($data->map_url) > 0) {
+                $result['map_url'] = $data->map_url;
+            }
             $status = 'success';
         } else {
             if (isset($json->error_message)) {

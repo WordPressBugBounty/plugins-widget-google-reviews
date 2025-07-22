@@ -26,8 +26,20 @@ msgstr "læs mere"
 msgid "More reviews"
 msgstr "Næste anmeldelse"
 
-msgid "Write a review"
-msgstr "Skriv en anmeldelse"
+msgid "review us on Google"
+msgstr "Anmeld os på Google"
 
 msgid "Response from the owner"
 msgstr "Svar fra ejeren"
+
+msgid "%s place profile"
+msgstr "%s stedprofil"
+
+msgid "All reviews"
+msgstr "Alle anmeldelser"
+
+msgid "%s user profile"
+msgstr "%s brugerprofil"
+
+msgid "opens in a new window"
+msgstr "åbner i et nyt vindue"

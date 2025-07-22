@@ -28,6 +28,7 @@ class Database {
                "address VARCHAR(255),".
                "rating DOUBLE PRECISION,".
                "url VARCHAR(255),".
+               "map_url VARCHAR(512),".
                "website VARCHAR(255),".
                "review_count INTEGER,".
                "updated BIGINT(20),".

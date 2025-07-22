@@ -34,3 +34,18 @@ msgstr "votaci su"
 
 msgid "Response from the owner"
 msgstr "Risposta del proprietario"
+
+msgid "%s place profile"
+msgstr "Profilo del luogo %s"
+
+msgid "review us on Google"
+msgstr "Lascia una recensione su Google"
+
+msgid "All reviews"
+msgstr "Tutte le recensioni"
+
+msgid "%s user profile"
+msgstr "Profilo utente di %s"
+
+msgid "opens in a new window"
+msgstr "si apre in una nuova finestra"

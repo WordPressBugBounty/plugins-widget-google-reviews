@@ -34,3 +34,18 @@ msgstr "beoordeel ons op"
 
 msgid "Response from the owner"
 msgstr "Antwoord van de eigenaar"
+
+msgid "%s place profile"
+msgstr "%s plaatsprofiel"
+
+msgid "review us on Google"
+msgstr "Beoordeel ons op Google"
+
+msgid "All reviews"
+msgstr "Alle beoordelingen"
+
+msgid "%s user profile"
+msgstr "%s gebruikersprofiel"
+
+msgid "opens in a new window"
+msgstr "opent in een nieuw venster"

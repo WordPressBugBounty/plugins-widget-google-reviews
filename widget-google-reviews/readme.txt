@@ -4,7 +4,7 @@ Tags: google, reviews, google reviews, google places reviews, rating
 Requires at least: 3.0.1
 Requires PHP: 7.2
 Tested up to: 6.8
-Stable tag: 6.1
+Stable tag: 6.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,7 +70,7 @@ Email support in English is also available on weekdays: support@richplugins.com
 
 == Roadmap ==
 
-= 6.2 =
+= 6.3 =
 * New feature: minimal rating layout (rating, stars and total reviews)
 * New feature: possibility to hide (or delete) the connected place to exclude from Overview page
 * Improve: adapt review connection modal for mobile devices
@@ -78,6 +78,14 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: add shortcode into each record in the widgets list
 
 == Changelog ==
+
+= 6.2 =
+* Improve: Google images are now saved locally by default
+* Improve: Default language in the Connect Reviews wizard is taken from WP settings
+* Improve: New option for ARIA label attribute (disabled by default)
+* Improve: ARIA label now includes place and author names
+* Bugfix: Fixed unicode errors when trimming text
+* Bugfix: Fixed a critical error on some sites
 
 = 6.1 =
 * Bugfix: Fixed pagination link (More reviews) for Grid layout

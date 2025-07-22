@@ -131,10 +131,8 @@ class Assets {
         wp_enqueue_script('jquery-ui-dialog');
 
         $vars = array(
-            //'handlerUrl'    => admin_url('options-general.php?page=grw'),
-            //'supportUrl'    => admin_url('admin.php?page=grw-support'),
-            'builderUrl'    => admin_url('admin.php?page=grw-builder'),
-            //'actionPrefix'  => 'grw',
+            'lang'       => get_locale(),
+            'builderUrl' => admin_url('admin.php?page=grw-builder')
         );
 
         if ($this->debug) {

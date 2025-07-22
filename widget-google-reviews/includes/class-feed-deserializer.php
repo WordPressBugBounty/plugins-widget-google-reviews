@@ -57,22 +57,4 @@ class Feed_Deserializer {
         }
         return $short;
     }
-
-    public function get_feed_count($args = array()) {
-        $default_args = array(
-            'post_type'      => Post_Types::FEED_POST_TYPE,
-            'posts_per_page' => -1,
-            'no_found_rows'  => true,
-        );
-
-        $args = wp_parse_args($args, $default_args);
-        $this->wp_query->query($args);
-
-        if (!$this->wp_query->have_posts()) {
-            return 0;
-        }
-
-        return count($this->wp_query->posts);
-    }
-
 }

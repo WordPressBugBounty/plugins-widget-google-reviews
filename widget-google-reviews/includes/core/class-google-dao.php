@@ -10,7 +10,7 @@ class Google_Dao {
         $this->helper = $helper;
     }
 
-    public function save($place, $local_img) {
+    public function save($place, $local_img = true) {
         global $wpdb;
 
         $log = array(round(microtime(true) * 1000));
@@ -78,7 +78,17 @@ class Google_Dao {
 
                 $images = null;
                 if (isset($review->images) && count($review->images) > 0) {
-                    $images = implode(';', $review->images);
+                    if ($local_img === true || $local_img == 'true') {
+                        $saved_imgs = [];
+                        foreach ($review->images as $img) {
+                            $img_name = $place->place_id . '_img_' . md5($img);
+                            $saved_img = $this->helper->upload_image($img, $img_name);
+                            array_push($saved_imgs, $saved_img);
+                        }
+                        $images = implode(';', $saved_imgs);
+                    } else {
+                        $images = implode(';', $review->images);
+                    }
                 }
 
                 $reply = null;
@@ -109,7 +119,7 @@ class Google_Dao {
         $rating = isset($place->rating) ? $place->rating : null;
         $review_count = isset($place->user_ratings_total) ? $place->user_ratings_total : (isset($place->reviews) ? count($place->reviews) : null);
 
-        $wpdb->insert($wpdb->prefix . Database::BUSINESS_TABLE, array(
+        $atts = array(
             'place_id'     => $pid,
             'rating'       => $rating,
             'review_count' => $review_count,
@@ -120,7 +130,12 @@ class Google_Dao {
             'icon'         => isset($place->icon) ? $place->icon : null,
             'address'      => isset($place->formatted_address) ? $place->formatted_address : null,
             'updated'      => round(microtime(true) * 1000)
-        ));
+        );
+        if (isset($place->map_url) && strlen($place->map_url) > 0) {
+            $atts['map_url'] = $place->map_url;
+        }
+
+        $wpdb->insert($wpdb->prefix . Database::BUSINESS_TABLE, $atts);
         $db_place_id = $wpdb->insert_id;
 
         array_push($log, 'ip[' . $pid . ',' . $name . ',' . $rating . ',' . $review_count . ']');
@@ -154,6 +169,11 @@ class Google_Dao {
         // Update business photo
         if (isset($place->business_photo) && strlen($place->business_photo) > 0) {
             $update_params['photo'] = $place->business_photo;
+        }
+
+        // Update map URL
+        if (isset($place->map_url) && strlen($place->map_url) > 0) {
+            $update_params['map_url'] = $place->map_url;
         }
 
         $wpdb->update($wpdb->prefix . Database::BUSINESS_TABLE, $update_params, array('ID' => $db_place_id));

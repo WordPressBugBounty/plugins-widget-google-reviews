@@ -31,3 +31,18 @@ msgstr "ອີງຕາມ %s ຣີວິວ"
 
 msgid "Response from the owner"
 msgstr "ການຕອບກັບຈາກຜູ້ລອງທີ່"
+
+msgid "%s place profile"
+msgstr "ໂປຣໄຟລ໌ສະຖານທີ່ %s"
+
+msgid "review us on Google"
+msgstr "ຂໍໃຫ້ຄະແນນພວກເຮົາໃນ Google"
+
+msgid "All reviews"
+msgstr "ທຸກຄໍາຄິດເຫັນ"
+
+msgid "%s user profile"
+msgstr "ໂປຣໄຟລ໌ຜູ້ໃຊ້ %s"
+
+msgid "opens in a new window"
+msgstr "ເປີດໃນປ່ອງໃໝ່"

@@ -35,3 +35,18 @@ msgstr "ohodnoťte nás na"
 
 msgid "Response from the owner"
 msgstr "Odpověď od vlastníka"
+
+msgid "%s place profile"
+msgstr "Profil místa %s na Googlu"
+
+msgid "review us on Google"
+msgstr "Napište nám recenzi na Googlu"
+
+msgid "All reviews"
+msgstr "Všechny recenze"
+
+msgid "%s user profile"
+msgstr "Profil uživatele %s"
+
+msgid "opens in a new window"
+msgstr "otevře se v novém okně"

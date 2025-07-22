@@ -31,3 +31,18 @@ msgstr "Με βάση %s κριτικές"
 
 msgid "Response from the owner"
 msgstr "Απάντηση από τον ιδιοκτήτη"
+
+msgid "%s place profile"
+msgstr "Προφίλ τοποθεσίας %s"
+
+msgid "review us on Google"
+msgstr "Αξιολογήστε μας στο Google"
+
+msgid "All reviews"
+msgstr "Όλες οι κριτικές"
+
+msgid "%s user profile"
+msgstr "Προφίλ χρήστη %s"
+
+msgid "opens in a new window"
+msgstr "ανοίγει σε νέο παράθυρο"

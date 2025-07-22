@@ -26,8 +26,20 @@ msgstr "leia mais"
 msgid "More reviews"
 msgstr "Próximas avaliações"
 
-msgid "Write a review"
-msgstr "Escreva uma avaliação"
+msgid "review us on Google"
+msgstr "Avalie-nos no Google"
 
 msgid "Response from the owner"
 msgstr "Resposta do proprietário"
+
+msgid "%s place profile"
+msgstr "Perfil do local %s"
+
+msgid "All reviews"
+msgstr "Todas as avaliações"
+
+msgid "%s user profile"
+msgstr "Perfil do usuário %s"
+
+msgid "opens in a new window"
+msgstr "abre em uma nova janela"

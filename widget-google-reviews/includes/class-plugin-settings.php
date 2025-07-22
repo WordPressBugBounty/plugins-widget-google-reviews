@@ -4,20 +4,18 @@ namespace WP_Rplg_Google_Reviews\Includes;
 
 class Plugin_Settings {
 
-    private $feed_deserializer;
     private $builder_page;
     private $debug_info;
 
-    public function __construct($feed_deserializer, $builder_page, $debug_info) {
-        $this->feed_deserializer = $feed_deserializer;
+    public function __construct($builder_page, $debug_info) {
         $this->builder_page = $builder_page;
         $this->debug_info = $debug_info;
     }
 
     public function register() {
         $render_func;
-        $feed_count = $this->feed_deserializer->get_feed_count();
-        if ($feed_count < 1) {
+        $feed_ids = get_option('grw_feed_ids');
+        if (empty($feed_ids)) {
             $render_func = array($this, 'connect');
         } else {
             $render_func = array($this, 'render');

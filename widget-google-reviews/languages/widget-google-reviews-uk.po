@@ -31,3 +31,18 @@ msgstr "На основі %s відгуків"
 
 msgid "Response from the owner"
 msgstr "Відповідь від власника"
+
+msgid "%s place profile"
+msgstr "Профіль місця %s"
+
+msgid "review us on Google"
+msgstr "Залиште відгук у Google"
+
+msgid "All reviews"
+msgstr "Всі відгуки"
+
+msgid "%s user profile"
+msgstr "Профіль користувача %s"
+
+msgid "opens in a new window"
+msgstr "відкривається у новому вікні"

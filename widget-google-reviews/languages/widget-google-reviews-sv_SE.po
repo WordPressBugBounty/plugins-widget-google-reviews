@@ -26,8 +26,8 @@ msgstr "läs mer"
 msgid "More reviews"
 msgstr "Fler recensioner"
 
-msgid "Write a review"
-msgstr "Skriv en recension"
+msgid "review us on Google"
+msgstr "Recensera oss på Google"
 
 msgid "Based on %s reviews"
 msgstr "Baserat på %s recensioner"
@@ -37,3 +37,15 @@ msgstr "Lämna ett omdöme"
 
 msgid "Response from the owner"
 msgstr "Svar från ägaren"
+
+msgid "%s place profile"
+msgstr "%s platsprofil"
+
+msgid "All reviews"
+msgstr "Alla recensioner"
+
+msgid "%s user profile"
+msgstr "%s användarprofil"
+
+msgid "opens in a new window"
+msgstr "öppnas i ett nytt fönster"

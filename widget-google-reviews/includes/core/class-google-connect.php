@@ -100,6 +100,11 @@ class Google_Connect {
                                '&siteurl=' . $siteurl . '&authcode=' . $authcode .
                                ($lang && strlen($lang) > 0 ? '&lang=' . $lang : '');
 
+                        if (isset($_POST['map_url'])) {
+                            $map_url = sanitize_text_field(wp_unslash($_POST['map_url']));
+                            $url .= ('&map_url=' . rawurlencode($map_url));
+                        }
+
                         $response = $this->api_old->call($url, null, $local_img);
                     }
                 }

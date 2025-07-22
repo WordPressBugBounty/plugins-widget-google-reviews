@@ -34,3 +34,18 @@ msgstr "оцените нас на"
 
 msgid "Response from the owner"
 msgstr "Ответ владельца"
+
+msgid "%s place profile"
+msgstr "Профиль места %s"
+
+msgid "review us on Google"
+msgstr "Оставьте отзыв в Google"
+
+msgid "All reviews"
+msgstr "Все отзывы"
+
+msgid "%s user profile"
+msgstr "Профиль пользователя %s"
+
+msgid "opens in a new window"
+msgstr "открывается в новом окне"

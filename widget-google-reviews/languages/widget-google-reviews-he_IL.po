@@ -26,11 +26,23 @@ msgstr "קראו עוד"
 msgid "More reviews"
 msgstr "הביקורות הבאות"
 
-msgid "Write a review"
-msgstr "כתבו ביקורת"
+msgid "review us on Google"
+msgstr "דרג אותנו בגוגל"
 
 msgid "Based on %s reviews"
 msgstr "מבוסס על %s ביקורות"
 
 msgid "Response from the owner"
 msgstr "תשובה מהבעלים"
+
+msgid "%s place profile"
+msgstr "פרופיל המקום של %s"
+
+msgid "All reviews"
+msgstr "כל הביקורות"
+
+msgid "%s user profile"
+msgstr "פרופיל המשתמש של %s"
+
+msgid "opens in a new window"
+msgstr "נפתח בחלון חדש"

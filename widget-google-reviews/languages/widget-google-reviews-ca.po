@@ -26,8 +26,20 @@ msgstr "Més"
 msgid "More reviews"
 msgstr "Següents"
 
-msgid "Write a review"
-msgstr "Escriu un comentari"
+msgid "review us on Google"
+msgstr "Deixa'ns una ressenya a Google"
 
 msgid "Response from the owner"
 msgstr "Resposta del propietari"
+
+msgid "%s place profile"
+msgstr "Perfil de %s a Google"
+
+msgid "All reviews"
+msgstr "Totes les ressenyes"
+
+msgid "%s user profile"
+msgstr "Perfil d'usuari de %s"
+
+msgid "opens in a new window"
+msgstr "s'obre en una finestra nova"

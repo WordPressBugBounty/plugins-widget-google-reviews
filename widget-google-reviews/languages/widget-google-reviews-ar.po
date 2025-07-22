@@ -31,3 +31,18 @@ msgstr "استناداً إلى %s تقييماً"
 
 msgid "review us on"
 msgstr "قم بتقييمنا على"
+
+msgid "%s place profile"
+msgstr "ملف %s على Google"
+
+msgid "review us on Google"
+msgstr "راجعنا على Google"
+
+msgid "All reviews"
+msgstr "جميع المراجعات"
+
+msgid "%s user profile"
+msgstr "ملف المستخدم %s"
+
+msgid "opens in a new window"
+msgstr "يفتح في نافذة جديدة"

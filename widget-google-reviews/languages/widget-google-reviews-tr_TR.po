@@ -26,8 +26,20 @@ msgstr "Devamını Oku"
 msgid "More reviews"
 msgstr "Diğer Değerlendirmeler"
 
-msgid "Write a review"
-msgstr "Değerlendirme Yap"
+msgid "review us on Google"
+msgstr "Bizi Google'da değerlendirin"
 
 msgid "Response from the owner"
 msgstr "Sahibinden yanıt"
+
+msgid "%s place profile"
+msgstr "%s yer profili"
+
+msgid "All reviews"
+msgstr "Tüm yorumlar"
+
+msgid "%s user profile"
+msgstr "%s kullanıcı profili"
+
+msgid "opens in a new window"
+msgstr "yeni bir pencerede açılır"

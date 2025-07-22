@@ -342,6 +342,12 @@ const GRW_HTML_CONTENT =
                 '</label>' +
             '</div>' +
             '<div class="grw-builder-option">' +
+                '<label>' +
+                    '<input type="checkbox" name="aria_label">' +
+                    'Enable ARIA label for screen readers' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
                 'Reviewer avatar size' +
                 '<select name="reviewer_avatar_size">' +
                     '<option value="56" selected="selected">Small: 56px</option>' +
@@ -371,7 +377,7 @@ const GRW_HTML_CONTENT =
     '</div>';
 
 const GRW_WIZARD =
-    '<iframe id="gpidc" src="https://app.richplugins.com/gpidc?authcode={{authcode}}" style="width:100%;height:400px"></iframe>' +
+    '<iframe id="gpidc" src="https://app.richplugins.com/gpidc?authcode={{authcode}}&lang={{lang}}" style="width:100%;height:400px"></iframe>' +
     '<small class="grw-connect-error"></small>';
 
 const GRW_WIZARD2 =
@@ -490,7 +496,8 @@ function grw_builder_init($, data) {
     var el = document.querySelector(data.el);
     if (!el) return;
 
-    el.innerHTML = GRW_HTML_CONTENT.replace('{{wizard}}', data.key ? GRW_WIZARD2 : GRW_WIZARD.replace('{{authcode}}', data.authcode));
+    el.innerHTML = GRW_HTML_CONTENT.replace('{{wizard}}',
+        data.key ? GRW_WIZARD2 : GRW_WIZARD.replace('{{authcode}}', data.authcode).replace('{{lang}}', GRW_VARS.lang));
 
     var $connect_wizard_el = $('#grw-connect-wizard');
 
@@ -524,7 +531,7 @@ function grw_builder_init($, data) {
                             res.result.place_id = gdata.pid;
                             window.gpidc.contentWindow.postMessage({data: res, action: 'set_place'}, '*');
                         } else {
-                            grw_connect_error($, res.result.error_message);
+                            grw_connect_error($, grw_get_error(res));
                         }
                     });
                     break;
@@ -675,12 +682,17 @@ function grw_get_place(pid) {
     }, function(res) {
         grw_place_spin();
         window.grw_place_list.innerHTML = '';
-        if (res && res.result.error_message) {
-            window.grw_place_error.innerHTML = res.result.error_message;
+        const err = grw_get_error(res);
+        if (err) {
+            window.grw_place_error.innerHTML = err;
             return;
         }
         grw_set_place(pid, res.result);
     });
+}
+
+function grw_get_error(res) {
+    return res?.result?.error_message?.message || res?.result?.error_message || null;
 }
 
 function grw_set_place(pid, place) {
@@ -794,23 +806,27 @@ function grw_review_hide($this) {
 function grw_connect_ajax($, el, params, authcode, attempt, cb) {
 
     var platform = 'google',
-        connect_btn = el.querySelector('.grw-connect-btn');
+        connect_btn = el.querySelector('.grw-connect-btn'),
+        local_img = params.local_img !== undefined ? params.local_img : true;
 
     window.grw_save.innerText = 'Auto save, wait';
     window.grw_save.disabled = true;
 
-    $.post(ajaxurl, {
-
+    const args = {
         id          : decodeURIComponent(params.id),
         lang        : params.lang,
-        local_img   : params.local_img || false,
+        local_img   : local_img,
         token       : params.token,
         feed_id     : $('input[name="grw_feed[post_id]"]').val(),
         grw_wpnonce : $('#grw_nonce').val(),
         action      : 'grw_connect_google',
         v           : new Date().getTime()
+    };
+    if (params.props && params.props.map_url) {
+        args.map_url = params.props.map_url;
+    }
 
-    }, function(res) {
+    $.post(ajaxurl, args, function(res) {
 
         console.log('grw_connect_debug:', res);
 
@@ -823,24 +839,29 @@ function grw_connect_ajax($, el, params, authcode, attempt, cb) {
 
             grw_wizard_close();
 
+            let props = {
+                default_photo : res.result.photo
+            };
+            if (res.result.map_url) {
+                props.map_url = res.result.map_url;
+            }
+
             let connection_params = {
                 id        : res.result.id,
                 lang      : params.lang,
                 name      : res.result.name,
                 photo     : res.result.photo,
                 refresh   : true,
-                local_img : params.local_img,
+                local_img : local_img,
                 platform  : platform,
-                props     : {
-                    default_photo : res.result.photo
-                }
+                props     : props
             };
 
             grw_connection_add($, el, connection_params);
             grw_serialize_connections();
 
         } else {
-            grw_connect_error($, res.result.error_message, function() {
+            grw_connect_error($, grw_get_error(res), function() {
                 if (attempt > 1) return;
                 if (window.gpidc) {
                     grw_popup('https://app.richplugins.com/gpaw/botcheck?authcode=' + authcode, 640, 480, function() {

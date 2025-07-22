@@ -49,6 +49,7 @@ class Core {
             'open_link'                 => true,
             'nofollow_link'             => true,
             'lazy_load_img'             => true,
+            'aria_label'                => false,
             'google_def_rev_link'       => false,
             'reviewer_avatar_size'      => 56,
             'reviews_limit'             => '',
