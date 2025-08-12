@@ -49,3 +49,6 @@ msgstr "%s lietotāja profils"
 
 msgid "opens in a new window"
 msgstr "atveras jaunā logā"
+
+msgid "Rating: %s out of 5"
+msgstr "Vērtējums: %s no 5"

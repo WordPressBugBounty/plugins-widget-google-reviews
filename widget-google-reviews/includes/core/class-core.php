@@ -282,7 +282,8 @@ class Core {
                     'images'        => isset($rev->images) ? $rev->images : null,
                     'reply'         => isset($rev->reply) ? $rev->reply : null,
                     'reply_time'    => isset($rev->reply_time) ? $rev->reply_time : null,
-                    'provider'      => 'google',
+                    'url'           => isset($rev->url) ? $rev->url : null,
+                    'provider'      => isset($rev->provider) ? $rev->provider : 'google'
                 )
             ));
             array_push($google_reviews, $review);

@@ -186,6 +186,10 @@ class Activator {
 
             case version_compare($last_active_version, '6.2', '<'):
                 $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::BUSINESS_TABLE . " ADD map_url VARCHAR(512)");
+
+            case version_compare($last_active_version, '6.3', '<'):
+                $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD url VARCHAR(255)");
+                $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD provider VARCHAR(32)");
         }
 
         if (!empty($wpdb->last_error)) {

@@ -43,3 +43,6 @@ msgstr "Perfil d'usuari de %s"
 
 msgid "opens in a new window"
 msgstr "s'obre en una finestra nova"
+
+msgid "Rating: %s out of 5"
+msgstr "Valoració: %s de 5"

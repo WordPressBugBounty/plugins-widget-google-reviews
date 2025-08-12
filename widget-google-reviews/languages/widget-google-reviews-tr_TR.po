@@ -43,3 +43,6 @@ msgstr "%s kullanıcı profili"
 
 msgid "opens in a new window"
 msgstr "yeni bir pencerede açılır"
+
+msgid "Rating: %s out of 5"
+msgstr "Puan: %s / 5"

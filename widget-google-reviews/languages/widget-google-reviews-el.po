@@ -46,3 +46,6 @@ msgstr "Προφίλ χρήστη %s"
 
 msgid "opens in a new window"
 msgstr "ανοίγει σε νέο παράθυρο"
+
+msgid "Rating: %s out of 5"
+msgstr "Βαθμολογία: %s από 5"

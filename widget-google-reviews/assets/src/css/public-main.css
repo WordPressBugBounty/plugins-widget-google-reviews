@@ -168,7 +168,7 @@
 }
 
 .wp-gr .wp-google-name {
-    color: black!important;
+    color: var(--name-color, #333333)!important;
     font-size: 100%!important;
     font-weight: bold!important;
     margin: 0 0 2px!important;
@@ -383,7 +383,7 @@
 }
 
 .wp-gr.wpac a.wp-google-name {
-    color: #154fc1!important;
+    color: var(--name-color, #154fc1)!important;
     text-decoration: none!important;
     white-space: nowrap!important;
     text-overflow: ellipsis!important;

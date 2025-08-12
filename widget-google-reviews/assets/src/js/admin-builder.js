@@ -60,7 +60,7 @@ const GRW_HTML_CONTENT =
 
     '<div class="grw-builder-platforms grw-builder-inside">' +
 
-        '<div class="grw-builder-connect grw-connect-google">Google Connection</div>' +
+        '<div class="grw-builder-connect grw-connect-google">Connect Google</div>' +
         '<div id="grw-connect-wizard" title="Google reviews" style="display:none;">{{wizard}}</div>' +
         '<div class="grw-connections"></div>' +
     '</div>' +
@@ -259,6 +259,11 @@ const GRW_HTML_CONTENT =
                 '<input type="color" name="--rev-color" value="#fafafa" data-val="#fafafa" data-defval="#fafafa"/>' +
                 '<input type="text" value="#fafafa"/>' +
                 'Reviews color' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<input type="color" name="--name-color" value="#154fc1" data-val="#154fc1" data-defval="#154fc1"/>' +
+                '<input type="text" value="#154fc1"/>' +
+                'Review author name color' +
             '</div>' +
             '<div class="grw-builder-option">' +
                 '<input type="color" name="--text-color" value="#222222" data-val="#222222" data-defval="#222222"/>' +

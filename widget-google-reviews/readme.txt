@@ -4,7 +4,7 @@ Tags: google, reviews, google reviews, google places reviews, rating
 Requires at least: 3.0.1
 Requires PHP: 7.2
 Tested up to: 6.8
-Stable tag: 6.2
+Stable tag: 6.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,14 +70,19 @@ Email support in English is also available on weekdays: support@richplugins.com
 
 == Roadmap ==
 
-= 6.3 =
+= 6.4 =
 * New feature: minimal rating layout (rating, stars and total reviews)
 * New feature: possibility to hide (or delete) the connected place to exclude from Overview page
 * Improve: adapt review connection modal for mobile devices
-* Improve: predefined SVG DOM elements for better HTML size optimization
-* Improve: add shortcode into each record in the widgets list
 
 == Changelog ==
+
+= 6.3 =
+* Improve: Added support for hotels in Google connection
+* Improve: Added predefined SVG symbols for better performance and reusability
+* Improve: Added shortcode display next to each widget on the widgets list page
+* Improve: New option - Style Options / Review author name color
+* Improve: Added aria-label for rating
 
 = 6.2 =
 * Improve: Google images are now saved locally by default

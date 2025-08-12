@@ -34,6 +34,23 @@ class View {
 
         ?>
         <div class="wp-gr wpac<?php if ($options->dark_theme) { ?> wp-dark<?php } ?>"<?php if ($style) { ?> style="<?php echo $style;?>"<?php } ?> data-id="<?php echo $feed_id; ?>" data-layout="<?php echo $options->view_mode; ?>" data-exec="false" data-options='<?php echo $this->options($options); ?>'>
+        <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+            <symbol id="grw-star" viewBox="0 0 1792 1792">
+                <path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path>
+            </symbol>
+            <symbol id="grw-star-h" viewBox="0 0 1792 1792">
+                <path d="M1250 957l257-250-356-52-66-10-30-60-159-322v963l59 31 318 168-60-355-12-66zm452-262l-363 354 86 500q5 33-6 51.5t-34 18.5q-17 0-40-12l-449-236-449 236q-23 12-40 12-23 0-34-18.5t-6-51.5l86-500-364-354q-32-32-23-59.5t54-34.5l502-73 225-455q20-41 49-41 28 0 49 41l225 455 502 73q45 7 54 34.5t-24 59.5z" fill="#fb8e28"></path>
+            </symbol>
+            <symbol id="grw-star-o" viewBox="0 0 1792 1792">
+                <path d="M1201 1004l306-297-422-62-189-382-189 382-422 62 306 297-73 421 378-199 377 199zm527-357q0 22-26 48l-363 354 86 500q1 7 1 20 0 50-41 50-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#ccc"></path>
+            </symbol>
+            <symbol id="grw-tripadvisor" viewBox="0 0 713.496 713.496">
+                <g><circle fill="#34E0A1" cx="356.749" cy="356.748" r="356.748"/><path d="M577.095,287.152l43.049-46.836h-95.465c-47.792-32.646-105.51-51.659-167.931-51.659   c-62.342,0-119.899,19.054-167.612,51.659H93.432l43.049,46.836c-26.387,24.075-42.929,58.754-42.929,97.259   c0,72.665,58.914,131.578,131.579,131.578c34.519,0,65.968-13.313,89.446-35.077l42.172,45.919l42.172-45.879   c23.478,21.764,54.887,35.037,89.406,35.037c72.665,0,131.658-58.913,131.658-131.578   C620.024,345.866,603.483,311.188,577.095,287.152z M225.17,473.458c-49.188,0-89.047-39.859-89.047-89.047   s39.86-89.048,89.047-89.048c49.187,0,89.047,39.86,89.047,89.048S274.357,473.458,225.17,473.458z M356.788,381.82   c0-58.595-42.61-108.898-98.853-130.383c30.413-12.716,63.776-19.771,98.813-19.771s68.439,7.055,98.853,19.771   C399.399,272.962,356.788,323.226,356.788,381.82z M488.367,473.458c-49.188,0-89.048-39.859-89.048-89.047   s39.86-89.048,89.048-89.048s89.047,39.86,89.047,89.048S537.554,473.458,488.367,473.458z M488.367,337.694   c-25.79,0-46.677,20.887-46.677,46.677c0,25.789,20.887,46.676,46.677,46.676c25.789,0,46.676-20.887,46.676-46.676   C535.042,358.621,514.156,337.694,488.367,337.694z M271.846,384.411c0,25.789-20.887,46.676-46.676,46.676   s-46.676-20.887-46.676-46.676c0-25.79,20.887-46.677,46.676-46.677C250.959,337.694,271.846,358.621,271.846,384.411z"/></g>
+            </symbol>
+            <symbol id="grw-google" viewBox="0 0 512 512">
+                <g fill="none" fill-rule="evenodd"><path d="M482.56 261.36c0-16.73-1.5-32.83-4.29-48.27H256v91.29h127.01c-5.47 29.5-22.1 54.49-47.09 71.23v59.21h76.27c44.63-41.09 70.37-101.59 70.37-173.46z" fill="#4285f4"/><path d="M256 492c63.72 0 117.14-21.13 156.19-57.18l-76.27-59.21c-21.13 14.16-48.17 22.53-79.92 22.53-61.47 0-113.49-41.51-132.05-97.3H45.1v61.15c38.83 77.13 118.64 130.01 210.9 130.01z" fill="#34a853"/><path d="M123.95 300.84c-4.72-14.16-7.4-29.29-7.4-44.84s2.68-30.68 7.4-44.84V150.01H45.1C29.12 181.87 20 217.92 20 256c0 38.08 9.12 74.13 25.1 105.99l78.85-61.15z" fill="#fbbc05"/><path d="M256 113.86c34.65 0 65.76 11.91 90.22 35.29l67.69-67.69C373.03 43.39 319.61 20 256 20c-92.25 0-172.07 52.89-210.9 130.01l78.85 61.15c18.56-55.78 70.59-97.3 132.05-97.3z" fill="#ea4335"/><path d="M20 20h472v472H20V20z"/></g>
+            </symbol>
+        </svg>
         <?php
         switch ($options->view_mode) {
             case 'slider':
@@ -240,7 +257,7 @@ class View {
         <div class="wp-google-badge<?php if ($options->view_mode == 'badge') { ?> wp-google-badge-fixed<?php } ?>">
             <div class="wp-google-border"></div>
             <div class="wp-google-badge-btn">
-                <svg viewBox="0 0 512 512" height="44" width="44" role="none"><g fill="none" fill-rule="evenodd"><path d="M482.56 261.36c0-16.73-1.5-32.83-4.29-48.27H256v91.29h127.01c-5.47 29.5-22.1 54.49-47.09 71.23v59.21h76.27c44.63-41.09 70.37-101.59 70.37-173.46z" fill="#4285f4"/><path d="M256 492c63.72 0 117.14-21.13 156.19-57.18l-76.27-59.21c-21.13 14.16-48.17 22.53-79.92 22.53-61.47 0-113.49-41.51-132.05-97.3H45.1v61.15c38.83 77.13 118.64 130.01 210.9 130.01z" fill="#34a853"/><path d="M123.95 300.84c-4.72-14.16-7.4-29.29-7.4-44.84s2.68-30.68 7.4-44.84V150.01H45.1C29.12 181.87 20 217.92 20 256c0 38.08 9.12 74.13 25.1 105.99l78.85-61.15z" fill="#fbbc05"/><path d="M256 113.86c34.65 0 65.76 11.91 90.22 35.29l67.69-67.69C373.03 43.39 319.61 20 256 20c-92.25 0-172.07 52.89-210.9 130.01l78.85 61.15c18.56-55.78 70.59-97.3 132.05-97.3z" fill="#ea4335"/><path d="M20 20h472v472H20V20z"/></g></svg>
+                <svg height="44" width="44" role="none"><use href="#grw-google"></use></svg>
                 <div class="wp-google-badge-score">
                     <div><?php echo __('Google Rating', 'widget-google-reviews'); ?></div>
                     <span class="wp-google-rating"><?php echo $business->rating; ?></span>
@@ -291,7 +308,7 @@ class View {
                 echo $this->grw_anchor($place->url, '', $place_name_content, $options, sprintf(__('%s place profile', 'widget-google-reviews'), $place->name)); ?>
             </div><?php
             }
-            $this->grw_place_rating($rating, $place->review_count, $options->hide_based_on);
+            $this->grw_place_rating($rating, $place->review_count, $options);
             if ($show_powered) {
                 $this->grw_powered();
             }
@@ -300,7 +317,7 @@ class View {
                 <?php echo $this->grw_anchor(
                     'https://search.google.com/local/writereview?placeid=' . $place->id,
                     '',
-                    __('review us on', 'widget-google-reviews') . '<svg viewBox="0 0 512 512" height="18" width="18" role="none"><g fill="none" fill-rule="evenodd"><path d="M482.56 261.36c0-16.73-1.5-32.83-4.29-48.27H256v91.29h127.01c-5.47 29.5-22.1 54.49-47.09 71.23v59.21h76.27c44.63-41.09 70.37-101.59 70.37-173.46z" fill="#4285f4"/><path d="M256 492c63.72 0 117.14-21.13 156.19-57.18l-76.27-59.21c-21.13 14.16-48.17 22.53-79.92 22.53-61.47 0-113.49-41.51-132.05-97.3H45.1v61.15c38.83 77.13 118.64 130.01 210.9 130.01z" fill="#34a853"/><path d="M123.95 300.84c-4.72-14.16-7.4-29.29-7.4-44.84s2.68-30.68 7.4-44.84V150.01H45.1C29.12 181.87 20 217.92 20 256c0 38.08 9.12 74.13 25.1 105.99l78.85-61.15z" fill="#fbbc05"/><path d="M256 113.86c34.65 0 65.76 11.91 90.22 35.29l67.69-67.69C373.03 43.39 319.61 20 256 20c-92.25 0-172.07 52.89-210.9 130.01l78.85 61.15c18.56-55.78 70.59-97.3 132.05-97.3z" fill="#ea4335"/><path d="M20 20h472v472H20V20z"/></g></svg>',
+                    __('review us on', 'widget-google-reviews') . '<svg height="18" width="18" role="none"><use href="#grw-google"></use></svg>',
                     $options,
                     __('review us on Google', 'widget-google-reviews'),
                     'return rplg_leave_review_window.call(this)'
@@ -311,13 +328,15 @@ class View {
         <?php
     }
 
-    function grw_place_rating($rating, $review_count, $hide_based_on) {
+    function grw_place_rating($rating, $review_count, $opts) {
+        $aria_label = isset($opts->aria_label) && $opts->aria_label ?
+            ' aria-label="' . sprintf(__('Rating: %s out of 5', 'widget-google-reviews'), $rating) . '"' : '';
         ?>
         <div>
-            <span class="wp-google-rating"><?php echo $rating; ?></span>
+            <span class="wp-google-rating"<?php echo $aria_label; ?>><?php echo $rating; ?></span>
             <span class="wp-google-stars"><?php $this->grw_stars($rating); ?></span>
         </div>
-        <?php if (!$hide_based_on && isset($review_count)) { ?>
+        <?php if (!$opts->hide_based_on && isset($review_count)) { ?>
         <div class="wp-google-based"><?php echo vsprintf(__('Based on %s reviews', 'widget-google-reviews'), $this->grw_array($review_count)); ?></div>
         <?php }
     }
@@ -410,8 +429,7 @@ class View {
         $addcls = $options->hide_backgnd ? "" : " grw-backgnd";
         $addcls .= $options->show_round ? " grw-round" : "";
         $addcls .= $options->show_shadow ? " grw-shadow" : "";
-        ?>
-        <div class="grw-review<?php if ($hr) { echo ' grw-hide'; } ?><?php if ($is_admin && $review->hide != '') { echo ' wp-review-hidden'; } ?>">
+        ?><div class="grw-review<?php if ($hr) { echo ' grw-hide'; } ?><?php if ($is_admin && $review->hide != '') { echo ' wp-review-hidden'; } ?>">
             <div class="grw-review-inner<?php echo $addcls; ?>">
                 <div class="wp-google-left">
                     <?php
@@ -429,8 +447,9 @@ class View {
                     $this->grw_image($author_avatar, '', $options->lazy_load_img, $default_avatar);
 
                     // Google reviewer name
-                    if (strlen($review->author_url) > 0) {
-                        $this->grw_anchor($review->author_url, 'wp-google-name', $review->author_name, $options, sprintf(__('%s user profile', 'widget-google-reviews'), $review->author_name));
+                    if (!empty($review->author_url) || !empty($review->url)) {
+                        $url = empty($review->author_url) ? $review->url : $review->author_url;
+                        $this->grw_anchor($url, 'wp-google-name', $review->author_name, $options, sprintf(__('%s user profile', 'widget-google-reviews'), $review->author_name));
                     } else {
                         if (strlen($review->author_name) > 0) {
                             $author_name = $review->author_name;
@@ -472,10 +491,13 @@ class View {
                 if ($is_admin) {
                     echo '<a href="#" class="wp-review-hide" data-id=' . $review->id . '>' . ($review->hide == '' ? 'hide' : 'show') . ' review</a>';
                 }
-                ?><svg viewBox="0 0 512 512" height="18" width="18" role="none"><g fill="none" fill-rule="evenodd"><path d="M482.56 261.36c0-16.73-1.5-32.83-4.29-48.27H256v91.29h127.01c-5.47 29.5-22.1 54.49-47.09 71.23v59.21h76.27c44.63-41.09 70.37-101.59 70.37-173.46z" fill="#4285f4"/><path d="M256 492c63.72 0 117.14-21.13 156.19-57.18l-76.27-59.21c-21.13 14.16-48.17 22.53-79.92 22.53-61.47 0-113.49-41.51-132.05-97.3H45.1v61.15c38.83 77.13 118.64 130.01 210.9 130.01z" fill="#34a853"/><path d="M123.95 300.84c-4.72-14.16-7.4-29.29-7.4-44.84s2.68-30.68 7.4-44.84V150.01H45.1C29.12 181.87 20 217.92 20 256c0 38.08 9.12 74.13 25.1 105.99l78.85-61.15z" fill="#fbbc05"/><path d="M256 113.86c34.65 0 65.76 11.91 90.22 35.29l67.69-67.69C373.03 43.39 319.61 20 256 20c-92.25 0-172.07 52.89-210.9 130.01l78.85 61.15c18.56-55.78 70.59-97.3 132.05-97.3z" fill="#ea4335"/><path d="M20 20h472v472H20V20z"/></g></svg>
-            </div>
-        </div>
-        <?php
+                $this->grw_provider($review);
+            ?></div>
+        </div><?php
+    }
+
+    function grw_provider($review) {
+        ?><svg height="18" width="18" role="none"><use href="#grw-<?php echo $review->provider; ?>"/></svg><?php
     }
 
     function grw_stars($rating) {
@@ -500,15 +522,15 @@ class View {
     }
 
     function star() {
-        ?><span class="wp-star"><svg width="17" height="17" viewBox="0 0 1792 1792" role="none"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg></span><?php
+        ?><span class="wp-star"><svg height="18" width="18" role="none"><use href="#grw-star"/></svg></span><?php
     }
 
     function star_h() {
-        ?><span class="wp-star"><svg width="17" height="17" viewBox="0 0 1792 1792" role="none"><path d="M1250 957l257-250-356-52-66-10-30-60-159-322v963l59 31 318 168-60-355-12-66zm452-262l-363 354 86 500q5 33-6 51.5t-34 18.5q-17 0-40-12l-449-236-449 236q-23 12-40 12-23 0-34-18.5t-6-51.5l86-500-364-354q-32-32-23-59.5t54-34.5l502-73 225-455q20-41 49-41 28 0 49 41l225 455 502 73q45 7 54 34.5t-24 59.5z" fill="#fb8e28"></path></svg></span><?php
+        ?><span class="wp-star"><svg height="18" width="18" role="none"><use href="#grw-star-h"/></svg></span><?php
     }
 
     function star_o() {
-        ?><span class="wp-star"><svg width="17" height="17" viewBox="0 0 1792 1792" role="none"><path d="M1201 1004l306-297-422-62-189-382-189 382-422 62 306 297-73 421 378-199 377 199zm527-357q0 22-26 48l-363 354 86 500q1 7 1 20 0 50-41 50-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#ccc"></path></svg></span><?php
+        ?><span class="wp-star"><svg height="18" width="18" role="none"><use href="#grw-star-o"/></svg></span><?php
     }
 
     function grw_anchor($url, $class, $text, $options, $aria_label = '', $onclick = '') {

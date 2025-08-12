@@ -46,3 +46,6 @@ msgstr "פרופיל המשתמש של %s"
 
 msgid "opens in a new window"
 msgstr "נפתח בחלון חדש"
+
+msgid "Rating: %s out of 5"
+msgstr "דירוג: %s מתוך 5"

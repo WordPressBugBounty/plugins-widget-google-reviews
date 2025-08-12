@@ -161,7 +161,7 @@
     right: 0;
     border: 2px solid #ccc;
     border-radius: 5px;
-    padding: 10px 12px;
+    padding: 16px;
     margin: 2px 0 0;
     z-index: 9999999;
     background: #fff;
@@ -1206,6 +1206,25 @@ img.grw-connect-photo {
     width: 18px;
     height: 18px;
     animation: grw-spin 4s infinite linear;
+}
+
+.grw_shortcode {
+    position: relative;
+}
+
+.grw_shortcode small {
+    visibility: hidden;
+    position: absolute;
+    left: 12px;
+    bottom: 0;
+    opacity: 1;
+    color: #12a908;
+}
+
+.grw_shortcode small.grw_hide {
+    visibility: visible;
+    opacity: 0;
+    transition: opacity 3s linear;
 }
 
 @keyframes grw-spin {

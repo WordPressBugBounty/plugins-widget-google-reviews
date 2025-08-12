@@ -44,10 +44,12 @@ class Database {
                "rating INTEGER NOT NULL,".
                "text VARCHAR(10000),".
                "time INTEGER NOT NULL,".
+               "url VARCHAR(255),".
                "language VARCHAR(10),".
                "author_name VARCHAR(255),".
                "author_url VARCHAR(127),".
                "profile_photo_url VARCHAR(255),".
+               "provider VARCHAR(32),".
                "images TEXT,".
                "reply TEXT,".
                "reply_time INTEGER,".

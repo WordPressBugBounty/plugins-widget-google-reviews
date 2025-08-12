@@ -46,3 +46,6 @@ msgstr "Профіль користувача %s"
 
 msgid "opens in a new window"
 msgstr "відкривається у новому вікні"
+
+msgid "Rating: %s out of 5"
+msgstr "Оцінка: %s з 5"

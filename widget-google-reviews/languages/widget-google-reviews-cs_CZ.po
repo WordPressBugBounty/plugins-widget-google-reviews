@@ -50,3 +50,6 @@ msgstr "Profil uživatele %s"
 
 msgid "opens in a new window"
 msgstr "otevře se v novém okně"
+
+msgid "Rating: %s out of 5"
+msgstr "Hodnocení: %s z 5"

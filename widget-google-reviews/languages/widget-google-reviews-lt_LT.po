@@ -49,3 +49,6 @@ msgstr "%s naudotojo profilis"
 
 msgid "opens in a new window"
 msgstr "atsidaro naujame lange"
+
+msgid "Rating: %s out of 5"
+msgstr "Įvertinimas: %s iš 5"

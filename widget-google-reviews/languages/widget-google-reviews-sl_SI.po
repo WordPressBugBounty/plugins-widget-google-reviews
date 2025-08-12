@@ -49,3 +49,6 @@ msgstr "Uporabniški profil %s"
 
 msgid "opens in a new window"
 msgstr "odpre se v novem oknu"
+
+msgid "Rating: %s out of 5"
+msgstr "Ocena: %s od 5"

@@ -49,3 +49,6 @@ msgstr "%s käyttäjäprofiili"
 
 msgid "opens in a new window"
 msgstr "avaa uudessa ikkunassa"
+
+msgid "Rating: %s out of 5"
+msgstr "Arvosana: %s / 5"

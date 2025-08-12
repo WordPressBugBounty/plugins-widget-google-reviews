@@ -46,3 +46,6 @@ msgstr "ໂປຣໄຟລ໌ຜູ້ໃຊ້ %s"
 
 msgid "opens in a new window"
 msgstr "ເປີດໃນປ່ອງໃໝ່"
+
+msgid "Rating: %s out of 5"
+msgstr "ຄະແນນ: %s ຈາກ 5"

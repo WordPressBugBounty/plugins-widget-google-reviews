@@ -231,6 +231,12 @@ class Google_Dao {
             $update_params['reply'] = $reply;
             $update_params['reply_time'] = $reply_time;
         }
+        if (isset($review->url)) {
+            $update_params['url'] = $review->url;
+        }
+        if (isset($review->provider)) {
+            $update_params['provider'] = $review->provider;
+        }
         $wpdb->update($wpdb->prefix . Database::REVIEW_TABLE, $update_params, array('id' => $db_review_id));
 
         array_push(
@@ -257,6 +263,8 @@ class Google_Dao {
             'author_name'       => $review->author_name,
             'author_url'        => isset($review->author_url) ? $review->author_url : null,
             'profile_photo_url' => $author_img,
+            'url'               => isset($review->url) ? $review->url : null,
+            'provider'          => isset($review->provider) ? $review->provider : null,
             'images'            => $images,
             'reply'             => $reply,
             'reply_time'        => $reply_time

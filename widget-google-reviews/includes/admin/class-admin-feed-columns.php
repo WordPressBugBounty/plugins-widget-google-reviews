@@ -42,11 +42,12 @@ class Admin_Feed_Columns {
     public function get_columns($columns) {
         $columns = $columns;
         $columns = array(
-            'cb'        => '<input type="checkbox">',
-            'title'     => __('Title', 'widget-google-reviews'),
-            'ID'        => __('ID',    'widget-google-reviews'),
-            'grw_theme' => __('Theme', 'widget-google-reviews'),
-            'date'      => __('Date',  'widget-google-reviews'),
+            'cb'            => '<input type="checkbox">',
+            'title'         => __('Title', 'widget-google-reviews'),
+            'ID'            => __('ID',    'widget-google-reviews'),
+            'grw_theme'     => __('Theme', 'widget-google-reviews'),
+            'grw_shortcode' => __('Shortcode', 'widget-google-reviews'),
+            'date'          => __('Date',  'widget-google-reviews'),
         );
         return $columns;
     }
@@ -75,6 +76,9 @@ class Admin_Feed_Columns {
                 break;
             case 'grw_theme':
                 echo isset($connection->options->view_mode) ? self::$plugin_themes[$connection->options->view_mode] : 'List';
+                break;
+            case 'grw_shortcode':
+                echo '<input type="text" value="[grw id=' . $feed->ID . ']" onclick="this.select(); document.execCommand(\'copy\');var sm=this.nextSibling;sm.className=\'\';setTimeout(function() {sm.className=\'grw_hide\';},10);" readonly=""><small>shortcode copied</small>';
                 break;
         }
     }

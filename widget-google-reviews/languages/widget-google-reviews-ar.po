@@ -46,3 +46,6 @@ msgstr "ملف المستخدم %s"
 
 msgid "opens in a new window"
 msgstr "يفتح في نافذة جديدة"
+
+msgid "Rating: %s out of 5"
+msgstr "التقييم: %s من 5"
