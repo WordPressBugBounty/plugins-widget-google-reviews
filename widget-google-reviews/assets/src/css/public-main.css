@@ -154,10 +154,7 @@
 .wp-gr .wp-star svg {
     width: 18px!important;
     height: 18px!important;
-    vertical-align: middle!important
-}
-
-.wp-gr .wp-star svg path {
+    vertical-align: middle!important;
     fill: var(--star-color, #fb8e28);
 }
 

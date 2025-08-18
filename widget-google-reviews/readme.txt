@@ -4,7 +4,7 @@ Tags: google, reviews, google reviews, google places reviews, rating
 Requires at least: 3.0.1
 Requires PHP: 7.2
 Tested up to: 6.8
-Stable tag: 6.3
+Stable tag: 6.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,12 +70,16 @@ Email support in English is also available on weekdays: support@richplugins.com
 
 == Roadmap ==
 
-= 6.4 =
+= 6.5 =
 * New feature: minimal rating layout (rating, stars and total reviews)
 * New feature: possibility to hide (or delete) the connected place to exclude from Overview page
 * Improve: adapt review connection modal for mobile devices
 
 == Changelog ==
+
+= 6.4 =
+* Improve: Show IP address on the Settings page for API key restriction
+* Bugfix: Fixed wrong color of star icon
 
 = 6.3 =
 * Improve: Added support for hotels in Google connection

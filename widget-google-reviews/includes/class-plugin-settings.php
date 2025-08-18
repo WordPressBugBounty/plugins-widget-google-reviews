@@ -140,8 +140,19 @@ class Plugin_Settings {
                             <div class="wp-review-field-option">
                                 <input type="text" id="grw_google_api_key" name="grw_google_api_key" class="regular-text" value="<?php echo esc_attr($grw_google_api_key); ?>">
                                 <?php if (!$grw_google_api_key && time() - $grw_activation_time > 60 * 60 * 48) { ?>
-                                <div class="grw-warn">Your Google API key is not set for this reason, reviews are not automatically updated daily.<br>Please create your own Google API key and save here.</div>
-                                <?php } ?>
+                                <div class="grw-warn">Your Google API key is not set for this reason, reviews are not automatically updated daily.<br>Please create your own Google API key and save here.</div><?php
+                                } elseif ($grw_google_api_key) {
+                                    $response = wp_remote_get('http://ip6.me/api/');
+                                    if (is_array($response) && !is_wp_error($response)) {
+                                        $body = wp_remote_retrieve_body($response);
+                                        if (!empty($body)) {
+                                            $parts = explode(',', $body);
+                                            if (count($parts) > 1) {
+                                                ?><p>If you wish to restrict your API key, please use <b>Application restrictions</b> - <b>IP addresses</b> and add the IP address: <b><u><?php echo $parts[1]; ?></u></b></p><?php
+                                            }
+                                        }
+                                    }
+                                } ?>
                                 <p>Google API key is required to automatically update and fetch new reviews.<br>With your own API key, there's no limit to collecting reviews, you can connect more than 10 and collect them daily.</p>
                                 <p>After you created your own API key, it's required to add your bank card to confirm usage of this Key.<br>Please do not worry <b>Google gives 1000 free API requests monthly</b> and<br>it's enough for automatically updated up to 2-3 connected your Google places.</p>
                                 <p>Here is extrimy complete guide on <a href="<?php echo admin_url('admin.php?page=grw-support&grw_tab=fig#fig_api_key'); ?>" target="_blank">how to create your own API key</a>.</p>
