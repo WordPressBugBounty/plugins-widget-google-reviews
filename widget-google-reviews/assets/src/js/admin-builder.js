@@ -919,7 +919,13 @@ function grw_connection_add($, el, conn, checked, append) {
     var connected_id = grw_connection_id(conn),
         connected_el = $('#' + connected_id);
 
-    if (!connected_el.length) {
+    if (connected_el.length && conn.props && conn.props.map_url) {
+        let propsEl = connected_el.children().eq(1);
+        let mapUrlEl = $('input[name="map_url"]', propsEl);
+        if (!mapUrlEl.length) {
+            propsEl.prepend('<input type="hidden" name="map_url" value="' + conn.props.map_url + '" class="grw-connect-prop" readonly="">');
+        }
+    } else {
         connected_el = $('<div class="grw-connection"></div>')[0];
         connected_el.id = connected_id;
         if (conn.lang != undefined) {
@@ -993,10 +999,22 @@ function grw_connection_add($, el, conn, checked, append) {
 }
 
 function grw_reconnect($, el, conn) {
-    window.grw_save.disabled = true;
-    window.grw_save.innerText = 'Updating...';
     if (window.gpidc) {
-        window.gpidc.contentWindow.postMessage({params: conn, action: 'connect'}, '*');
+        if (conn.props && !conn.props.map_url) {
+            if (conn.lang) {
+                window.gpidc.src = window.gpidc.src.replace(/&lang=.+/, '&lang=' + conn.lang);
+            }
+            $('#grw-connect-wizard').dialog({
+                title: 'Please copy & paste Google map URL for this location in the field below and click Connect button to refresh reviews',
+                modal: true,
+                width: '50%',
+                maxWidth: '600px'
+            });
+        } else {
+            window.grw_save.disabled = true;
+            window.grw_save.innerText = 'Updating...';
+            window.gpidc.contentWindow.postMessage({params: conn, action: 'connect'}, '*');
+        }
     } else {
         grw_connect_ajax($, el, conn, null, 1);
     }

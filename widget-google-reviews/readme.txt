@@ -1,10 +1,10 @@
-=== Widgets for Google Reviews ===
+=== Rich Shortcodes for Google Reviews ===
 Contributors: widgetpack
 Tags: google, reviews, google reviews, google places reviews, rating
 Requires at least: 3.0.1
 Requires PHP: 7.2
 Tested up to: 6.8
-Stable tag: 6.4
+Stable tag: 6.4.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,6 +76,11 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: adapt review connection modal for mobile devices
 
 == Changelog ==
+
+= 6.4.1 =
+* Improve: Ask map URL for reviews update if missing
+* Improve: Updated plugin name
+* Improve: Updated translations
 
 = 6.4 =
 * Improve: Show IP address on the Settings page for API key restriction

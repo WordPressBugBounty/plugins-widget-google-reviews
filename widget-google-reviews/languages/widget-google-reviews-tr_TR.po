@@ -26,6 +26,12 @@ msgstr "Devamını Oku"
 msgid "More reviews"
 msgstr "Diğer Değerlendirmeler"
 
+msgid "Based on %s reviews"
+msgstr "%s yoruma göre"
+
+msgid "review us on"
+msgstr "bizi değerlendir"
+
 msgid "review us on Google"
 msgstr "Bizi Google'da değerlendirin"
 
