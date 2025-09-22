@@ -76,14 +76,15 @@ class Google_Connect {
                     }
                 }
 
-                $pid = sanitize_text_field(wp_unslash($_POST['id']));
                 $lang = sanitize_text_field(wp_unslash($_POST['lang']));
                 $local_img = sanitize_text_field(wp_unslash($_POST['local_img']));
                 $key = get_option('grw_google_api_key');
 
                 if ($key && strlen($key) > 0) {
 
+                    $pid = sanitize_text_field(wp_unslash($_POST['id']));
                     $gpa_old = get_option('grw_gpa_old');
+
                     if ($gpa_old === 'true') {
                         $response = $this->api_old->connect($pid, $lang, $key, $local_img);
                     } else {
@@ -91,21 +92,24 @@ class Google_Connect {
                     }
 
                 } else {
+
+                    $url = sanitize_url(wp_unslash($_POST['url']));
                     $token = isset($_POST['token']) ? sanitize_text_field(wp_unslash($_POST['token'])) : null;
+
                     if (strlen($token) > 0) {
                         $siteurl = get_option('siteurl');
                         $authcode = get_option('grw_auth_code');
-                        $url = 'https://app.richplugins.com/gpaw2/get/json?' .
-                               'pid=' . $pid . '&token=' . $token .
-                               '&siteurl=' . $siteurl . '&authcode=' . $authcode .
-                               ($lang && strlen($lang) > 0 ? '&lang=' . $lang : '');
-
-                        if (isset($_POST['map_url'])) {
-                            $map_url = sanitize_text_field(wp_unslash($_POST['map_url']));
-                            $url .= ('&map_url=' . rawurlencode($map_url));
+                        $app_url = 'https://app.richplugins.com/connect/reviews/json';
+                        $args = [
+                            'url'      => $url,
+                            'token'    => $token,
+                            'siteurl'  => $siteurl,
+                            'authcode' => $authcode
+                        ];
+                        if ($lang && strlen($lang) > 0) {
+                            $args['lang'] = $lang;
                         }
-
-                        $response = $this->api_old->call($url, null, $local_img);
+                        $response = $this->api_old->post($app_url, $args, null, $local_img);
                     }
                 }
 
@@ -155,13 +159,14 @@ class Google_Connect {
             } else {
                 check_admin_referer('grw_wpnonce', 'grw_nonce');
 
-                $pid = sanitize_text_field(wp_unslash($_POST['pid']));
                 $lang = isset($_POST['lang']) ? sanitize_text_field(wp_unslash($_POST['lang'])) : null;
                 $key = get_option('grw_google_api_key');
 
                 if ($key && strlen($key) > 0) {
 
+                    $pid = sanitize_text_field(wp_unslash($_POST['pid']));
                     $gpa_old = get_option('grw_gpa_old');
+
                     if ($gpa_old === 'true') {
                         $response = $this->api_old->place($pid, $lang, $key);
                     } else {
@@ -169,17 +174,24 @@ class Google_Connect {
                     }
 
                 } else {
+
+                    $url = sanitize_url(wp_unslash($_POST['url']));
                     $token = isset($_POST['token']) ? sanitize_text_field(wp_unslash($_POST['token'])) : null;
+
                     if (strlen($token) > 0) {
                         $siteurl = get_option('siteurl');
                         $authcode = get_option('grw_auth_code');
-
-                        $url = 'https://app.richplugins.com/gpaw2/place/json?' .
-                               'pid=' . $pid . '&token=' . $token .
-                               '&siteurl=' . $siteurl . '&authcode=' . $authcode .
-                               ($lang && strlen($lang) > 0 ? '&lang=' . $lang : '');
-
-                        $response = $this->api_old->call($url, null, $local_img, false);
+                        $app_url = 'https://app.richplugins.com/connect/place/json';
+                        $args = [
+                            'url'      => $url,
+                            'token'    => $token,
+                            'siteurl'  => $siteurl,
+                            'authcode' => $authcode
+                        ];
+                        if ($lang && strlen($lang) > 0) {
+                            $args['lang'] = $lang;
+                        }
+                        $response = $this->api_old->post($app_url, $args, null, false, false);
                     }
                 }
             }

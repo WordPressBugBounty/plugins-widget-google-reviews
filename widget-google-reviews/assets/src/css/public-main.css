@@ -1,6 +1,9 @@
 .wp-gr {
     --rev-gap: 4px;
     --rev-padding: 4px;
+    --media-gap: 8px;
+    --media-size: 40px;
+    --media-lines: 2;
 }
 
 .wp-gr .wp-google-badge {
@@ -872,13 +875,15 @@
 .wp-gr .wp-google-img {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: var(--media-gap);
+    max-height: calc(var(--media-size) * var(--media-lines) + var(--media-gap) * var(--media-lines) - 2px) !important;
+    overflow-y: auto !important;
 }
 
 .wp-gr .wp-google-img img {
     display: flex;
-    width: 40px !important;
-    height: 40px !important;
+    width: var(--media-size) !important;
+    height: var(--media-size) !important;
     cursor: pointer !important;
     border-radius: 3px !important;
     box-shadow: 0 0 2px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .24) !important;

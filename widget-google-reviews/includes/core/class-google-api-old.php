@@ -38,8 +38,17 @@ class Google_Api_Old {
         return $result;
     }
 
+    public function post($url, $args = [], $key = null, $local_img = false, $db_save = true) {
+        $res = wp_remote_post($url, ['body' => $args]);
+        return $this->save($res, $key, $local_img, $db_save);
+    }
+
     public function call($url, $key = null, $local_img = false, $db_save = true) {
         $res = wp_remote_get($url);
+        return $this->save($res, $key, $local_img, $db_save);
+    }
+
+    private function save($res, $key = null, $local_img = false, $db_save = true) {
         $body = wp_remote_retrieve_body($res);
         $json = json_decode($body);
 

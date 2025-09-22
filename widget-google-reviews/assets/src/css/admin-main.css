@@ -457,11 +457,11 @@
     height: 24px;
 }
 
-.grw-rate_us-body .wp-star svg path {
+.grw-rate_us-body .wp-star svg use {
     fill: #fa8e08;
 }
 
-.grw-rate_us-body .wp-star:hover ~ .wp-star svg path {
+.grw-rate_us-body .wp-star:hover ~ .wp-star svg use {
     fill: #ccc;
 }
 
@@ -1027,7 +1027,8 @@ img.grw-connect-photo {
 
 .grw-connect-error {
   color: #e60909;
-  font-size: 13px;
+  font-size: 16px;
+  line-height: 26px;
 }
 
 .grw-connection-checkbox {

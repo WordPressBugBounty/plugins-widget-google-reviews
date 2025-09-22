@@ -257,7 +257,7 @@ jQuery(document).ready(function($) {
                     common.init();
 
                     $('.wp-review-hide', $reviews).unbind('click').click(function() {
-                        grw_review_hide($(this));
+                        grw_review_hide_global($(this));
                         return false;
                     });
 

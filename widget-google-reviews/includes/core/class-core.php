@@ -53,6 +53,7 @@ class Core {
             'google_def_rev_link'       => false,
             'reviewer_avatar_size'      => 56,
             'reviews_limit'             => '',
+            'hidden'                    => '',
             'cache'                     => 12,
         );
     }
@@ -106,124 +107,98 @@ class Core {
         return $data;
     }
 
+    private function get_ops($connection) {
+        foreach ($this->get_default_options() as $field => $value) {
+            $connection->options->{$field} = isset($connection->options->{$field}) ? esc_attr($connection->options->{$field}) : $value;
+        }
+        return $connection->options;
+    }
+
     public function get_data($connection, $is_admin = false) {
 
         if ($connection == null) {
             return null;
         }
 
-        foreach ($this->get_default_options() as $field => $value) {
-            $connection->options->{$field} = isset($connection->options->{$field}) ? esc_attr($connection->options->{$field}) : $value;
-        }
-        $options = $connection->options;
+        $options = $this->get_ops($connection);
+
+        $biz = array();
+        $reviews = array();
 
         if (isset($connection->connections) && is_array($connection->connections)) {
-            $google_business = null;
             foreach ($connection->connections as $conn) {
                 switch ($conn->platform) {
-                    case 'google':
-                        if (!$google_business) $google_business = array();
-                        array_push($google_business, $conn);
-                        break;
+                    case 'facebook':
+                        // TODO
+                        // break;
+                    default:
+                        $result = $this->get_db_reviews($conn, $options, $is_admin);
+                        if (!$options->header_hide_social) {
+                            array_push($biz, $result['business']);
+                        }
+                        if (!$options->hide_reviews) {
+                            $reviews = array_merge($reviews, $result['reviews']);
+                        }
                 }
             }
-        } else {
-            $google_business = isset($connection->google) ? $connection->google : null;
         }
 
-        $google_biz = array();
-        $google_reviews = array();
+        usort($reviews, array($this, 'sort_recent'));
 
-        if ($google_business != null) {
-            foreach ($google_business as $biz) {
-                $result = $this->get_google_reviews($biz, $options, $is_admin);
-                array_push($google_biz, $result['business']);
-                $google_reviews = array_merge($google_reviews, $result['reviews']);
-            }
+        // Trim reviews limit
+        if ($options->reviews_limit > 0) {
+            $reviews = array_slice($reviews, 0, $options->reviews_limit);
         }
 
-        $social_biz = array();
-        if ($options->header_merge_social) {
-            if (count($google_biz) > 0) {
-                array_push($social_biz, $this->merge_biz($google_biz));
-            }
-        } else {
-            $social_biz = array_merge($google_biz);
-        }
-
-        $businesses = array();
-        if (!$options->header_hide_social) {
-            $businesses = $social_biz;
-        }
-
-        $reviews = array();
-        if (!$options->hide_reviews) {
-
-            $revs = array();
-            if (count($google_reviews) > 0) {
-                array_push($revs, $google_reviews);
-            }
-
-            // Sorting
-            while (count($revs) > 0) {
-                foreach ($revs as $i => $value) {
-                    $review = array_shift($revs[$i]);
-                    if (strlen($review->text) > 0) {
-                        $review->text = nl2br($review->text);
-                    }
-                    array_push($reviews, $review);
-                    if (count($revs[$i]) < 1) {
-                        unset($revs[$i]);
-                    }
-                }
-            }
-
-            // Normalize reviews array indexes after unset filter above
-            $reviews = array_values($reviews);
-
-            // Trim reviews limit
-            if ($options->reviews_limit > 0) {
-                $reviews = array_slice($google_reviews, 0, $options->reviews_limit);
-            }
-        }
-
-        return array('businesses' => $businesses, 'reviews' => $reviews, 'options' => $options);
+        return array('businesses' => $biz, 'reviews' => $reviews, 'options' => $options);
     }
 
-    public function get_google_reviews($google_biz, $options, $is_admin = false) {
+    public function get_db_reviews($biz, $options, $is_admin = false) {
         global $wpdb;
 
         $rating = 0;
         $review_count = 0;
         $reviews = [];
 
-        // Get Google place
+        // Get place
         $place = $wpdb->get_row(
             $wpdb->prepare(
                 "SELECT * FROM " . $wpdb->prefix . Database::BUSINESS_TABLE .
-                " WHERE place_id = %s", $google_biz->id
+                " WHERE place_id = %s", $biz->id
             )
         );
 
         if ($place) {
 
-            // Get Google reviews
+            // Get reviews
+            $reviews_params = [$place->id];
+
             $reviews_where = $is_admin ? '' : ' AND hide = \'\'';
 
-            $reviews_lang = strlen($google_biz->lang) > 0 ? $google_biz->lang : 'en';
-            $reviews_where = $reviews_where . ' AND (language = \'' . $reviews_lang . '\' OR language = \'\' OR language IS NULL)';
+            if (isset($options->hidden) && !$is_admin) {
+                $hidden_ids = $this->parse_hidden_ids($options->hidden);
+                if (!empty($hidden_ids)) {
+                    $hidden_phs     = implode(',', array_fill(0, count($hidden_ids), '%d'));
+                    $reviews_where .= ' AND id NOT IN (' . $hidden_phs . ')';
+                    $reviews_params = array_merge($reviews_params, $hidden_ids);
+                }
+            }
+
+            $reviews_lang = empty($biz->lang) ? 'en' : $biz->lang;
+            $reviews_where .= ' AND (language = %s OR language = \'\' OR language IS NULL)';
+            $reviews_params[] = $reviews_lang;
 
             $reviews = $wpdb->get_results(
                 $wpdb->prepare(
                     "SELECT * FROM " . $wpdb->prefix . Database::REVIEW_TABLE .
-                    " WHERE google_place_id = %d" . $reviews_where . " ORDER BY time DESC", $place->id
+                    " WHERE google_place_id = %d" . $reviews_where . " ORDER BY time DESC", $reviews_params
                 )
             );
 
-            // Setup Google photo
-            $place->photo = strlen($google_biz->photo) > 0 ? $google_biz->photo : (strlen($place->photo) > 0 ? $place->photo : GRW_GOOGLE_BIZ);
+            // Setup photo
+            $place->photo = strlen($biz->photo) > 0 ? $biz->photo : (strlen($place->photo) > 0 ? $place->photo : GRW_GOOGLE_BIZ);
 
-            // Calculate Google reviews count
+            // Calculate reviews count
             if (isset($place->review_count) && $place->review_count > 0) {
                 $review_count = $place->review_count;
             } else {
@@ -235,7 +210,7 @@ class Core {
                 );
             }
 
-            // Calculate Google rating
+            // Calculate rating
             $rating = 0;
             if ($place->rating > 0) {
                 $rating = $place->rating;
@@ -250,8 +225,8 @@ class Core {
 
         $business = json_decode(json_encode(
             array(
-                'id'                  => $google_biz->id,
-                'name'                => $google_biz->name ? $google_biz->name : $place->name,
+                'id'                  => $biz->id,
+                'name'                => $biz->name ? $biz->name : $place->name,
                 'url'                 => isset($place->url) ? $place->url : null,
                 'photo'               => isset($place->photo) ? $place->photo : GRW_GOOGLE_BIZ,
                 'address'             => isset($place->address) ? $place->address : null,
@@ -266,14 +241,15 @@ class Core {
             if (isset($options->min_letter) && isset($rev->text) && strlen($rev->text) < $options->min_letter) {
                 continue;
             }
+            $text = isset($rev->text) && strlen($rev->text) > 0 ? nl2br(wp_encode_emoji($rev->text)) : null;
             $review = json_decode(json_encode(
                 array(
                     'id'            => $rev->id,
                     'hide'          => $rev->hide,
-                    'biz_id'        => $google_biz->id,
+                    'biz_id'        => $biz->id,
                     'biz_url'       => $place->url,
                     'rating'        => $rev->rating,
-                    'text'          => wp_encode_emoji($rev->text),
+                    'text'          => $text,
                     'author_avatar' => $rev->profile_photo_url,
                     'author_url'    => $rev->author_url,
                     'author_name'   => isset($options->short_last_name) && $options->short_last_name ?
@@ -454,6 +430,32 @@ class Core {
             }
         }
         return $author_name;
+    }
+
+    private function sort_recent($a, $b) {
+        return $b->time - $a->time;
+    }
+
+    private function parse_hidden_ids($input) {
+        $ids = array();
+        if (empty($input)) {
+            return $ids;
+        }
+        if (is_string($input)) {
+            $parts = preg_split('/\s*,\s*/', $input, -1, PREG_SPLIT_NO_EMPTY);
+        } elseif (is_array($input)) {
+            $parts = $input;
+        } else {
+            return $ids;
+        }
+        foreach ($parts as $p) {
+            $val = intval($p);
+            if ($val > 0) {
+                $ids[] = $val;
+            }
+        }
+        $ids = array_values(array_unique($ids));
+        return $ids;
     }
 
     private function _strlen($str) {

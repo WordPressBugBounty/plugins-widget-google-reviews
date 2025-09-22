@@ -377,12 +377,13 @@ const GRW_HTML_CONTENT =
                 'Reviews limit' +
                 '<input type="text" name="reviews_limit" value="">' +
             '</div>' +
+            '<input type="hidden" id="hidden_ids" name="hidden" value="">' +
         '</div>' +
 
     '</div>';
 
 const GRW_WIZARD =
-    '<iframe id="gpidc" src="https://app.richplugins.com/gpidc?authcode={{authcode}}&lang={{lang}}" style="width:100%;height:400px"></iframe>' +
+    '<iframe id="gpidc" src="https://app.richplugins.com/connect?authcode={{authcode}}&lang={{lang}}" style="width:100%;height:400px"></iframe>' +
     '<small class="grw-connect-error"></small>';
 
 const GRW_WIZARD2 =
@@ -788,7 +789,24 @@ function grw_feed_save_ajax() {
 }
 
 function grw_review_hide($this) {
+    let id = $this.attr('data-id'),
+        hids = window.hidden_ids.value;
+    if (hids) {
+        hids = hids.split(',');
+        let idx = hids.indexOf(id);
+        if (idx < 0) {
+            hids.push(id);
+        } else {
+            hids.splice(idx, 1);
+        }
+    } else {
+        hids = [id];
+    }
+    window.hidden_ids.value = hids.join(',');
+    grw_serialize_connections();
+}
 
+function grw_review_hide_global($this) {
     jQuery.post(ajaxurl, {
 
         id          : $this.attr('data-id'),
@@ -819,6 +837,7 @@ function grw_connect_ajax($, el, params, authcode, attempt, cb) {
 
     const args = {
         id          : decodeURIComponent(params.id),
+        url         : params.url,
         lang        : params.lang,
         local_img   : local_img,
         token       : params.token,
@@ -827,9 +846,6 @@ function grw_connect_ajax($, el, params, authcode, attempt, cb) {
         action      : 'grw_connect_google',
         v           : new Date().getTime()
     };
-    if (params.props && params.props.map_url) {
-        args.map_url = params.props.map_url;
-    }
 
     $.post(ajaxurl, args, function(res) {
 
@@ -866,14 +882,20 @@ function grw_connect_ajax($, el, params, authcode, attempt, cb) {
             grw_serialize_connections();
 
         } else {
-            grw_connect_error($, grw_get_error(res), function() {
-                if (attempt > 1) return;
-                if (window.gpidc) {
-                    grw_popup('https://app.richplugins.com/gpaw/botcheck?authcode=' + authcode, 640, 480, function() {
-                        window.gpidc.contentWindow.postMessage({params: params, action: 'connect'}, '*');
-                    });
-                }
-            });
+            let err = grw_get_error(res);
+
+            if (params.event === 'refresh' && err.indexOf('The place you are trying to connect to does not have a rating yet') > -1) {
+                grw_show_wizard($, 'It seems connection lost, please try to reconnect your Google reviews again', params.lang);
+            } else {
+                grw_connect_error($, err, function() {
+                    if (attempt > 1) return;
+                    if (window.gpidc) {
+                        grw_popup('https://app.richplugins.com/gpaw/botcheck?authcode=' + authcode, 640, 480, function() {
+                            window.gpidc.contentWindow.postMessage({params: params, action: 'connect'}, '*');
+                        });
+                    }
+                });
+            }
         }
 
         cb && cb(res);
@@ -922,10 +944,11 @@ function grw_connection_add($, el, conn, checked, append) {
     if (connected_el.length && conn.props && conn.props.map_url) {
         let propsEl = connected_el.children().eq(1);
         let mapUrlEl = $('input[name="map_url"]', propsEl);
-        if (!mapUrlEl.length) {
-            propsEl.prepend('<input type="hidden" name="map_url" value="' + conn.props.map_url + '" class="grw-connect-prop" readonly="">');
+        if (mapUrlEl.length) {
+            mapUrlEl.remove();
         }
-    } else {
+        propsEl.prepend('<input type="hidden" name="map_url" value="' + conn.props.map_url + '" class="grw-connect-prop" readonly="">');
+    } else if (!connected_el.length) {
         connected_el = $('<div class="grw-connection"></div>')[0];
         connected_el.id = connected_id;
         if (conn.lang != undefined) {
@@ -1001,16 +1024,10 @@ function grw_connection_add($, el, conn, checked, append) {
 function grw_reconnect($, el, conn) {
     if (window.gpidc) {
         if (conn.props && !conn.props.map_url) {
-            if (conn.lang) {
-                window.gpidc.src = window.gpidc.src.replace(/&lang=.+/, '&lang=' + conn.lang);
-            }
-            $('#grw-connect-wizard').dialog({
-                title: 'Please copy & paste Google map URL for this location in the field below and click Connect button to refresh reviews',
-                modal: true,
-                width: '50%',
-                maxWidth: '600px'
-            });
+            grw_show_wizard($, '', conn.lang);
         } else {
+            conn.event = 'refresh';
+            conn.url = conn.props.map_url;
             window.grw_save.disabled = true;
             window.grw_save.innerText = 'Updating...';
             window.gpidc.contentWindow.postMessage({params: conn, action: 'connect'}, '*');
@@ -1018,6 +1035,18 @@ function grw_reconnect($, el, conn) {
     } else {
         grw_connect_ajax($, el, conn, null, 1);
     }
+}
+
+function grw_show_wizard($, title, lang) {
+    if (lang) {
+        window.gpidc.src = window.gpidc.src.replace(/&lang=.+/, '&lang=' + lang);
+    }
+    $('#grw-connect-wizard').dialog({
+        title: title || 'Please copy & paste Google map URL for this location in the field below and click Connect button to refresh reviews',
+        modal: true,
+        width: '50%',
+        maxWidth: '600px'
+    });
 }
 
 function grw_connection_id(conn) {

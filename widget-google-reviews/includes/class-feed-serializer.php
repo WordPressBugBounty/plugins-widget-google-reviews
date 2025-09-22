@@ -38,11 +38,41 @@ class Feed_Serializer {
         $post_id = wp_insert_post(array(
             'ID'           => sanitize_text_field(wp_unslash($post_id)),
             'post_title'   => sanitize_text_field(wp_unslash($title)),
-            'post_content' => sanitize_text_field(wp_unslash($content)),
+            'post_content' => $this->sanitize_json(wp_unslash($content)),
             'post_type'    => Post_Types::FEED_POST_TYPE,
             'post_status'  => 'publish',
         ));
         return $post_id;
     }
 
+    function sanitize_json($json) {
+        $arr = json_decode($json, true, 512, JSON_INVALID_UTF8_SUBSTITUTE);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            // TODO: log
+            return false;
+        }
+
+        $this->sanitize_json_recurs($arr);
+        return wp_json_encode($arr, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
+
+    function sanitize_json_recurs(&$input) {
+        if (!is_array($input)) return;
+
+        foreach ($input as $key => &$value) {
+            if (is_array($value)) {
+                $this->sanitize_json_recurs($value);
+                continue;
+            }
+
+            if (is_string($key) && is_string($value)) {
+                if (stripos($key, 'url') !== false) {
+                    $value = esc_url_raw($value);
+                } else {
+                    $value = sanitize_textarea_field($value);
+                }
+            }
+        }
+        unset($value);
+    }
 }

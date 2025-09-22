@@ -426,11 +426,13 @@ class View {
     }
 
     function grw_slider_review($review, $hr, $options, $is_admin = false) {
-        $addcls = $options->hide_backgnd ? "" : " grw-backgnd";
-        $addcls .= $options->show_round ? " grw-round" : "";
-        $addcls .= $options->show_shadow ? " grw-shadow" : "";
-        ?><div class="grw-review<?php if ($hr) { echo ' grw-hide'; } ?><?php if ($is_admin && $review->hide != '') { echo ' wp-review-hidden'; } ?>">
-            <div class="grw-review-inner<?php echo $addcls; ?>">
+        $cls = $hr ? ' grw-hide' : '';
+        $cls .= $is_admin && ($review->hide != '' || (isset($options->hidden) && $this->is_hidden($review->id, $options->hidden))) ? ' wp-review-hidden' : '';
+        $inr_cls = $options->hide_backgnd ? "" : " grw-backgnd";
+        $inr_cls .= $options->show_round ? " grw-round" : "";
+        $inr_cls .= $options->show_shadow ? " grw-shadow" : "";
+        ?><div class="grw-review<?php echo $cls; ?>">
+            <div class="grw-review-inner<?php echo $inr_cls; ?>">
                 <div class="wp-google-left">
                     <?php
                     // Google reviewer avatar
@@ -494,6 +496,11 @@ class View {
                 $this->grw_provider($review);
             ?></div>
         </div><?php
+    }
+
+    function is_hidden($id, $hidden) {
+        $ids = array_map('intval', explode(',', $hidden));
+        return in_array((int)$id, $ids, true);
     }
 
     function grw_provider($review) {
