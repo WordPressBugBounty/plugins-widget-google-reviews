@@ -87,11 +87,13 @@ function grw_init(el, layout) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+function grw_boot() {
     const els = document.querySelectorAll('.wp-gr[data-exec="false"]');
     for (let i = 0; i < els.length; i++) {
         (function(elem) {
             grw_init(elem, elem.getAttribute('data-layout'));
         })(els[i]);
     }
-});
+}
+
+document.addEventListener('DOMContentLoaded', grw_boot);

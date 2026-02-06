@@ -45,7 +45,15 @@ class Settings_Save {
 
         if (isset($_POST['save'])) {
             $notice_code = 'settings_save';
-            $fields = array('grw_async_css', 'grw_demand_assets', 'grw_freq_revs_upd', 'grw_gpa_old', 'grw_google_api_key');
+            $fields = array(
+                'grw_async_css',
+                'grw_demand_assets',
+                'grw_rucss_safelist',
+                'grw_inlinecss_off',
+                'grw_freq_revs_upd',
+                'grw_gpa_old',
+                'grw_google_api_key'
+            );
             foreach ($fields as $field) {
 
                 if (isset($_POST[$field])) {

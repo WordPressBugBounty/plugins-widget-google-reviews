@@ -93,15 +93,16 @@ class Google_Connect {
 
                 } else {
 
-                    $url = sanitize_url(wp_unslash($_POST['url']));
-                    $token = isset($_POST['token']) ? sanitize_text_field(wp_unslash($_POST['token'])) : null;
+                    $pid = sanitize_text_field(wp_unslash($_POST['id']));
+                    $lang = empty($_POST['lang']) ? null : sanitize_text_field(wp_unslash($_POST['lang']));
+                    $token = empty($_POST['token']) ? null : sanitize_text_field(wp_unslash($_POST['token']));
 
                     if (strlen($token) > 0) {
                         $siteurl = get_option('siteurl');
                         $authcode = get_option('grw_auth_code');
-                        $app_url = 'https://app.richplugins.com/connect/reviews/json';
+                        $app_url = 'https://app.richplugins.com/public/connect/reviews';
                         $args = [
-                            'url'      => $url,
+                            'input'    => $pid,
                             'token'    => $token,
                             'siteurl'  => $siteurl,
                             'authcode' => $authcode
@@ -175,15 +176,16 @@ class Google_Connect {
 
                 } else {
 
-                    $url = sanitize_url(wp_unslash($_POST['url']));
-                    $token = isset($_POST['token']) ? sanitize_text_field(wp_unslash($_POST['token'])) : null;
+                    $pid = sanitize_text_field(wp_unslash($_POST['pid']));
+                    $lang = empty($_POST['lang']) ? null : sanitize_text_field(wp_unslash($_POST['lang']));
+                    $token = empty($_POST['token']) ? null : sanitize_text_field(wp_unslash($_POST['token']));
 
                     if (strlen($token) > 0) {
                         $siteurl = get_option('siteurl');
                         $authcode = get_option('grw_auth_code');
-                        $app_url = 'https://app.richplugins.com/connect/place/json';
+                        $app_url = 'https://app.richplugins.com/connector/place/json';
                         $args = [
-                            'url'      => $url,
+                            'pid'      => $pid,
                             'token'    => $token,
                             'siteurl'  => $siteurl,
                             'authcode' => $authcode

@@ -38,17 +38,19 @@ class Activator {
             'grw_last_error',
             'rplg_rev_notice_show',
             'grw_rate_us',
+            'grw_inlinecss_off',
+            'grw_rucss_safelist',
         );
     }
 
     public function register() {
         add_action('init', array($this, 'init'));
-        add_filter('https_ssl_verify', '__return_false');
-        add_filter('block_local_requests', '__return_false');
     }
 
     public function init() {
-        $this->check_version();
+        if (is_admin()) {
+            $this->check_version();
+        }
     }
 
     public function check_version() {
@@ -75,9 +77,12 @@ class Activator {
         $site_ids = $wpdb->get_col("SELECT blog_id FROM $wpdb->blogs");
 
         foreach($site_ids as $site_id) {
-            switch_to_blog($site_id);
-            $this->activate_single_site();
-            restore_current_blog();
+            try {
+                switch_to_blog($site_id);
+                $this->activate_single_site();
+            } finally {
+                restore_current_blog();
+            }
         }
     }
 
@@ -91,7 +96,7 @@ class Activator {
             update_option('grw_auth_code', $this->random_str(127));
             update_option('grw_revupd_cron', '1');
         } elseif ($last_active_version !== $current_version) {
-            $this->exist_install($current_version, $last_active_version);
+            $this->exist_install($last_active_version);
             update_option('grw_version', $current_version);
             update_option('grw_revupd_cron', '1');
         }
@@ -104,92 +109,108 @@ class Activator {
         add_option('grw_google_api_key', '');
     }
 
-    private function exist_install($current_version, $last_active_version) {
+    private function exist_install($last_active_version) {
         $this->update_db($last_active_version);
     }
 
     public function update_db($last_active_version) {
         global $wpdb;
 
-        switch($last_active_version) {
+        if (version_compare($last_active_version, '1.8.2', '<')) {
+            $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::BUSINESS_TABLE . " ADD review_count INTEGER");
+        }
 
-            case version_compare($last_active_version, '1.8.2', '<'):
-                $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::BUSINESS_TABLE . " ADD review_count INTEGER");
+        if (version_compare($last_active_version, '1.8.7', '<')) {
+            $table = $wpdb->prefix . Database::REVIEW_TABLE;
+            $col = $wpdb->get_var($wpdb->prepare("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS " .
+                "WHERE table_schema = DATABASE() AND table_name = %s AND column_name = %s LIMIT 1", $table, 'hide'
+            ));
+            if (empty($col)) {
+                $wpdb->query("ALTER TABLE " . $table . " ADD hide VARCHAR(1) DEFAULT '' NOT NULL");
+            }
+        }
 
-            case version_compare($last_active_version, '1.8.7', '<'):
-                $row = $wpdb->get_results(
-                    "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS " .
-                    "WHERE table_name = '" . $wpdb->prefix . Database::REVIEW_TABLE . "' AND column_name = 'hide'"
-                );
-                if(empty($row)){
-                    $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD hide VARCHAR(1) DEFAULT '' NOT NULL");
-                }
+        if (version_compare($last_active_version, '2.0.1', '<')) {
+            $grw_auth_code = get_option('grw_auth_code');
+            if (!$grw_auth_code || strlen($grw_auth_code) == 0) {
+                update_option('grw_auth_code', $this->random_str(127));
+            }
+        }
 
-            case version_compare($last_active_version, '2.0.1', '<'):
-                $grw_auth_code = get_option('grw_auth_code');
-                if (!$grw_auth_code || strlen($grw_auth_code) == 0) {
-                    update_option('grw_auth_code', $this->random_str(127));
-                }
-
-            case version_compare($last_active_version, '2.1.5', '<'):
-                if (!function_exists('drop_index') || !function_exists('dbDelta')) {
-                    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-                }
-                if (!function_exists('maybe_drop_column')) {
-                    // Define 'maybe_drop_column' function without including install-helper.php due to error:
-                    // Fatal error: Cannot redeclare maybe_create_table()
-                    // (previously declared in /wp-admin/install-helper.php:52) in /wp-admin/includes/upgrade.php on line 1616
-                    function maybe_drop_column($table_name, $column_name, $drop_ddl) {
-                        global $wpdb;
-                        foreach ($wpdb->get_col( "DESC $table_name", 0) as $column) {
-                            if ($column === $column_name) {
-                                $wpdb->query($drop_ddl);
-                                foreach ($wpdb->get_col("DESC $table_name", 0) as $column) {
-                                    if ($column === $column_name) {
-                                        return false;
-                                    }
+        if (version_compare($last_active_version, '2.1.5', '<')) {
+            if (!function_exists('drop_index') || !function_exists('dbDelta')) {
+                require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+            }
+            if (!function_exists('maybe_drop_column')) {
+                // Define 'maybe_drop_column' function without including install-helper.php due to error:
+                // Fatal error: Cannot redeclare maybe_create_table()
+                // (previously declared in /wp-admin/install-helper.php:52) in /wp-admin/includes/upgrade.php on line 1616
+                function maybe_drop_column($table_name, $column_name, $drop_ddl) {
+                    global $wpdb;
+                    foreach ($wpdb->get_col( "DESC $table_name", 0) as $column) {
+                        if ($column === $column_name) {
+                            $wpdb->query($drop_ddl);
+                            foreach ($wpdb->get_col("DESC $table_name", 0) as $column) {
+                                if ($column === $column_name) {
+                                    return false;
                                 }
                             }
                         }
-                        return true;
                     }
+                    return true;
                 }
-                if (drop_index($wpdb->prefix . Database::REVIEW_TABLE, 'grp_google_review_hash')) {
-                    maybe_drop_column(
-                        $wpdb->prefix . Database::REVIEW_TABLE,
-                        "hash",
-                        "ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " DROP COLUMN hash"
-                    );
-                }
-                $sql = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "grp_google_stats (".
-                    "id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,".
-                    "google_place_id BIGINT(20) UNSIGNED NOT NULL,".
-                    "time INTEGER NOT NULL,".
-                    "rating DOUBLE PRECISION,".
-                    "review_count INTEGER,".
-                    "PRIMARY KEY (`id`),".
-                    "INDEX grp_google_place_id (`google_place_id`)".
-                    ") " . $wpdb->get_charset_collate() . ";";
-                dbDelta($sql);
+            }
+            if (drop_index($wpdb->prefix . Database::REVIEW_TABLE, 'grp_google_review_hash')) {
+                maybe_drop_column(
+                    $wpdb->prefix . Database::REVIEW_TABLE,
+                    "hash",
+                    "ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " DROP COLUMN hash"
+                );
+            }
+            $sql = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "grp_google_stats (".
+                "id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,".
+                "google_place_id BIGINT(20) UNSIGNED NOT NULL,".
+                "time INTEGER NOT NULL,".
+                "rating DOUBLE PRECISION,".
+                "review_count INTEGER,".
+                "PRIMARY KEY (`id`),".
+                "INDEX grp_google_place_id (`google_place_id`)".
+                ") " . $wpdb->get_charset_collate() . ";";
+            dbDelta($sql);
+        }
 
-            //case version_compare($last_active_version, '4.2', '<'):
-                //$this->delete_duplicates();
-                //$wpdb->query("ALTER TABLE `" . $wpdb->prefix . Database::REVIEW_TABLE . "` ADD UNIQUE `grp_author_url_lang` (`author_url`, `language`)");
+        //if (version_compare($last_active_version, '4.2', '<')) {
+            //$this->delete_duplicates();
+            //$wpdb->query("ALTER TABLE `" . $wpdb->prefix . Database::REVIEW_TABLE . "` ADD UNIQUE `grp_author_url_lang` (`author_url`, `language`)");
+        //}
 
-            case version_compare($last_active_version, '4.8.1', '<'):
-                $wpdb->query("ALTER TABLE `" . $wpdb->prefix . Database::REVIEW_TABLE . "` MODIFY COLUMN `author_url` VARCHAR(127)");
+        if (version_compare($last_active_version, '4.8.1', '<')) {
+            $wpdb->query("ALTER TABLE `" . $wpdb->prefix . Database::REVIEW_TABLE . "` MODIFY COLUMN `author_url` VARCHAR(127)");
+        }
 
-            case version_compare($last_active_version, '5.8', '<'):
-                $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD images TEXT");
-                $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD reply TEXT");
-                $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD reply_time INTEGER");
+        if (version_compare($last_active_version, '5.8', '<')) {
+            $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD images TEXT");
+            $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD reply TEXT");
+            $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD reply_time INTEGER");
+        }
 
-            case version_compare($last_active_version, '6.2', '<'):
-                $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::BUSINESS_TABLE . " ADD map_url VARCHAR(512)");
+        if (version_compare($last_active_version, '6.2', '<')) {
+            $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::BUSINESS_TABLE . " ADD map_url VARCHAR(512)");
+        }
 
-            case version_compare($last_active_version, '6.3', '<'):
-                $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD url VARCHAR(255)");
-                $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD provider VARCHAR(32)");
+        if (version_compare($last_active_version, '6.3', '<')) {
+            $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD url VARCHAR(255)");
+            $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD provider VARCHAR(32)");
+        }
+
+        if (version_compare($last_active_version, '6.9.1', '<')) {
+            $wpdb->query("UPDATE " . $wpdb->prefix . Database::REVIEW_TABLE . " SET provider = 'google' WHERE provider IS NULL OR provider = ''");
+            $this->database->create_text_table();
+            $this->database->migrate_review_texts();
+        }
+
+        if (version_compare($last_active_version, '6.9.4.1', '<')) {
+            update_option('grw_debug_mode', '0');
         }
 
         if (!empty($wpdb->last_error)) {
@@ -215,9 +236,12 @@ class Activator {
         $site_ids = $wpdb->get_col("SELECT blog_id FROM $wpdb->blogs");
 
         foreach($site_ids as $site_id) {
-            switch_to_blog($site_id);
-            $this->create_db_single_site();
-            restore_current_blog();
+            try {
+                switch_to_blog($site_id);
+                $this->create_db_single_site();
+            } finally {
+                restore_current_blog();
+            }
         }
     }
 
@@ -243,9 +267,12 @@ class Activator {
         $site_ids = $wpdb->get_col("SELECT blog_id FROM $wpdb->blogs");
 
         foreach($site_ids as $site_id) {
-            switch_to_blog($site_id);
-            $this->drop_db_single_site();
-            restore_current_blog();
+            try {
+                switch_to_blog($site_id);
+                $this->drop_db_single_site();
+            } finally {
+                restore_current_blog();
+            }
         }
     }
 
@@ -271,9 +298,12 @@ class Activator {
         $site_ids = $wpdb->get_col("SELECT blog_id FROM $wpdb->blogs");
 
         foreach($site_ids as $site_id) {
-            switch_to_blog($site_id);
-            $this->delete_all_options_single_site();
-            restore_current_blog();
+            try {
+                switch_to_blog($site_id);
+                $this->delete_all_options_single_site();
+            } finally {
+                restore_current_blog();
+            }
         }
     }
 
@@ -301,9 +331,12 @@ class Activator {
         $site_ids = $wpdb->get_col("SELECT blog_id FROM $wpdb->blogs");
 
         foreach($site_ids as $site_id) {
-            switch_to_blog($site_id);
-            $this->delete_all_feeds_single_site();
-            restore_current_blog();
+            try {
+                switch_to_blog($site_id);
+                $this->delete_all_feeds_single_site();
+            } finally {
+                restore_current_blog();
+            }
         }
     }
 

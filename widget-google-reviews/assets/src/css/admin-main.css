@@ -61,6 +61,11 @@
     color: #d63638;
 }
 
+.grw-flex {
+    display: flex;
+    align-items: center;
+}
+
 /*-------------------------------- Top Header --------------------------------*/
 .grw-tophead {
     -ms-flex-align: center;
@@ -328,12 +333,15 @@
 }
 
 .grw-builder-preview {
-    font-size: 14px;
     grid-area: preview;
-    min-height: 0;
     min-width: 0;
-    padding: 20px;
-    line-height: 1.75;
+    min-height: 0;
+    margin: 16px;
+    padding: 16px;
+    font-size: 14px;
+    line-height: normal;
+    border-radius: 12px;
+    background: #ffffff;
 }
 
 .grw-builder-options {
@@ -435,34 +443,10 @@
 }
 
 .grw-rate_us-body {
+    display: flex;
+    gap: 4px;
+    align-items: center;
     font-size: 18px;
-}
-
-.grw-rate_us-body .wp-stars {
-    display: inline-block;
-    vertical-align: middle;
-    cursor: pointer;
-}
-
-.grw-rate_us-body .wp-star,
-.grw-rate_us-body .wp-star svg,
-#grw-rate_us-feedback .wp-star svg {
-    display: inline-block;
-    padding: 2px 3px;
-}
-
-.grw-rate_us-body .wp-star svg,
-#grw-rate_us-feedback .wp-star svg {
-    width: 24px;
-    height: 24px;
-}
-
-.grw-rate_us-body .wp-star svg use {
-    fill: #fa8e08;
-}
-
-.grw-rate_us-body .wp-star:hover ~ .wp-star svg use {
-    fill: #ccc;
 }
 
 #grw-rate_us-feedback {
@@ -499,19 +483,14 @@
     right: 0;
 }
 
-#grw-overview-rating {
-    font-size: 15px;
-}
-
-#grw-overview-rating .wp-star svg {
-    vertical-align: middle;
-}
-
 .grw-overview-h {
-    margin: 0 0 6px;
     color: #000;
     font-size: 15px;
     font-weight: 600;
+}
+
+#grw-overview-rating .rpi-stars {
+    font-size: 20px;
 }
 
 #grw-overview-stats > div {
@@ -523,6 +502,7 @@
     color: #29af4c;
     font-size: 18px;
     font-weight: 600;
+    padding: 0 0 0 4px;
 }
 
 .grw-stat-val.grw-stat-up {

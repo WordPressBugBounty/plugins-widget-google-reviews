@@ -13,13 +13,13 @@ jQuery(document).ready(function($) {
     var $rateus = $('#grw-rate_us');
     if ($rateus.length) {
         var $rateus_dlg = $('#grw-rate_us-feedback'),
-            $rateus_stars = $('#grw-rate_us-feedback-stars');
+            $rateus_stars = $('.rpi-star', $rateus_dlg);
 
         grw_svg_init();
         if (window.location.href.indexOf('grw_feed_id=') > -1 && !window['grw_rateus']) {
             $rateus.addClass('grw-flash-visible');
         }
-        $('.wp-star', $rateus).click(function() {
+        $('.rpi-star i', $rateus).click(function() {
             var rate = $(this).index() + 1;
             if (rate > 3) {
                 $.post({
@@ -41,13 +41,16 @@ jQuery(document).ready(function($) {
                 window.open(askUrl, '_blank');
                 grw_rateus_close();
             } else {
-                $rateus_stars.attr('data-rate', rate);
-                $rateus_stars.html(grw_stars(rate, '#fb8e28', 24));
+                $rateus_stars.attr('data-rating', rate);
                 $rateus_dlg.dialog({modal: true, width: '50%', maxWidth: '600px'});
                 $('.ui-widget-overlay').bind('click', function() {
                     $rateus_dlg.dialog('close');
                 });
             }
+        });
+
+        $('i', $rateus_stars).click(function() {
+            $rateus_stars.attr('data-rating', $(this).index() + 1);
         });
 
         $('.grw-rate_us-cancel').click(function() {
@@ -60,7 +63,7 @@ jQuery(document).ready(function($) {
                 type     : 'POST',
                 dataType : 'json',
                 data     : {
-                    rate      : $rateus_stars.attr('data-rate'),
+                    rate      : $rateus_stars.attr('data-rating'),
                     email     : $('input', $rateus_dlg).val(),
                     msg       : $('textarea', $rateus_dlg).val(),
                     action    : 'grw_rateus_ajax_feedback',
@@ -196,8 +199,7 @@ jQuery(document).ready(function($) {
                     $stats.html('Not calculated yet');
 
                     if (stats_result) {
-                        let sr = stats_result.rating,
-                            src = stats_result.review_count;
+                        let sr = stats_result.rating, src = stats_result.review_count;
                         $stats.html(
                             '<div class="grw-overview-h">While using the plugin</div>' +
                             '<div>' +
@@ -219,41 +221,41 @@ jQuery(document).ready(function($) {
                      * Render rating
                      */
                     $rating.html(
-                        '<div class="wp-gr">' +
-                            '<div class="grw-overview-h">' + place.name + '</div>' +
-                            '<div>' +
-                                '<span class="wp-google-rating">' + res.rating + '</span>' +
-                                '<span class="wp-google-stars">' + grw_stars(res.rating, '#fb8e28', 20) + '</span>' +
-                            '</div>' +
-                            '<div class="wp-google-powered">Based on ' + res.review_count + ' reviews</div>' +
+                        '<div class="grw-overview-h">' + place.name + '</div>' +
+                        '<span class="rpi-stars" style="--rpi-star-size:26px;--rating:' + res.rating + '">' + res.rating + '</span>' +
+                        '<div class="wp-google-powered">Based on ' + res.review_count + ' reviews</div>' +
 
-                            (place.updated ?
-                            '<div class="wp-google-powered">Last updated: ' +
-                                '<span class="wp-google-time">' +
-                                    rpi.Time.getTime(parseInt(place.updated), rpi.Utils.lang(), 'ago') +
-                                '</span>' +
-                            '</div>' : '') +
-                        '</div>'
+                        (place.updated ?
+                        '<div class="wp-google-powered">Last updated: ' +
+                            '<span class="wp-google-time">' +
+                                rpi.Time.getTime(parseInt(place.updated), rpi.Utils.lang(), 'ago') +
+                            '</span>' +
+                        '</div>' : '')
                     );
 
                     /*
                      * Render reviews
                      */
-                    var list = '',
-                        common = rpi.Common($reviews[0], {text_size: 50}, {
-                            time     : 'wp-google-time',
-                            text     : 'wp-google-text',
-                            readmore : 'wp-more-toggle'
-                        });
+                    const root = document.createElement('div');
+                    const list = document.createElement('div');
 
-                    $.each(res.reviews, function(i, review) {
-                        list += grw_review(review);
+                    const common = rpi.Common($reviews[0], {text_size: 50}, {
+                        time     : 'wp-google-time',
+                        text     : 'wp-google-text',
+                        readmore : 'wp-more-toggle'
                     });
-                    $reviews.html(
-                        '<div class="wp-gr wpac">' +
-                            '<div class="wp-google-reviews">' + list + '</div>' +
-                        '</div>'
-                    );
+
+                    list.className = 'wp-google-reviews';
+                    $.each(res.reviews, function(i, review) {
+                        list.appendChild(grw_review(review));
+                    });
+
+                    root.className = 'wp-gr wpac';
+                    root.appendChild(list);
+
+                    $reviews.html('');
+                    $reviews[0].appendChild(root);
+
                     common.init();
 
                     $('.wp-review-hide', $reviews).unbind('click').click(function() {
@@ -419,15 +421,6 @@ function grw_svg() {
     return '' +
     '<svg>' +
         '<defs>' +
-            '<g id="rp-star" width="17" height="17">' +
-                '<path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z"></path>' +
-            '</g>' +
-            '<g id="rp-star-half" width="17" height="17">' +
-                '<path d="M1250 957l257-250-356-52-66-10-30-60-159-322v963l59 31 318 168-60-355-12-66zm452-262l-363 354 86 500q5 33-6 51.5t-34 18.5q-17 0-40-12l-449-236-449 236q-23 12-40 12-23 0-34-18.5t-6-51.5l86-500-364-354q-32-32-23-59.5t54-34.5l502-73 225-455q20-41 49-41 28 0 49 41l225 455 502 73q45 7 54 34.5t-24 59.5z"></path>' +
-            '</g>' +
-            '<g id="rp-star-o" width="17" height="17">' +
-                '<path d="M1201 1004l306-297-422-62-189-382-189 382-422 62 306 297-73 421 378-199 377 199zm527-357q0 22-26 48l-363 354 86 500q1 7 1 20 0 50-41 50-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#ccc"></path>' +
-            '</g>' +
             '<g id="rp-logo-g" height="44" width="44" fill="none" fill-rule="evenodd">' +
                 '<path d="M482.56 261.36c0-16.73-1.5-32.83-4.29-48.27H256v91.29h127.01c-5.47 29.5-22.1 54.49-47.09 71.23v59.21h76.27c44.63-41.09 70.37-101.59 70.37-173.46z" fill="#4285f4"></path><path d="M256 492c63.72 0 117.14-21.13 156.19-57.18l-76.27-59.21c-21.13 14.16-48.17 22.53-79.92 22.53-61.47 0-113.49-41.51-132.05-97.3H45.1v61.15c38.83 77.13 118.64 130.01 210.9 130.01z" fill="#34a853"></path><path d="M123.95 300.84c-4.72-14.16-7.4-29.29-7.4-44.84s2.68-30.68 7.4-44.84V150.01H45.1C29.12 181.87 20 217.92 20 256c0 38.08 9.12 74.13 25.1 105.99l78.85-61.15z" fill="#fbbc05"></path><path d="M256 113.86c34.65 0 65.76 11.91 90.22 35.29l67.69-67.69C373.03 43.39 319.61 20 256 20c-92.25 0-172.07 52.89-210.9 130.01l78.85 61.15c18.56-55.78 70.59-97.3 132.05-97.3z" fill="#ea4335"></path><path d="M20 20h472v472H20V20z"></path>' +
             '</g>' +
@@ -435,49 +428,63 @@ function grw_svg() {
     '</svg>';
 }
 
-function grw_stars(rating, color, size) {
-    var str = '';
-    for (var i = 1; i < 6; i++) {
-        var score = rating - i;
-        if (score >= 0) {
-            str += grw_star('', color, size);
-        } else if (score > -1 && score < 0) {
-            if (score < -0.75) {
-                str += grw_star('-o', '#ccc', size);
-            } else if (score > -0.25) {
-                str += grw_star('', color, size);
-            } else {
-                str += grw_star('-half', color, size);
-            }
-        } else {
-            str += grw_star('-o', '#ccc', size);
-        }
-    }
-    return str;
-}
-
-function grw_star(prefix, color, size) {
-    return '' +
-    '<span class="wp-star">' +
-        '<svg viewBox="0 0 1792 1792" width="' + size + '" height="' + size + '">' +
-            '<use xlink:href="#rp-star' + prefix + '" fill="' + color + '"/>' +
-        '</svg>' +
-    '</span>';
-}
-
 function grw_review(review) {
-    return '' +
-    '<div class="wp-google-review' + (review.hide == '' ? '' : ' wp-review-hidden') + '">' +
-        '<div class="wp-google-right">' +
-            '<a href="' + review.author_url + '" class="wp-google-name" target="_blank" rel="nofollow noopener">' + review.author_name + '</a>' +
-            '<div class="wp-google-time" data-time="' + review.time + '"></div>' +
-            '<div class="wp-google-feedback">' +
-                '<span class="wp-google-stars">' + grw_stars(review.rating, '#fb8e28', 16) + '</span>' +
-                '<span class="wp-google-text">' + review.text + '</span>' +
-            '</div>' +
-            '<a href="#" class="wp-review-hide" data-id="' + review.id + '">' + (review.hide == '' ? 'Hide' : 'Show') + ' review</a>' +
-        '</div>' +
-    '</div>';
+    const slg = 'wp-google';
+
+    const root = document.createElement('div');
+    root.className = slg + '-review' + (review.hide === '' ? '' : ' wp-review-hidden');
+    root.dataset.rev = String(review.provider || '');
+
+    const right = document.createElement('div');
+    right.className = slg + '-right';
+    root.appendChild(right);
+
+    const lnk = document.createElement('a');
+    lnk.className = slg + '-name';
+    lnk.target = '_blank';
+    lnk.rel = 'nofollow noopener';
+    lnk.href = grw_safeUrl(review.author_url);
+    lnk.textContent = review.author_name || '';
+    right.appendChild(lnk);
+
+    const time = document.createElement('div');
+    time.className = slg + '-time';
+    time.dataset.time = String(review.time || '');
+    right.appendChild(time);
+
+    const feedback = document.createElement('div');
+    feedback.className = slg + '-feedback';
+    right.appendChild(feedback);
+
+    const stars = document.createElement('span');
+    stars.className = 'rpi-stars';
+    stars.style.setProperty('--rpi-star-size', '16px');
+    stars.style.setProperty('--rating', review.rating);
+    feedback.appendChild(stars);
+
+    const text = document.createElement('span');
+    text.className = slg + '-text';
+    text.textContent = review.text;
+    text.innerHTML = text.innerHTML.replace(/\n/g, '<br>');
+    feedback.appendChild(text);
+
+    const toggle = document.createElement('a');
+    toggle.href = '#';
+    toggle.className = 'wp-review-hide';
+    toggle.dataset.id = String(review.id || '');
+    toggle.textContent = (review.hide === '' ? 'Hide' : 'Show') + ' review';
+    right.appendChild(toggle);
+
+    return root;
+}
+
+function grw_safeUrl(url) {
+    if (!url) return '#';
+    url = String(url).trim();
+    if (/^https?:\/\//i.test(url)) {
+        return url;
+    }
+    return '#';
 }
 
 function grw_s2dmy(s) {

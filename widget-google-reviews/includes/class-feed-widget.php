@@ -89,7 +89,7 @@ class Feed_Widget extends \WP_Widget {
         ?>
         <p>
             <label for="<?php echo esc_attr($this->get_field_id('title')); ?>">
-                <?php esc_html_e('Title:', 'grw'); ?>
+                <?php esc_html_e('Title:', 'widget-google-reviews'); ?>
             </label>
             <input
                 type="text"
@@ -101,7 +101,7 @@ class Feed_Widget extends \WP_Widget {
         </p>
         <p>
             <label for="<?php echo esc_attr($this->get_field_id('feed_id')); ?>">
-                <?php esc_html_e('Feed:', 'grw'); ?>
+                <?php esc_html_e('Feed:', 'widget-google-reviews'); ?>
             </label>
 
             <select

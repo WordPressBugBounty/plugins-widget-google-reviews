@@ -8,16 +8,14 @@ class Database {
 
     const REVIEW_TABLE = 'grp_google_review';
 
+    const TEXT_TABLE = self::REVIEW_TABLE . '_text';
+
     const STATS_TABLE = 'grp_google_stats';
 
     public function create() {
         global $wpdb;
 
         $charset_collate = $wpdb->get_charset_collate();
-
-        if (!function_exists('dbDelta')) {
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        }
 
         $sql = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . self::BUSINESS_TABLE . " (".
                "id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,".
@@ -61,6 +59,8 @@ class Database {
 
         $this->execsql($sql);
 
+        $this->create_text_table();
+
         $sql = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . self::STATS_TABLE . " (".
                "id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,".
                "google_place_id BIGINT(20) UNSIGNED NOT NULL,".
@@ -74,23 +74,75 @@ class Database {
         $this->execsql($sql);
     }
 
+    public function create_text_table() {
+        global $wpdb;
+
+        $charset_collate = $wpdb->get_charset_collate();
+
+        $sql = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . self::TEXT_TABLE . " (".
+               "id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,".
+               "review_id CHAR(32) NOT NULL,".
+               "lang VARCHAR(10) NOT NULL,".
+               "text TEXT,".
+               "PRIMARY KEY (`id`),".
+               "UNIQUE INDEX uniq_review_lang (`review_id`, `lang`),".
+               "INDEX idx_review_id (`review_id`)".
+               ") " . $charset_collate . ";";
+
+        $this->execsql($sql);
+    }
+
+    public function migrate_review_texts() {
+        global $wpdb;
+
+        $wpdb->query("INSERT INTO " . $wpdb->prefix . self::TEXT_TABLE . " (review_id, lang, text)
+                      SELECT
+                          x.review_id,
+                          x.lang,
+                          r.text
+                      FROM (
+                          SELECT
+                              MAX(r.id) AS max_id,
+                              MD5(CONCAT(r.provider, ':', p.place_id, ':', r.author_url)) AS review_id,
+                              r.language AS lang
+                          FROM " . $wpdb->prefix . self::REVIEW_TABLE . " r
+                          JOIN " . $wpdb->prefix . self::BUSINESS_TABLE . " p ON p.id = r.google_place_id
+                          WHERE r.text IS NOT NULL AND r.text <> ''
+                            AND r.author_url IS NOT NULL AND r.author_url <> ''
+                            AND r.provider IS NOT NULL AND r.provider <> ''
+                          GROUP BY MD5(CONCAT(r.provider, ':', p.place_id, ':', r.author_url)), r.language
+                      ) x
+                      JOIN " . $wpdb->prefix . self::REVIEW_TABLE . " r ON r.id = x.max_id
+                      ON DUPLICATE KEY UPDATE text = VALUES(text)");
+
+        $this->log_error($wpdb->last_error);
+    }
+
     private function execsql($sql) {
         global $wpdb;
 
-        dbDelta($sql);
-        $last_error = $wpdb->last_error;
-        if (isset($last_error) && strlen($last_error) > 0) {
-            $now = floor(microtime(true) * 1000);
-            update_option('grw_last_error', $now . ': ' . $last_error);
+        if (!function_exists('dbDelta')) {
+            require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         }
+
+        dbDelta($sql);
+
+        $this->log_error($wpdb->last_error);
     }
 
     public function drop() {
         global $wpdb;
 
-        $wpdb->query("DROP TABLE " . $wpdb->prefix . self::BUSINESS_TABLE . ";");
-        $wpdb->query("DROP TABLE " . $wpdb->prefix . self::REVIEW_TABLE . ";");
-        $wpdb->query("DROP TABLE " . $wpdb->prefix . self::STATS_TABLE . ";");
+        $wpdb->query("DROP TABLE IF EXISTS " . $wpdb->prefix . self::BUSINESS_TABLE . ";");
+        $wpdb->query("DROP TABLE IF EXISTS " . $wpdb->prefix . self::REVIEW_TABLE . ";");
+        $wpdb->query("DROP TABLE IF EXISTS " . $wpdb->prefix . self::TEXT_TABLE . ";");
+        $wpdb->query("DROP TABLE IF EXISTS " . $wpdb->prefix . self::STATS_TABLE . ";");
     }
 
+    private function log_error($last_error) {
+        if (isset($last_error) && strlen($last_error) > 0) {
+            $now = (int) floor(microtime(true) * 1000);
+            update_option('grw_last_error', $now . ': ' . $last_error);
+        }
+    }
 }

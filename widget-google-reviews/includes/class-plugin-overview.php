@@ -53,7 +53,7 @@ class Plugin_Overview {
                     <option value="36">3 years</option>
                     <option value="60">5 years</option>
                 </select>
-                <select id="grw-overview-places"></select>
+                <select id="grw-overview-places" style="max-width:256px"></select>
             </div>
 
             <div class="grw-flex-row">
@@ -75,13 +75,17 @@ class Plugin_Overview {
                             <div class="grw-card">
                                 <div class="grw-card-header">Rating</div>
                                 <div class="grw-card-body grw-card-fh">
-                                    <div id="grw-overview-rating"><img src="<?php echo GRW_ASSETS_URL; ?>img/dots-spinner.svg"></div>
+                                    <div id="grw-overview-rating" class="rpi-flx rpi-col8">
+                                        <img src="<?php echo GRW_ASSETS_URL; ?>img/dots-spinner.svg">
+                                    </div>
                                 </div>
                             </div><br>
                             <div class="grw-card">
                                 <div class="grw-card-header">Usage Stats</div>
                                 <div class="grw-card-body grw-card-fh">
-                                    <div id="grw-overview-stats"><img src="<?php echo GRW_ASSETS_URL; ?>img/dots-spinner.svg"></div>
+                                    <div id="grw-overview-stats" class="rpi-flx rpi-col8">
+                                        <img src="<?php echo GRW_ASSETS_URL; ?>img/dots-spinner.svg">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -90,7 +94,9 @@ class Plugin_Overview {
                             <div class="grw-card">
                                 <div class="grw-card-header">Latest Reviews</div>
                                 <div class="grw-card-body grw-card-fh" style="padding-top:0">
-                                    <div id="grw-overview-reviews"><img src="<?php echo GRW_ASSETS_URL; ?>img/dots-spinner.svg"></div>
+                                    <div id="grw-overview-reviews">
+                                        <img src="<?php echo GRW_ASSETS_URL; ?>img/dots-spinner.svg">
+                                    </div>
                                 </div>
                             </div>
                         </div>

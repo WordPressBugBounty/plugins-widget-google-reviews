@@ -59,16 +59,14 @@ const GRW_LANGS = [
 const GRW_HTML_CONTENT =
 
     '<div class="grw-builder-platforms grw-builder-inside">' +
-
         '<div class="grw-builder-connect grw-connect-google">Connect Google</div>' +
-        '<div id="grw-connect-wizard" title="Google reviews" style="display:none;">{{wizard}}</div>' +
+        '<div id="grw-connect-wizard" title="Connect Google Reviews" style="display:none;">{{wizard}}</div>' +
         '<div class="grw-connections"></div>' +
     '</div>' +
 
     '<div class="grw-connect-options">' +
 
         '<div class="grw-builder-inside">' +
-
             '<div class="grw-builder-option">' +
                 'Layout' +
                 '<select id="view_mode" name="view_mode">' +
@@ -78,7 +76,6 @@ const GRW_HTML_CONTENT =
                     '<option value="rating">Rating</option>' +
                 '</select>' +
             '</div>' +
-
         '</div>' +
 
         /* Common Options */
@@ -138,28 +135,16 @@ const GRW_HTML_CONTENT =
             '</div>' +
             '<div class="grw-builder-option">' +
                 '<label>' +
-                    '<input type="checkbox" name="media" value="" checked>' +
-                    'Show review images' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="reply" value="" checked>' +
-                    'Show owner responses' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
                     '<input type="checkbox" name="header_hide_social" value="">' +
                     'Hide rating header, leave only reviews' +
                 '</label>' +
             '</div>' +
-            '<div class="grw-builder-option">' +
+            /*'<div class="grw-builder-option">' +
                 '<label>' +
                     '<input type="checkbox" name="hide_reviews" value="">' +
                     'Hide reviews, leave only rating header' +
                 '</label>' +
-            '</div>' +
+            '</div>' +*/
         '</div>' +
 
         /* Slider Options */
@@ -256,8 +241,8 @@ const GRW_HTML_CONTENT =
                 'Button color' +
             '</div>' +
             '<div class="grw-builder-option">' +
-                '<input type="color" name="--rev-color" value="#fafafa" data-val="#fafafa" data-defval="#fafafa"/>' +
-                '<input type="text" value="#fafafa"/>' +
+                '<input type="color" name="--rev-color" value="#f4f4f4" data-val="#f4f4f4" data-defval="#f4f4f4"/>' +
+                '<input type="text" value="#f4f4f4"/>' +
                 'Reviews color' +
             '</div>' +
             '<div class="grw-builder-option">' +
@@ -281,15 +266,21 @@ const GRW_HTML_CONTENT =
                     'Dark background' +
                 '</label>' +
             '</div>' +
-            '<div class="grw-builder-option">' +
+            /*'<div class="grw-builder-option">' +
                 '<label>' +
                     '<input type="checkbox" name="hide_backgnd" value="">' +
+                    'Hide reviews background' +
+                '</label>' +
+            '</div>' +*/
+            '<div class="grw-builder-option">' +
+                '<label>' +
+                    '<input type="checkbox" name="--rev-color" value="#f4f4f4" data-on="transparent" data-off="#f4f4f4" data-defval="#f4f4f4">' +
                     'Hide reviews background' +
                 '</label>' +
             '</div>' +
             '<div class="grw-builder-option">' +
                 '<label>' +
-                    '<input type="checkbox" name="show_round" value="">' +
+                    '<input type="checkbox" name="show_round" value="" checked>' +
                     'Round reviews borders' +
                 '</label>' +
             '</div>' +
@@ -298,21 +289,6 @@ const GRW_HTML_CONTENT =
                     '<input type="checkbox" name="show_shadow" value="">' +
                     'Show reviews shadow' +
                 '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="centered" value="">' +
-                    'Place by center (only if max-width is set)' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                'Container max-width' +
-                '<input type="text" name="max_width" value="" placeholder="for instance: 300px">' +
-                '<small>Be careful: this will make reviews unresponsive</small>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                'Container max-height' +
-                '<input type="text" name="max_height" value="" placeholder="for instance: 500px">' +
             '</div>' +
             '<input id="style_vars" name="style_vars" type="hidden"/>' +
         '</div>' +
@@ -328,11 +304,9 @@ const GRW_HTML_CONTENT =
             '</div>' +
             '<div class="grw-builder-option">' +
                 '<label>' +
-                    '<input type="checkbox" name="google_def_rev_link">' +
-                    'Use default Google reviews link' +
+                    '<input type="checkbox" name="nofollow_link" checked>' +
+                    'Use no follow links' +
                 '</label>' +
-                '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
-                '<div class="grw-quest-help" style="display:none;">If the direct link to all reviews <b>https://search.google.com/local/reviews?placeid=&lt;PLACE_ID&gt;</b> does not work with your Google place (leads to 404), please use this option to use the default reviews link to Google map.</div>' +
             '</div>' +
             '<div class="grw-builder-option">' +
                 '<label>' +
@@ -342,15 +316,36 @@ const GRW_HTML_CONTENT =
             '</div>' +
             '<div class="grw-builder-option">' +
                 '<label>' +
-                    '<input type="checkbox" name="nofollow_link" checked>' +
-                    'Use no follow links' +
+                    '<input type="checkbox" name="aria_label">' +
+                    'Enable ARIA label for screen readers' +
                 '</label>' +
             '</div>' +
             '<div class="grw-builder-option">' +
                 '<label>' +
-                    '<input type="checkbox" name="aria_label">' +
-                    'Enable ARIA label for screen readers' +
+                    '<input type="checkbox" name="media" value="" checked>' +
+                    'Show review images' +
                 '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<label>' +
+                    '<input type="checkbox" name="reply" value="" checked>' +
+                    'Show owner responses' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<label>' +
+                    '<input type="checkbox" name="google_def_rev_link">' +
+                    'Use default Google reviews link' +
+                '</label>' +
+                '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
+                '<div class="grw-quest-help" style="display:none;">If the direct link to all reviews <b>https://search.google.com/local/reviews?placeid=&lt;PLACE_ID&gt;</b> does not work with your Google place (leads to 404), please use this option to use the default reviews link to Google map.</div>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                'Widget style' +
+                '<select name="style">' +
+                    '<option value="legacy">Legacy</option>' +
+                    '<option value="modern" selected="selected">Modern</option>' +
+                '</select>' +
             '</div>' +
             '<div class="grw-builder-option">' +
                 'Reviewer avatar size' +
@@ -383,11 +378,11 @@ const GRW_HTML_CONTENT =
     '</div>';
 
 const GRW_WIZARD =
-    '<iframe id="gpidc" src="https://app.richplugins.com/connect?authcode={{authcode}}&lang={{lang}}" style="width:100%;height:400px"></iframe>' +
+    '<iframe id="gpidc" src="https://app.richplugins.com/public/connect?authcode={{authcode}}&lang={{lang}}" style="width:100%;height:99%"></iframe>' +
     '<small class="grw-connect-error"></small>';
 
 const GRW_WIZARD2 =
-    '<div style="width:100%;height:400px">' +
+    '<div id="gpidc" style="height:400px;background:#ffffff;padding:20px">' +
         '<h3>Connection Wizard</h3>' +
         '<p>Please start typing your business name or address in the search field below.<br>Alternatively, you can paste your Google Place ID if you know it.</p>' +
         '<div style="position:relative">' +
@@ -418,6 +413,10 @@ const GRW_WIZARD2 =
         '</div>' +
         '<p id="grw_place_error" class="grw-connect-error"></p>' +
     '</div>';
+
+var GRW_LIGHTBOX;
+
+const GRW_TOAST = rpi.Toast({timeout: 25});
 
 function grw_stylechange2(target) {
     let rp = document.getElementsByClassName('wp-gr')[0];
@@ -465,7 +464,8 @@ function grw_stylechange2(target) {
 }
 
 function stylereset(parentEl, style_var) {
-    let rp = document.getElementsByClassName('wp-gr')[0];
+    window.style_vars.value = '';
+    /*let rp = document.getElementsByClassName('wp-gr')[0];
     if (rp) {
         let inputs = (parentEl ? parentEl : document).querySelectorAll('input[name^="--"]');
 
@@ -494,7 +494,7 @@ function stylereset(parentEl, style_var) {
             rp.style.removeProperty(inputs[i].name);
         }
         window.style_vars.value = rp.getAttribute('style');
-    }
+    }*/
 }
 
 function grw_builder_init($, data) {
@@ -502,22 +502,27 @@ function grw_builder_init($, data) {
     var el = document.querySelector(data.el);
     if (!el) return;
 
-    el.innerHTML = GRW_HTML_CONTENT.replace('{{wizard}}',
-        data.key ? GRW_WIZARD2 : GRW_WIZARD.replace('{{authcode}}', data.authcode).replace('{{lang}}', GRW_VARS.lang));
+    const lang = GRW_VARS.lang ? GRW_VARS.lang.toLowerCase().split(/[_-]/)[0] : '';
 
-    var $connect_wizard_el = $('#grw-connect-wizard');
+    el.innerHTML = GRW_HTML_CONTENT.replace('{{wizard}}',
+        data.key ? GRW_WIZARD2 : GRW_WIZARD.replace('{{authcode}}', data.authcode).replace('{{lang}}', lang));
+
+    //var $connect_wizard_el = $('#grw-connect-wizard');
+    GRW_LIGHTBOX = rpi.Lightbox(window.gpidc);
 
     if (data.conns && data.conns.connections && data.conns.connections.length) {
         grw_deserialize_connections($, el, data);
     } else {
-        $('.grw-connect-google').hide();
-        $connect_wizard_el.dialog({
+        //$('.grw-connect-google').hide();
+        GRW_LIGHTBOX.show(true);
+        window.gpidc.focus();
+        /*$connect_wizard_el.dialog({
             modal: false,
             width: '50%',
             maxWidth: '600px',
             closeOnEscape: false,
             open: function() { $(".ui-dialog-titlebar-close").hide() }
-        });
+        });*/
     }
 
     // GPIDC
@@ -529,6 +534,7 @@ function grw_builder_init($, data) {
                 case 'get_place':
                     $.post(ajaxurl, {
                         pid       : gdata.pid,
+                        lang      : gdata.lang,
                         token     : gdata.token,
                         action    : 'grw_get_place',
                         grw_nonce : jQuery('#grw_nonce').val()
@@ -542,7 +548,9 @@ function grw_builder_init($, data) {
                     });
                     break;
                 case 'connect':
-                    grw_connect_ajax($, el, gdata, data.authcode, 1);
+                    grw_connect_ajax($, el, gdata, data.authcode, 1, function() {
+                        window.gpidc.contentWindow.postMessage({action: 'connect_done'}, '*');
+                    });
                     break;
             }
         }
@@ -551,11 +559,11 @@ function grw_builder_init($, data) {
     // Init slider breakpoints
     grw_sbs_init();
 
-    $('.grw-connect-options input[type="text"],.grw-connect-options textarea').keyup(function() {
+    $('.grw-connect-options input[type="text"]:not([name^="--"]),.grw-connect-options textarea').keyup(function() {
         clearTimeout(GRW_AUTOSAVE_TIMEOUT);
         GRW_AUTOSAVE_TIMEOUT = setTimeout(grw_serialize_connections, GRW_AUTOSAVE_KEYUP_TIMEOUT);
     });
-    $('.grw-connect-options input[type="checkbox"],.grw-connect-options select').change(function() {
+    $('.grw-connect-options input[type="checkbox"]:not([name^="--"]),.grw-connect-options select').change(function() {
         grw_serialize_connections();
     });
     $('.grw-connect-options input[name^="--"]').on('input', function() {
@@ -576,7 +584,8 @@ function grw_builder_init($, data) {
     });
 
     $('.grw-builder-connect.grw-connect-google').click(function () {
-        $connect_wizard_el.dialog({modal: true, width: '50%', maxWidth: '600px'});
+        GRW_LIGHTBOX.show(true);
+        //$connect_wizard_el.dialog({modal: true, width: '50%', maxWidth: '600px'});
     });
 
     if ($('.grw-connections').sortable) {
@@ -594,16 +603,28 @@ function grw_builder_init($, data) {
     });
 
     $('#grw_save').click(function() {
-        grw_serialize_connections();
-        return false;
+        const url = new URL(window.location.href);
+        if (url.searchParams.has('grw_feed_id')) {
+            grw_serialize_connections();
+            return false;
+        } else {
+            return true;
+        }
     });
 
-    window.addEventListener('beforeunload', function(e) {
-        if (!GRW_AUTOSAVE_TIMEOUT) return undefined;
+    let _isSubmit = false;
+    const form = document.querySelector('.grw-builder form');
+    form.addEventListener('submit', function () {
+        _isSubmit = true;
+    });
 
-        var msg = 'It looks like you have been editing something. If you leave before saving, your changes will be lost.';
-        (e || window.event).returnValue = msg;
-        return msg;
+    // Confirmation alert before close the page if unautosave
+    window.addEventListener('beforeunload', function(e) {
+        const url = new URL(window.location.href);
+        if (window.grw_post_id.value && !_isSubmit && (!url.searchParams.has('grw_feed_id') || GRW_AUTOSAVE_TIMEOUT)) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
     });
 
     if (data.key) {
@@ -766,20 +787,26 @@ function grw_feed_save_ajax() {
 
         window.grw_collection_preview.innerHTML = res;
 
+        window.grw_boot && window.grw_boot();
+
         jQuery('.wp-review-hide').unbind('click').click(function() {
             grw_review_hide(jQuery(this));
             return false;
         });
 
         if (!window.grw_post_id.value) {
-            var post_id = document.querySelector('.wp-gr').getAttribute('data-id');
+            const post_id = document.querySelector('.wp-gr').getAttribute('data-id');
+            const toolbar_el = document.querySelector('.grw-toolbar-control');
+            const label = document.createElement('label');
+            label.innerHTML = '<span id="grw_sc_msg">Copy Shortcode </span> <input id="grw_sc" type="text" value="[grw id=' + post_id + ']" data-grw-shortcode="[grw id=' + post_id + ']" onclick="this.select(); document.execCommand(\'copy\'); window.grw_sc_msg.innerHTML = \'Shortcode Copied! Paste on page. \';" readonly="">';
+            toolbar_el.insertBefore(label, window.grw_save);
             window.grw_post_id.value = post_id;
-            window.location.href = GRW_VARS.builderUrl + '&grw_feed_id=' + post_id + '&grw_feed_new=1';
-        } else {
-            var $rateus = jQuery('#grw-rate_us');
-            if ($rateus.length && !$rateus.hasClass('grw-flash-visible') && !window['grw_rateus']) {
-                $rateus.addClass('grw-flash-visible');
-            }
+            //window.location.href = GRW_VARS.builderUrl + '&grw_feed_id=' + post_id + '&grw_feed_new=1';
+        }
+
+        var $rateus = jQuery('#grw-rate_us');
+        if ($rateus.length && !$rateus.hasClass('grw-flash-visible') && !window['grw_rateus']) {
+            $rateus.addClass('grw-flash-visible');
         }
 
         window.grw_save.innerText = 'Save & Update';
@@ -881,11 +908,17 @@ function grw_connect_ajax($, el, params, authcode, attempt, cb) {
             grw_connection_add($, el, connection_params);
             grw_serialize_connections();
 
-        } else {
-            let err = grw_get_error(res);
+            GRW_TOAST.show({
+                msg: (params.event === 'refresh' ? 'Reviews updated' : 'Widget saved') + ' successfully. ' +
+                     (res.result.credits > -1 ? '<br><b>' + res.result.credits + ' attempts remaining (without your API key).</b>' : ''),
+                type: 'success'
+            });
 
-            if (params.event === 'refresh' && err.indexOf('The place you are trying to connect to does not have a rating yet') > -1) {
-                grw_show_wizard($, 'It seems connection lost, please try to reconnect your Google reviews again', params.lang);
+        } else {
+            const err = grw_get_error(res);
+            GRW_TOAST.show({msg: err, type: 'error'});
+            /*if (params.event === 'refresh') {
+                GRW_TOAST.show({msg: err, type: 'error'});
             } else {
                 grw_connect_error($, err, function() {
                     if (attempt > 1) return;
@@ -895,7 +928,7 @@ function grw_connect_ajax($, el, params, authcode, attempt, cb) {
                         });
                     }
                 });
-            }
+            }*/
         }
 
         cb && cb(res);
@@ -904,9 +937,10 @@ function grw_connect_ajax($, el, params, authcode, attempt, cb) {
 }
 
 function grw_wizard_close() {
-    try {
+    GRW_LIGHTBOX.hide();
+    /*try {
         jQuery('#grw-connect-wizard').dialog('close');
-    } catch (e) {}
+    } catch (e) {}*/
 }
 
 function grw_connect_error($, error_message, cb) {
@@ -1022,22 +1056,22 @@ function grw_connection_add($, el, conn, checked, append) {
 }
 
 function grw_reconnect($, el, conn) {
-    if (window.gpidc) {
-        if (conn.props && !conn.props.map_url) {
+    if (window.gpidc instanceof HTMLIFrameElement) {
+        /*if (conn.props && !conn.props.map_url) {
             grw_show_wizard($, '', conn.lang);
-        } else {
+        } else {*/
             conn.event = 'refresh';
             conn.url = conn.props.map_url;
             window.grw_save.disabled = true;
             window.grw_save.innerText = 'Updating...';
             window.gpidc.contentWindow.postMessage({params: conn, action: 'connect'}, '*');
-        }
+        //}
     } else {
         grw_connect_ajax($, el, conn, null, 1);
     }
 }
 
-function grw_show_wizard($, title, lang) {
+/*function grw_show_wizard($, title, lang) {
     if (lang) {
         window.gpidc.src = window.gpidc.src.replace(/&lang=.+/, '&lang=' + lang);
     }
@@ -1047,7 +1081,7 @@ function grw_show_wizard($, title, lang) {
         width: '50%',
         maxWidth: '600px'
     });
-}
+}*/
 
 function grw_connection_id(conn) {
     var id = 'grw-' + conn.platform + '-' + conn.id.replace(/\//g, '');
@@ -1108,7 +1142,7 @@ function grw_connection_render(conn, checked) {
             (conn.lang != undefined ?
             '<div class="grw-builder-option">' +
                 //'<input type="text" name="lang" value="' + conn.lang + '" placeholder="Default language (English)" />' +
-                grw_lang('Show all connected languages', conn.lang) +
+                grw_lang('Show all', conn.lang) +
             '</div>'
             : '' ) +
             (conn.review_count != undefined ?

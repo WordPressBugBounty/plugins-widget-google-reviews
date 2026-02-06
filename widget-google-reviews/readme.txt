@@ -1,14 +1,14 @@
-=== Rich Shortcodes for Google Reviews ===
+=== Rich Showcase for Google Reviews ===
 Contributors: widgetpack
-Tags: google, reviews, google reviews, google places reviews, rating
-Requires at least: 3.0.1
+Tags: google reviews, reviews, business reviews, testimonials, widget
+Requires at least: 4.7
 Requires PHP: 7.2
-Tested up to: 6.8
-Stable tag: 6.5
+Tested up to: 6.9
+Stable tag: 6.9.4.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Display up to 10 Google reviews in less than a minute. Continue collecting new reviews. No limits on connected places, widgets and shortcodes.
+Display up to 10 Google reviews in less than a minute. Continue collecting new reviews. No limits on connected places, widgets, shortcodes and blocks.
 
 == Description ==
 
@@ -27,7 +27,6 @@ Want to see how it works? Watch the short demo below to see how quickly you can 
 * **No limits on created widgets or shortcodes**
 * **Show up to 10 Google reviews on initial setup**
 * **Connect multiple Google business places**
-* Display customer photos and owner replies inside reviews
 * **Fully GDPR-compliant** — no external requests, all data loads from your own website
 * **Automatically updates reviews** and ratings (when using your own API key)
 * Option to hide reviews without text
@@ -76,6 +75,80 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 6.9.4.3 =
+* Added stable CSS-based transparent borders for slider buttons
+* Improved slider performance and UI
+* Fixed minor styling issues
+
+= 6.9.4.2 =
+* Use standard WordPress function for inline CSS
+* Added aria-labels for slider prev and next buttons
+* Fixed W3C validation warnings
+
+= 6.9.4.1 =
+* Fixed an issue with duplicated star icons
+* Fixed header centering issue
+* Minor style fixes
+
+= 6.9.4 =
+* Fixed conflicts between star icons
+* Added an option to disable inline CSS output
+* Minor style fixes
+
+= 6.9.3 =
+* Completely redesigned frontend
+* Updated star icons with a new modern look
+* Removed legacy styles and forced CSS cleanup, with major CSS refactoring
+* Improved layout consistency, responsiveness, and performance
+
+= 6.9.2 =
+* Improve: Shortcode appears immediately after reviews are connected in widget
+* Bugfix: Custom business photo for Google places in widgets
+* Minor style adjustments
+
+= 6.9.1 =
+* Improve: New Google reviews connection wizard
+* Improve: Show remaining attempts to connect new places or refresh reviews
+* Bugfix: Added support for displaying reviews without language duplicates
+* Bugfix: Reviews without text are now displayed
+
+= 6.9 =
+* Display reviews for all connected languages
+* Removed old and unusable style options (max width and height)
+* Fixed "Style Options / Reset to default style" link
+* Fixed oversized slider buttons
+* UI and style enhancements
+
+= 6.8.2 =
+* Updated API connection endpoint
+* Improved settings description
+
+= 6.8.1 =
+* Security fixes for Overview page
+* Minor style improvements
+
+= 6.8 =
+* Added prev, next and dots slider button elements
+* Removed unused service pixel image
+* Tested up to WordPress 6.9
+* Minor style fixes
+
+= 6.7 =
+* Improve: Option added to disable automatic adding of styles file to RUCSS safelist
+* Bugfix: Fixed text domain for some messages
+
+= 6.6.2 =
+* Improve: Security fixes (added escaping in overall views)
+
+= 6.6.1 =
+* Bugfix: Fixed PHP variable bug from previous release
+
+= 6.6 =
+* Improve: Added clear and easy-to-use steps to the Google connection wizard
+* Improve: Added alt attributes for all images when ARIA labels are disabled
+* Improve: Switched to a better style (CSS) obfuscator
+* Some style fixes
 
 = 6.5 =
 * Improve: Updated Google reviews connection wizard for improved stability

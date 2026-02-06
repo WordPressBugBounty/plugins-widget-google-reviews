@@ -96,25 +96,33 @@ $places        = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . Database:
 $places_error  = $wpdb->last_error;
 $reviews       = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . Database::REVIEW_TABLE);
 $reviews_error = $wpdb->last_error;
+$r_text        = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . Database::TEXT_TABLE);
+$r_text_error  = $wpdb->last_error;
 $stats         = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . Database::STATS_TABLE);
 $stats_error   = $wpdb->last_error; ?>
 
 ------------ Places ------------
 
-<?php if (isset($places_error) && strlen($places_error) > 0) { echo 'DB Places error: ' . $places_error; } ?>
+<?php if (!empty($places_error)) { echo 'DB Places error: ' . $places_error; } ?>
 
 <?php echo print_r($places); ?>
 
 
 ------------ Reviews ------------
 
-<?php if (isset($reviews_error) && strlen($reviews_error) > 0) { echo 'DB Reviews error: ' . $reviews_error; } ?>
+<?php if (!empty($reviews_error)) { echo 'DB Reviews error: ' . $reviews_error; } ?>
 
 <?php echo print_r($reviews); ?>
 
+------------ Reviews Text ------------
+
+<?php if (!empty($r_text_error)) { echo 'DB Reviews Text error: ' . $r_text_error; } ?>
+
+<?php echo print_r($r_text); ?>
+
 ------------ Stats ------------
 
-<?php if (isset($stats_error) && strlen($stats_error) > 0) { echo 'DB Stats error: ' . $stats_error; } ?>
+<?php if (!empty($stats_error)) { echo 'DB Stats error: ' . $stats_error; } ?>
 
 <?php echo print_r($stats);
 

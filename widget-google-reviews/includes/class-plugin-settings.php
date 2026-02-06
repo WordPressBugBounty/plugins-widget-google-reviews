@@ -40,6 +40,8 @@ class Plugin_Settings {
         $grw_enabled         = get_option('grw_active') == '1';
         $async_css           = get_option('grw_async_css');
         $grw_demand_assets   = get_option('grw_demand_assets');
+        $grw_rucss_safelist  = get_option('grw_rucss_safelist');
+        $grw_inlinecss_off   = get_option('grw_inlinecss_off');
         $grw_freq_revs_upd   = get_option('grw_freq_revs_upd');
         $gpa_old             = get_option('grw_gpa_old');
         $grw_google_api_key  = get_option('grw_google_api_key');
@@ -96,6 +98,32 @@ class Plugin_Settings {
                                     <input type="checkbox" id="grw_demand_assets" name="grw_demand_assets" value="true" <?php checked('true', $grw_demand_assets); ?>>
                                     Load static assets (JS/CSS) only on pages where reviews are showing
                                 </label>
+                            </div>
+                        </div>
+                        <div class="grw-field">
+                            <div class="grw-field-label">
+                                <label>Disable inline CSS</label>
+                            </div>
+                            <div class="wp-review-field-option">
+                                <label>
+                                    <input type="hidden" name="grw_inlinecss_off" value="false">
+                                    <input type="checkbox" id="grw_inlinecss_off" name="grw_inlinecss_off" value="true" <?php checked('true', $grw_inlinecss_off); ?>>
+                                    Do not output the plugin’s inline CSS styles.<br>
+                                    <b>Do not turn on this</b> to ensure the latest styles and avoid caching issues after updates.
+                                </label>
+                            </div>
+                        </div>
+                        <div class="grw-field">
+                            <div class="grw-field-label">
+                                <label>Disable RUCSS safelist</label>
+                            </div>
+                            <div class="wp-review-field-option">
+                                <label>
+                                    <input type="hidden" name="grw_rucss_safelist" value="false">
+                                    <input type="checkbox" id="grw_rucss_safelist" name="grw_rucss_safelist" value="true" <?php checked('true', $grw_rucss_safelist); ?>>
+                                    Disables automatic addition of the main CSS file to the safelist<br>
+                                    to prevent possible style issues with optimization plugins such as NitroPack or WP Rocket
+                                </label>
                                 <div style="padding-top:15px">
                                     <input type="submit" value="Save" name="save" class="button" />
                                 </div>
@@ -129,7 +157,8 @@ class Plugin_Settings {
                                 <label>
                                     <input type="hidden" name="grw_gpa_old" value="false">
                                     <input type="checkbox" id="grw_gpa_old" name="grw_gpa_old" value="true" <?php checked('true', $gpa_old); ?>>
-                                    Applies to API keys created before March 1, 2025,<br>provided that the Places API (New) has not been enabled in Google Console.
+                                    It can display more reviews because it sorts them from newest to oldest.<br>
+                                    However, not all API keys support this (you can check it in Google Cloud Console).
                                 </label>
                             </div>
                         </div>

@@ -24,9 +24,9 @@ class Google_Dao {
 
         // Insert or update Google place
         if ($db_place_id) {
-            $this->update_place($place, $db_place_id, $log);
+            $this->update_place($place, $db_place_id, $local_img, $log);
         } else {
-            $db_place_id = $this->insert_place($place, $log);
+            $db_place_id = $this->insert_place($place, $local_img, $log);
         }
         $this->log_last_error($wpdb);
 
@@ -52,6 +52,7 @@ class Google_Dao {
                 $review_lang = null;
                 if (isset($review->language)) {
                     $review_lang = ($review->language == 'en-US' ? 'en' : $review->language);
+                    // TODO commentout
                     if (strlen($review_lang) > 0) {
                         $where = $where . " AND language = %s";
                         array_push($where_params, $review_lang);
@@ -63,7 +64,7 @@ class Google_Dao {
                     array_push($where_params, $db_place_id);
                 }
 
-                $sql = "SELECT id FROM " . $wpdb->prefix . Database::REVIEW_TABLE . $where;
+                $sql = "SELECT id FROM " . $wpdb->prefix . Database::REVIEW_TABLE . $where/* . " ORDER BY id DESC LIMIT 1"*/;
                 $db_review_id = $wpdb->get_var($wpdb->prepare($sql, $where_params));
 
                 $author_img = null;
@@ -99,9 +100,9 @@ class Google_Dao {
                 }
 
                 if ($db_review_id) {
-                    $this->update_review($review, $review_lang, $author_img, $images, $reply, $reply_time, $db_review_id, $log);
+                    $this->update_review($place->place_id, $review, $review_lang, $author_img, $images, $reply, $reply_time, $db_review_id, $log);
                 } else {
-                    $this->insert_review($review, $review_lang, $author_img, $images, $reply, $reply_time, $db_place_id, $log);
+                    $this->insert_review($place->place_id, $review, $review_lang, $author_img, $images, $reply, $reply_time, $db_place_id, $log);
                 }
                 $this->log_last_error($wpdb);
             }
@@ -110,7 +111,7 @@ class Google_Dao {
         update_option('grw_save_log', implode('_', $log));
     }
 
-    public function insert_place($place, &$log = []) {
+    public function insert_place($place, $local_img, &$log = []) {
         global $wpdb;
 
         // Insert Google place
@@ -124,7 +125,7 @@ class Google_Dao {
             'rating'       => $rating,
             'review_count' => $review_count,
             'name'         => $name,
-            'photo'        => isset($place->business_photo) ? $place->business_photo : null,
+            'photo'        => $this->get_place_photo($place, $local_img),
             'url'          => isset($place->url) ? $place->url     : null,
             'website'      => isset($place->website) ? $place->website : null,
             'icon'         => isset($place->icon) ? $place->icon : null,
@@ -147,7 +148,7 @@ class Google_Dao {
         return $db_place_id;
     }
 
-    public function update_place($place, $db_place_id, &$log = []) {
+    public function update_place($place, $db_place_id, $local_img, &$log = []) {
         global $wpdb;
 
         $name = $place->name;
@@ -167,8 +168,8 @@ class Google_Dao {
         }
 
         // Update business photo
-        if (isset($place->business_photo) && strlen($place->business_photo) > 0) {
-            $update_params['photo'] = $place->business_photo;
+        if (!empty($place->business_photo)) {
+            $update_params['photo'] = $this->get_place_photo($place, $local_img);
         }
 
         // Update map URL
@@ -181,6 +182,18 @@ class Google_Dao {
         array_push($log, 'up[' . $db_place_id . ',' . $name . ',' . $rating . ',' . $review_count . ']');
 
         $this->update_stats($place->rating, $review_count, $db_place_id);
+    }
+
+    public function get_place_photo($place, $local_img) {
+        $photo = null;
+        if (!empty($place->business_photo)) {
+            if ($local_img === true || $local_img == 'true') {
+                $photo = $this->helper->upload_image($place->business_photo, $place->place_id);
+            } else {
+                $photo = $place->business_photo;
+            }
+        }
+        return $photo;
     }
 
     public function update_stats($rating, $review_count, $db_place_id) {
@@ -214,7 +227,7 @@ class Google_Dao {
         $this->log_last_error($wpdb);
     }
 
-    public function update_review($review, $review_lang, $author_img, $images, $reply, $reply_time, $db_review_id, &$log = []) {
+    public function update_review($pid, $review, $review_lang, $author_img, $images, $reply, $reply_time, $db_review_id, &$log = []) {
         global $wpdb;
 
         $update_params = array(
@@ -237,7 +250,10 @@ class Google_Dao {
         if (isset($review->provider)) {
             $update_params['provider'] = $review->provider;
         }
+
         $wpdb->update($wpdb->prefix . Database::REVIEW_TABLE, $update_params, array('id' => $db_review_id));
+
+        $this->upsert_review_text($pid, $review, $review_lang, $review->text);
 
         array_push(
             $log,
@@ -251,7 +267,7 @@ class Google_Dao {
         );
     }
 
-    public function insert_review($review, $review_lang, $author_img, $images, $reply, $reply_time, $db_place_id, &$log = []) {
+    public function insert_review($pid, $review, $review_lang, $author_img, $images, $reply, $reply_time, $db_place_id, &$log = []) {
         global $wpdb;
 
         $wpdb->insert($wpdb->prefix . Database::REVIEW_TABLE, array(
@@ -270,6 +286,10 @@ class Google_Dao {
             'reply_time'        => $reply_time
         ));
 
+        $db_review_id = $wpdb->insert_id;
+
+        $this->upsert_review_text($pid, $review, $review_lang, $review->text);
+
         array_push(
             $log,
             'ir[' .
@@ -281,8 +301,23 @@ class Google_Dao {
         );
     }
 
+    private function upsert_review_text($pid, $review, $lang, $text) {
+        global $wpdb;
+
+        if (empty($pid) || empty($review->provider) || empty($review->author_url) || empty($lang) || empty($text)) {
+            return;
+        }
+
+        $review_id = md5($review->provider . ':' . $pid . ':' . $review->author_url);
+
+        $wpdb->query($wpdb->prepare('INSERT INTO ' . $wpdb->prefix . Database::TEXT_TABLE . ' (review_id, lang, text) ' .
+            'VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE text = VALUES(text)', $review_id, $lang, $text));
+
+        $this->log_last_error($wpdb);
+    }
+
     private function log_last_error($wpdb) {
-        if (isset($wpdb->last_error) && strlen($wpdb->last_error) > 0) {
+        if (!empty($wpdb->last_error)) {
             $last_error = $wpdb->last_error;
             $opt = get_option('grw_last_error');
             if (empty($opt)) {

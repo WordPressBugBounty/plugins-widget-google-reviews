@@ -8,11 +8,16 @@ class Assets {
     private $version;
     private $debug;
 
+    private $css_cache = array();
+
     private static $css_assets = array(
         'grw-admin-main-css'      => 'css/admin-main',
-        'grw-public-clean-css'    => 'css/public-clean',
         'grw-public-main-css'     => 'css/public-main',
+        'grw-public-badge-css'    => 'css/public-badge',
 
+        'rpi-flex-css'            => 'https://cdn.reviewsplugin.com/assets/css/flex.css',
+        'rpi-stars-css'           => 'https://cdn.reviewsplugin.com/assets/css/stars.css',
+        'rpi-slider-css'          => 'https://cdn.reviewsplugin.com/assets/css/slider.css',
         'rpi-common-css'          => 'https://cdn.reviewsplugin.com/assets/css/common.css',
         'rpi-lightbox-css'        => 'https://cdn.reviewsplugin.com/assets/css/lightbox.css'
     );
@@ -27,6 +32,8 @@ class Assets {
         'rpi-utils-js'            => 'https://cdn.reviewsplugin.com/assets/js/utils.js',
         'rpi-column-js'           => 'https://cdn.reviewsplugin.com/assets/js/column.js',
         'rpi-common-js'           => 'https://cdn.reviewsplugin.com/assets/js/common.js',
+        'rpi-lightbox-js'         => 'https://cdn.reviewsplugin.com/assets/js/lightbox.js',
+        'rpi-toast-js'            => 'https://cdn.reviewsplugin.com/assets/js/toast.js',
         'rpi-media-js'            => 'https://cdn.reviewsplugin.com/assets/js/media.js',
         'rpi-slider-js'           => 'https://cdn.reviewsplugin.com/assets/js/slider.js'
     );
@@ -58,7 +65,11 @@ class Assets {
                 add_filter('style_loader_tag', array($this, 'style_async'), 10, 2);
             }
         }
-        add_filter('get_rocket_option_remove_unused_css_safelist', array($this, 'rucss_safelist'));
+
+        $grw_rucss_safelist = get_option('grw_rucss_safelist');
+        if (!$grw_rucss_safelist || $grw_rucss_safelist != 'true') {
+            add_filter('get_rocket_option_remove_unused_css_safelist', array($this, 'rucss_safelist'));
+        }
     }
 
     function script_async($tag, $handle) {
@@ -76,7 +87,6 @@ class Assets {
     function style_async($tag, $handle) {
         $css_assets = array(
             'grw-admin-main-css'   => 'css/admin-main',
-            'grw-public-clean-css' => 'css/public-clean',
             'grw-public-main-css'  => 'css/public-main',
         );
         if (isset($handle) && array_key_exists($handle, $css_assets)) {
@@ -95,10 +105,16 @@ class Assets {
     }
 
     public function register_styles() {
-        $styles = array('grw-admin-main-css', 'grw-public-main-css', 'rpi-common-css', 'rpi-lightbox-css');
-        if ($this->debug) {
-            array_push($styles, 'grw-public-clean-css');
-        }
+        $styles = array(
+            'grw-admin-main-css',
+            'grw-public-main-css',
+            'grw-public-badge-css',
+            'rpi-flex-css',
+            'rpi-stars-css',
+            'rpi-slider-css',
+            'rpi-common-css',
+            'rpi-lightbox-css'
+        );
         $this->register_styles_loop($styles);
     }
 
@@ -110,6 +126,8 @@ class Assets {
             array_push($scripts, 'rpi-utils-js');
             array_push($scripts, 'rpi-column-js');
             array_push($scripts, 'rpi-common-js');
+            array_push($scripts, 'rpi-lightbox-js');
+            array_push($scripts, 'rpi-toast-js');
             array_push($scripts, 'rpi-media-js');
             array_push($scripts, 'rpi-slider-js');
         }
@@ -136,6 +154,8 @@ class Assets {
         );
 
         if ($this->debug) {
+            wp_enqueue_script('rpi-toast-js');
+            wp_enqueue_script('rpi-lightbox-js');
             wp_localize_script('grw-admin-builder-js', 'GRW_VARS', $vars);
             wp_enqueue_script('grw-admin-builder-js');
         } else {
@@ -148,13 +168,28 @@ class Assets {
 
     public function enqueue_public_styles() {
         if ($this->debug) {
-            wp_enqueue_style('grw-public-clean-css');
-            wp_style_add_data('grw-public-clean-css', 'rtl', 'replace');
+            wp_enqueue_style('rpi-flex-css');
+            wp_enqueue_style('rpi-stars-css');
+            wp_enqueue_style('rpi-slider-css');
             wp_enqueue_style('rpi-common-css');
             wp_enqueue_style('rpi-lightbox-css');
         }
-        wp_enqueue_style('grw-public-main-css');
-        wp_style_add_data('grw-public-main-css', 'rtl', 'replace');
+
+        $handle = 'grw-public-main-css';
+        $inlinecss_off = get_option('grw_inlinecss_off');
+        if ($inlinecss_off !== 'true') {
+            $css = $this->get_css_content('public-main');
+            if (!empty($css)) {
+                wp_dequeue_style($handle);
+                wp_deregister_style($handle);
+                wp_register_style($handle, false);
+                wp_enqueue_style($handle);
+                wp_add_inline_style($handle, $css);
+                return;
+            }
+        }
+        wp_enqueue_style($handle);
+        wp_style_add_data($handle, 'rtl', 'replace');
     }
 
     public function enqueue_public_scripts() {
@@ -163,6 +198,7 @@ class Assets {
             wp_enqueue_script('rpi-utils-js');
             wp_enqueue_script('rpi-column-js');
             wp_enqueue_script('rpi-common-js');
+            // TODO: wp_enqueue_script('rpi-lightbox-js');
             wp_enqueue_script('rpi-media-js');
             wp_enqueue_script('rpi-slider-js');
         }
@@ -195,4 +231,18 @@ class Assets {
         return $this->version;
     }
 
+    private function get_css_content($name) {
+        $key = $name . (is_rtl() ? '-rtl' : '');
+
+        if (isset($this->css_cache[$key])) {
+            return $this->css_cache[$key];
+        }
+
+        $file = GRW_PLUGIN_PATH . '/assets/' . ($this->debug ? 'src/' : '') . 'css/' . $key . '.css';
+        if (!file_exists($file) || !is_readable($file)) {
+            return $this->css_cache[$key] = '';
+        }
+        $css = (string) file_get_contents($file);
+        return $this->css_cache[$key] = $css;
+    }
 }

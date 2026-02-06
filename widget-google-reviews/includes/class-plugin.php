@@ -65,8 +65,6 @@ final class Plugin {
 
         $feed_deserializer = new Feed_Deserializer(new \WP_Query());
 
-        $debug_info = new Debug_Info($activator, $feed_deserializer);
-
         $core = new Core();
 
         $view = new View();
@@ -129,6 +127,8 @@ final class Plugin {
 
             $settings_save = new Settings_Save($activator, $reviews_cron);
             $settings_save->register();
+
+            $debug_info = new Debug_Info($activator, $feed_deserializer);
 
             $plugin_settings = new Plugin_Settings($builder_page, $debug_info);
             $plugin_settings->register();

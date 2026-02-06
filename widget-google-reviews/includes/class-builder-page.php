@@ -70,9 +70,9 @@ class Builder_Page {
         }
 
         ?>
-        <div class="grw-builder"<?php if (!$feed_inited) { ?> style="filter:blur(4px)"<?php } ?>>
-            <?php wp_nonce_field('grw_wpnonce', 'grw_nonce'); ?>
+        <div class="grw-builder">
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php?action=' . Post_Types::FEED_POST_TYPE . '_save')); ?>">
+                <?php wp_nonce_field('grw_wpnonce', 'grw_nonce'); ?>
                 <input type="hidden" id="grw_post_id" name="<?php echo Post_Types::FEED_POST_TYPE; ?>[post_id]" value="<?php echo esc_attr($feed_id); ?>">
                 <input type="hidden" id="grw_current_url" name="<?php echo Post_Types::FEED_POST_TYPE; ?>[current_url]" value="<?php echo home_url($_SERVER['REQUEST_URI']); ?>">
                 <div class="grw-builder-workspace">
@@ -120,7 +120,7 @@ class Builder_Page {
                     </div>
                     <div class="grw-rate_us-body">
                         Rate us clicking on the stars:
-                        <?php $this->view->grw_stars(5); ?>
+                        <span class="rpi-star" data-rating="5" style="--rpi-star-size:26px;--gap:0"><i></i><i></i><i></i><i></i><i></i></span>
                     </div>
                 </div>
             </div>
@@ -129,8 +129,8 @@ class Builder_Page {
 
         <div id="grw-rate_us-feedback" title="Thanks for your feedback!" style="display:none;">
             <b>Please tell us how we can improve the plugin.</b>
-            <p style="font-size:16px;">
-                <span id="grw-rate_us-feedback-stars"></span>
+            <p>
+                <span class="rpi-star" data-rating="5" style="--rpi-star-size:26px;--gap:0"><i></i><i></i><i></i><i></i><i></i></span>
             </p>
             <p style="font-size:16px;">
                 <input type="text" value="<?php global $current_user; echo $current_user->user_email; ?>" placeholder="Contact email"/>

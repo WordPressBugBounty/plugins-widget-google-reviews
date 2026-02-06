@@ -51,6 +51,7 @@ class Core {
             'lazy_load_img'             => true,
             'aria_label'                => false,
             'google_def_rev_link'       => false,
+            'star_style'                => '',
             'reviewer_avatar_size'      => 56,
             'reviews_limit'             => '',
             'hidden'                    => '',
@@ -61,11 +62,11 @@ class Core {
     public function get_reviews($feed, $is_admin = false) {
         $connection = json_decode($feed->post_content);
 
-        if ($is_admin) {
+        if ($is_admin && is_admin()) {
             return $this->get_data($connection, $is_admin);
         }
 
-        $cache_time            = isset($connection->options->cache) ? $connection->options->cache : null;
+        $cache_time            = isset($connection->options) && isset($connection->options->cache) ? $connection->options->cache : null;
         $data_cache_key        = 'grw_feed_' . GRW_VERSION . '_' . $feed->ID . '_reviews';
         $connection_cache_key  = 'grw_feed_' . GRW_VERSION . '_' . $feed->ID . '_options';
 
@@ -100,7 +101,7 @@ class Core {
                 default:
                     $expiration = 3600 * 24;
             }
-            $data = $this->get_data($connection, $is_admin);
+            $data = $this->get_data($connection);
             set_transient($data_cache_key, $data, $expiration);
             set_transient($connection_cache_key, $serialized_connection, $expiration);
         }
@@ -108,8 +109,11 @@ class Core {
     }
 
     private function get_ops($connection) {
+        if (!isset($connection->options) || !is_object($connection->options)) {
+            $connection->options = (object)[];
+        }
         foreach ($this->get_default_options() as $field => $value) {
-            $connection->options->{$field} = isset($connection->options->{$field}) ? esc_attr($connection->options->{$field}) : $value;
+            $connection->options->{$field} = isset($connection->options->{$field}) ? $connection->options->{$field} : $value;
         }
         return $connection->options;
     }
@@ -158,7 +162,10 @@ class Core {
 
         $rating = 0;
         $review_count = 0;
-        $reviews = [];
+        $reviews = array();
+
+        $business = null;
+        $google_reviews = array();
 
         // Get place
         $place = $wpdb->get_row(
@@ -171,32 +178,54 @@ class Core {
         if ($place) {
 
             // Get reviews
-            $reviews_params = [$place->id];
-
-            $reviews_where = $is_admin ? '' : ' AND hide = \'\'';
+            $hidden_ids  = array();
+            $where_plain = $is_admin ? '' : " AND r2.hide = ''";
+            $where_r     = $is_admin ? '' : " AND r.hide = ''";
 
             if (isset($options->hidden) && !$is_admin) {
                 $hidden_ids = $this->parse_hidden_ids($options->hidden);
                 if (!empty($hidden_ids)) {
-                    $hidden_phs     = implode(',', array_fill(0, count($hidden_ids), '%d'));
-                    $reviews_where .= ' AND id NOT IN (' . $hidden_phs . ')';
-                    $reviews_params = array_merge($reviews_params, $hidden_ids);
+                    $hidden_phs   = implode(',', array_fill(0, count($hidden_ids), '%d'));
+                    $where_plain .= ' AND r2.id NOT IN (' . $hidden_phs . ')';
+                    $where_r     .= ' AND r.id NOT IN (' . $hidden_phs . ')';
                 }
             }
 
-            $reviews_lang = empty($biz->lang) ? 'en' : $biz->lang;
-            $reviews_where .= ' AND (language = %s OR language = \'\' OR language IS NULL)';
-            $reviews_params[] = $reviews_lang;
+            if (empty($biz->lang)) {
 
-            $reviews = $wpdb->get_results(
-                $wpdb->prepare(
-                    "SELECT * FROM " . $wpdb->prefix . Database::REVIEW_TABLE .
-                    " WHERE google_place_id = %d" . $reviews_where . " ORDER BY time DESC", $reviews_params
-                )
-            );
+                $sql = "SELECT r.*
+                        FROM {$wpdb->prefix}" . Database::REVIEW_TABLE . " r
+                        WHERE r.google_place_id = %d{$where_r}
+                            AND r.author_url IS NOT NULL
+                            AND NOT EXISTS (
+                                SELECT 1
+                                FROM {$wpdb->prefix}" . Database::REVIEW_TABLE . " r2
+                                WHERE r2.google_place_id = r.google_place_id
+                                    AND r2.author_url = r.author_url{$where_plain}
+                                    AND (
+                                        r2.time > r.time
+                                        OR (r2.time = r.time AND r2.id > r.id)
+                                    )
+                            )
+                        ORDER BY r.time DESC, r.id DESC";
+
+                $params = array_merge([$place->id], $hidden_ids, $hidden_ids);
+
+            } else {
+
+                $sql = "SELECT r2.*
+                        FROM {$wpdb->prefix}" . Database::REVIEW_TABLE . " r2
+                        WHERE r2.google_place_id = %d{$where_plain} AND (r2.language = %s OR r2.language IS NULL)
+                        ORDER BY r2.time DESC";
+
+                $params = array_merge([$place->id], $hidden_ids);
+                $params[] = $biz->lang;
+            }
+
+            $reviews = $wpdb->get_results($wpdb->prepare($sql, $params));
 
             // Setup photo
-            $place->photo = strlen($biz->photo) > 0 ? $biz->photo : (strlen($place->photo) > 0 ? $place->photo : GRW_GOOGLE_BIZ);
+            $place_photo = empty($biz->photo) ? (empty($place->photo) ? GRW_GOOGLE_BIZ : $place->photo) : $biz->photo;
 
             // Calculate reviews count
             if (isset($place->review_count) && $place->review_count > 0) {
@@ -221,50 +250,48 @@ class Core {
                 $rating = round($rating / count($reviews), 1);
             }
             $rating = number_format((float)$rating, 1, '.', '');
-        }
 
-        $business = json_decode(json_encode(
-            array(
-                'id'                  => $biz->id,
-                'name'                => $biz->name ? $biz->name : $place->name,
-                'url'                 => isset($place->url) ? $place->url : null,
-                'photo'               => isset($place->photo) ? $place->photo : GRW_GOOGLE_BIZ,
-                'address'             => isset($place->address) ? $place->address : null,
-                'rating'              => $rating,
-                'review_count'        => $review_count,
-                'provider'            => 'google'
-            )
-        ));
-
-        $google_reviews = array();
-        foreach ($reviews as $rev) {
-            if (isset($options->min_letter) && isset($rev->text) && strlen($rev->text) < $options->min_letter) {
-                continue;
-            }
-            $text = isset($rev->text) && strlen($rev->text) > 0 ? nl2br(wp_encode_emoji($rev->text)) : null;
-            $review = json_decode(json_encode(
+            $business = json_decode(json_encode(
                 array(
-                    'id'            => $rev->id,
-                    'hide'          => $rev->hide,
-                    'biz_id'        => $biz->id,
-                    'biz_url'       => $place->url,
-                    'rating'        => $rev->rating,
-                    'text'          => $text,
-                    'author_avatar' => $rev->profile_photo_url,
-                    'author_url'    => $rev->author_url,
-                    'author_name'   => isset($options->short_last_name) && $options->short_last_name ?
-                                       $this->get_short_name($rev->author_name) : $rev->author_name,
-                    'time'          => $rev->time,
-                    'images'        => isset($rev->images) ? $rev->images : null,
-                    'reply'         => isset($rev->reply) ? $rev->reply : null,
-                    'reply_time'    => isset($rev->reply_time) ? $rev->reply_time : null,
-                    'url'           => isset($rev->url) ? $rev->url : null,
-                    'provider'      => isset($rev->provider) ? $rev->provider : 'google'
+                    'id'                  => $biz->id,
+                    'name'                => $biz->name ? $biz->name : $place->name,
+                    'url'                 => empty($place->url) ? null : $place->url,
+                    'photo'               => $place_photo,
+                    'address'             => empty($place->address) ? null : $place->address,
+                    'rating'              => $rating,
+                    'review_count'        => $review_count,
+                    'provider'            => 'google'
                 )
             ));
-            array_push($google_reviews, $review);
-        }
 
+            foreach ($reviews as $rev) {
+                if (isset($options->min_letter) && isset($rev->text) && strlen($rev->text) < $options->min_letter) {
+                    continue;
+                }
+                $text = isset($rev->text) && strlen($rev->text) > 0 ? nl2br(wp_encode_emoji($rev->text)) : null;
+                $review = json_decode(json_encode(
+                    array(
+                        'id'            => $rev->id,
+                        'hide'          => $rev->hide,
+                        'biz_id'        => $biz->id,
+                        'biz_url'       => empty($place->url) ? null : $place->url,
+                        'rating'        => $rev->rating,
+                        'text'          => $text,
+                        'author_avatar' => $rev->profile_photo_url,
+                        'author_url'    => $rev->author_url,
+                        'author_name'   => isset($options->short_last_name) && $options->short_last_name ?
+                                           $this->get_short_name($rev->author_name) : $rev->author_name,
+                        'time'          => $rev->time,
+                        'images'        => isset($rev->images) ? $rev->images : null,
+                        'reply'         => isset($rev->reply) ? $rev->reply : null,
+                        'reply_time'    => isset($rev->reply_time) ? $rev->reply_time : null,
+                        'url'           => isset($rev->url) ? $rev->url : null,
+                        'provider'      => isset($rev->provider) ? $rev->provider : 'google'
+                    )
+                ));
+                array_push($google_reviews, $review);
+            }
+        }
         return array('business' => $business, 'reviews' => $google_reviews);
     }
 
@@ -327,7 +354,7 @@ class Core {
                     'id'            => $rev->id,
                     'hide'          => $rev->hide,
                     'rating'        => $rev->rating,
-                    'text'          => wp_encode_emoji($rev->text),
+                    'text'          => $rev->text,
                     'author_url'    => $rev->author_url,
                     'author_name'   => $rev->author_name,
                     'time'          => $rev->time,
