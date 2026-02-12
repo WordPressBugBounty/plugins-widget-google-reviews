@@ -47,6 +47,7 @@ class Builder_Page {
         $feed_id = '';
         $feed_post_title = '';
         $feed_content = '';
+        $decoded_content = array();
         $feed_inited = false;
         $businesses = null;
         $reviews = null;
@@ -59,6 +60,13 @@ class Builder_Page {
             $feed_id = $feed->ID;
             $feed_post_title = $feed->post_title;
             $feed_content = trim($feed->post_content);
+
+            if (!empty($feed_content)) {
+                $tmp = json_decode($feed_content, true);
+                if (is_array($tmp)) {
+                    $decoded_content = $tmp;
+                }
+            }
 
             $data = $this->core->get_reviews($feed, true);
             $businesses = $data['businesses'];
@@ -74,11 +82,11 @@ class Builder_Page {
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php?action=' . Post_Types::FEED_POST_TYPE . '_save')); ?>">
                 <?php wp_nonce_field('grw_wpnonce', 'grw_nonce'); ?>
                 <input type="hidden" id="grw_post_id" name="<?php echo Post_Types::FEED_POST_TYPE; ?>[post_id]" value="<?php echo esc_attr($feed_id); ?>">
-                <input type="hidden" id="grw_current_url" name="<?php echo Post_Types::FEED_POST_TYPE; ?>[current_url]" value="<?php echo home_url($_SERVER['REQUEST_URI']); ?>">
+                <input type="hidden" id="grw_current_url" name="<?php echo Post_Types::FEED_POST_TYPE; ?>[current_url]" value="<?php echo home_url(esc_url_raw(wp_unslash($_SERVER['REQUEST_URI']))); ?>">
                 <div class="grw-builder-workspace">
                     <div class="grw-toolbar">
                         <div class="grw-toolbar-title">
-                            <input id="grw_title" class="grw-toolbar-title-input" type="text" name="<?php echo Post_Types::FEED_POST_TYPE; ?>[title]" value="<?php if (isset($feed_post_title)) { echo $feed_post_title; } ?>" placeholder="Enter a widget name" maxlength="255" autofocus>
+                            <input id="grw_title" class="grw-toolbar-title-input" type="text" name="<?php echo Post_Types::FEED_POST_TYPE; ?>[title]" value="<?php if (!empty($feed_post_title)) echo esc_attr($feed_post_title); ?>" placeholder="Enter a widget name" maxlength="255" autofocus>
                         </div>
                         <div class="grw-toolbar-control">
                             <?php if ($feed_inited) { ?>
@@ -94,7 +102,7 @@ class Builder_Page {
                         </div>
                     </div>
                     <div class="grw-builder-preview">
-                        <textarea id="grw-builder-connection" name="<?php echo Post_Types::FEED_POST_TYPE; ?>[content]" style="display:none"><?php echo $feed_content; ?></textarea>
+                        <textarea id="grw-builder-connection" name="<?php echo Post_Types::FEED_POST_TYPE; ?>[content]" style="display:none"><?php echo esc_textarea($feed_content); ?></textarea>
                         <div id="grw_collection_preview">
                             <?php
                             if ($feed_inited) {
@@ -133,7 +141,7 @@ class Builder_Page {
                 <span class="rpi-star" data-rating="5" style="--rpi-star-size:26px;--gap:0"><i></i><i></i><i></i><i></i><i></i></span>
             </p>
             <p style="font-size:16px;">
-                <input type="text" value="<?php global $current_user; echo $current_user->user_email; ?>" placeholder="Contact email"/>
+                <input type="text" value="<?php global $current_user; echo esc_attr($current_user->user_email); ?>" placeholder="Contact email"/>
             </p>
             <p style="font-size:16px;">
                 <textarea autofocus placeholder="Describe your experience and how we can improve that"></textarea>
@@ -146,7 +154,7 @@ class Builder_Page {
                 This plugin uses our default <b>Google Places API key which is mandatory for retrieving Google reviews</b> through official way approved by Google (without crawling). Our API key can make 5 requests to Google API for each WordPress server and it's exceeded at the moment.
             </p>
             <p style="font-size:16px;">
-                To continue working with Google API and daily reviews refreshing, please create your own API key by <a href="<?php echo admin_url('admin.php?page=grw-support&grw_tab=fig#fig_api_key'); ?>" target="_blank">this instruction</a> and save it on the settings page of the plugin.
+                To continue working with Google API and daily reviews refreshing, please create your own API key by <a href="<?php echo esc_url(admin_url('admin.php?page=grw-support&grw_tab=fig#fig_api_key')); ?>" target="_blank">this instruction</a> and save it on the settings page of the plugin.
             </p>
             <p style="font-size:16px;">
                 Don’t worry, it will be free because Google is currently giving free credit a month and it should be enough to use the plugin for connecting several Google places and daily refresh of reviews.
@@ -164,9 +172,9 @@ class Builder_Page {
                     }
                     grw_builder_init($, {
                         el       : '#grw-builder-option',
-                        authcode : '<?php echo $authcode; ?>',
-                        <?php if (isset($api_key) && strlen($api_key) > 0) { echo 'key: true,'; } ?>
-                        <?php if (strlen($feed_content) > 0) { echo 'conns: ' . $feed_content; } ?>
+                        authcode : <?php echo wp_json_encode((string) $authcode); ?>,
+                        <?php if (!empty($api_key)) echo 'key: true,'; ?>
+                        <?php if (!empty($feed_content)) echo 'conns: ' . wp_json_encode($decoded_content); ?>
                     });
                 }
                 grw_builder_init_listener(20);

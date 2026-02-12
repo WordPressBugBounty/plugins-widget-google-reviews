@@ -1,10 +1,10 @@
 === Rich Showcase for Google Reviews ===
 Contributors: widgetpack
-Tags: google reviews, reviews, business reviews, testimonials, widget
+Tags: google, google reviews, reviews, testimonials, widget
 Requires at least: 4.7
 Requires PHP: 7.2
 Tested up to: 6.9
-Stable tag: 6.9.4.3
+Stable tag: 6.9.4.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,10 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 6.9.4.4 =
+* Fixed security issues
+* Removed unused options
 
 = 6.9.4.3 =
 * Added stable CSS-based transparent borders for slider buttons

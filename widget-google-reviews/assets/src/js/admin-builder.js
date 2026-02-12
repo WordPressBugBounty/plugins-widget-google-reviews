@@ -341,13 +341,6 @@ const GRW_HTML_CONTENT =
                 '<div class="grw-quest-help" style="display:none;">If the direct link to all reviews <b>https://search.google.com/local/reviews?placeid=&lt;PLACE_ID&gt;</b> does not work with your Google place (leads to 404), please use this option to use the default reviews link to Google map.</div>' +
             '</div>' +
             '<div class="grw-builder-option">' +
-                'Widget style' +
-                '<select name="style">' +
-                    '<option value="legacy">Legacy</option>' +
-                    '<option value="modern" selected="selected">Modern</option>' +
-                '</select>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
                 'Reviewer avatar size' +
                 '<select name="reviewer_avatar_size">' +
                     '<option value="56" selected="selected">Small: 56px</option>' +
