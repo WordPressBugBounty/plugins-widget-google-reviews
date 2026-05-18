@@ -64,12 +64,15 @@ class Google_Api_Old {
                 $this->dao->save($data, $local_img);
             }
 
+            $business_photo = empty($data->business_photo) ? GRW_GOOGLE_BIZ : $data->business_photo;
+
             $result = array(
                 'id'                 => $data->place_id,
                 'name'               => $data->name,
                 'rating'             => $data->rating,
                 'user_ratings_total' => $data->user_ratings_total,
-                'photo'              => isset($data->business_photo) && strlen($data->business_photo) ? $data->business_photo : GRW_GOOGLE_BIZ,
+                'photo'              => empty($data->photo) ? $business_photo : $data->photo,
+                'business_photo'     => $business_photo,
                 'reviews'            => isset($data->reviews) ? $data->reviews : null
             );
             if (isset($json->credits)) {
@@ -92,7 +95,7 @@ class Google_Api_Old {
 
     private function url($pid, $lang, $key = '', $reviews_sort = '') {
         $url = GRW_GOOGLE_PLACE_API . 'details/json?placeid=' . $pid . '&key=' . $key;
-        if (strlen($lang) > 0) {
+        if (!empty($lang)) {
             $url = $url . '&language=' . $lang;
         }
         if (strlen($reviews_sort) > 0) {

@@ -38,7 +38,7 @@ class Activator {
             'grw_last_error',
             'rplg_rev_notice_show',
             'grw_rate_us',
-            'grw_inlinecss_off',
+            'grw_inlinecss',
             'grw_rucss_safelist',
         );
     }
@@ -63,8 +63,7 @@ class Activator {
 	 * Activates the plugin on a multisite
 	 */
     public function activate() {
-        $network_wide = get_option('grw_is_multisite');
-        if ($network_wide) {
+        if ($this->is_multisite_flag()) {
             $this->activate_multisite();
         } else {
             $this->activate_single_site();
@@ -203,14 +202,15 @@ class Activator {
             $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD provider VARCHAR(32)");
         }
 
-        if (version_compare($last_active_version, '6.9.1', '<')) {
+        if (version_compare($last_active_version, '6.9.4.1', '<')) {
+            update_option('grw_debug_mode', '0');
+        }
+
+        if (version_compare($last_active_version, '6.9.5', '<')) {
+            delete_option('grw_inlinecss_off');
             $wpdb->query("UPDATE " . $wpdb->prefix . Database::REVIEW_TABLE . " SET provider = 'google' WHERE provider IS NULL OR provider = ''");
             $this->database->create_text_table();
             $this->database->migrate_review_texts();
-        }
-
-        if (version_compare($last_active_version, '6.9.4.1', '<')) {
-            update_option('grw_debug_mode', '0');
         }
 
         if (!empty($wpdb->last_error)) {
@@ -222,8 +222,7 @@ class Activator {
 	 * Creates the plugin database on a multisite
 	 */
     public function create_db() {
-        $network_wide = get_option('grw_is_multisite');
-        if ($network_wide) {
+        if ($this->is_multisite_flag()) {
             $this->create_db_multisite();
         } else {
             $this->create_db_single_site();
@@ -253,8 +252,7 @@ class Activator {
 	 * Drops the plugin database on a multisite
 	 */
     public function drop_db($multisite = false) {
-        $network_wide = get_option('grw_is_multisite');
-        if ($multisite && $network_wide) {
+        if ($multisite && $this->is_multisite_flag()) {
             $this->drop_db_multisite();
         } else {
             $this->drop_db_single_site();
@@ -284,8 +282,7 @@ class Activator {
 	 * Delete all options of the plugin on a multisite
 	 */
     public function delete_all_options($multisite = false) {
-        $network_wide = get_option('grw_is_multisite');
-        if ($multisite && $network_wide) {
+        if ($multisite && $this->is_multisite_flag()) {
             $this->delete_all_options_multisite();
         } else {
             $this->delete_all_options_single_site();
@@ -317,8 +314,7 @@ class Activator {
 	 * Delete all feeds of the plugin on a multisite
 	 */
     public function delete_all_feeds($multisite = false) {
-        $network_wide = get_option('grw_is_multisite');
-        if ($multisite && $network_wide) {
+        if ($multisite && $this->is_multisite_flag()) {
             $this->delete_all_feeds_multisite();
         } else {
             $this->delete_all_feeds_single_site();
@@ -390,6 +386,11 @@ class Activator {
         if (count($last_error) > 0) {
             update_option('grw_last_error', time() . ': ' . implode("; ", $last_error));
         }
+    }
+
+    private function is_multisite_flag() {
+        if (!is_multisite()) return false;
+        return get_option('grw_is_multisite') == '1';
     }
 
     private function random_str($len) {

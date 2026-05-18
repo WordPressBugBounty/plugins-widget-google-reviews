@@ -4,7 +4,8 @@
 }
 
 .google-reviews_page_grw-builder #wpcontent,
-.grw-admin.google-reviews_page_grw-builder #wpcontent {
+.grw-admin.google-reviews_page_grw-builder #wpcontent,
+.grw-builder-workspace {
     padding-right: 300px;
 }
 
@@ -330,6 +331,10 @@
     width: 100%;
     overflow-y: hidden;
     box-sizing: border-box;
+}
+
+.google-reviews_page_grw-builder .grw-builder-workspace {
+    padding-right: 0;
 }
 
 .grw-builder-preview {
@@ -833,7 +838,7 @@
     cursor: pointer;
     border: 1px solid #e5e5e5;
     box-shadow: 0 1px 1px rgba(0,0,0,.04);
-    background: #fafafa url('../img/button-down-black.svg') no-repeat right;
+    background: #fafafa url('../../img/button-down-black.svg') no-repeat right;
 }
 
 .grw-builder-top:hover {
@@ -967,7 +972,7 @@
     text-align: left;
     margin: 10px 0 0;
     border: 1px solid #ccc;
-    background: #fafafa url(../img/button-down-black.svg) no-repeat right;
+    background: #fafafa url(../../img/button-down-black.svg) no-repeat right;
 }
 
 .grw-connect-business:hover {

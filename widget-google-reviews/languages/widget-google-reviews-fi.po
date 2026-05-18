@@ -12,34 +12,34 @@ msgstr ""
 "X-Generator: Poedit 3.4.2\n"
 
 msgid "Google Rating"
-msgstr "Google arvostelut"
+msgstr "Google-arvostelu"
 
 msgid "See All Reviews"
-msgstr "Katso kaikki arvostelut"
+msgstr "Näytä kaikki arvostelut"
 
 msgid "Google User"
 msgstr "Google-käyttäjä"
 
 msgid "read more"
-msgstr "lue lisää"
+msgstr "lisää"
 
 msgid "More reviews"
-msgstr "Seuraavat arvostelut"
+msgstr "Lisää arvosteluja"
 
 msgid "Based on %s reviews"
-msgstr "Perustuu %s arvioon"
+msgstr "Perustuu %s arvosteluun"
 
 msgid "review us on"
-msgstr "arvostele meitä"
+msgstr "arvioi meidät"
 
 msgid "Response from the owner"
-msgstr "Vastaus omistajalta"
+msgstr "Omistajan vastaus"
 
 msgid "%s place profile"
-msgstr "%s paikkaprofiili"
+msgstr "%s paikan profiili"
 
 msgid "review us on Google"
-msgstr "Arvostele meidät Googlessa"
+msgstr "arvioi meidät Googlessa"
 
 msgid "All reviews"
 msgstr "Kaikki arvostelut"
@@ -48,7 +48,7 @@ msgid "%s user profile"
 msgstr "%s käyttäjäprofiili"
 
 msgid "opens in a new window"
-msgstr "avaa uudessa ikkunassa"
+msgstr "avautuu uudessa ikkunassa"
 
 msgid "Rating: %s out of 5"
-msgstr "Arvosana: %s / 5"
+msgstr "Arvostelu: %s / 5"

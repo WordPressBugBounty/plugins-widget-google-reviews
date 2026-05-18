@@ -12,34 +12,34 @@ msgstr ""
 "X-Generator: Poedit 3.4.2\n"
 
 msgid "Google Rating"
-msgstr "Google Değerlendirme Notu"
+msgstr "Google puanı"
 
 msgid "See All Reviews"
-msgstr "Tüm Değerlendirmeleri Oku"
+msgstr "Tüm yorumları gör"
 
 msgid "Google User"
-msgstr "Google Kullanıcısı"
+msgstr "Google kullanıcısı"
 
 msgid "read more"
-msgstr "Devamını Oku"
+msgstr "devamı"
 
 msgid "More reviews"
-msgstr "Diğer Değerlendirmeler"
+msgstr "Daha fazla yorum"
 
 msgid "Based on %s reviews"
-msgstr "%s yoruma göre"
+msgstr "%s yoruma dayalı"
 
 msgid "review us on"
-msgstr "bizi değerlendir"
-
-msgid "review us on Google"
-msgstr "Bizi Google'da değerlendirin"
+msgstr "bizi değerlendirin"
 
 msgid "Response from the owner"
-msgstr "Sahibinden yanıt"
+msgstr "Sahibinin yanıtı"
 
 msgid "%s place profile"
 msgstr "%s yer profili"
+
+msgid "review us on Google"
+msgstr "bizi Google'da değerlendirin"
 
 msgid "All reviews"
 msgstr "Tüm yorumlar"
@@ -48,7 +48,7 @@ msgid "%s user profile"
 msgstr "%s kullanıcı profili"
 
 msgid "opens in a new window"
-msgstr "yeni bir pencerede açılır"
+msgstr "yeni pencerede açılır"
 
 msgid "Rating: %s out of 5"
-msgstr "Puan: %s / 5"
+msgstr "Puan: 5 üzerinden %s"

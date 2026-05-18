@@ -12,34 +12,40 @@ msgstr ""
 "X-Generator: Poedit 3.4.2\n"
 
 msgid "Google Rating"
-msgstr "Valoració a google"
+msgstr "Valoració de Google"
 
 msgid "See All Reviews"
-msgstr "Mostra els comentaris"
+msgstr "Veure totes les ressenyes"
 
 msgid "Google User"
 msgstr "Usuari de Google"
 
 msgid "read more"
-msgstr "Més"
+msgstr "més"
 
 msgid "More reviews"
-msgstr "Següents"
+msgstr "Més ressenyes"
 
-msgid "review us on Google"
-msgstr "Deixa'ns una ressenya a Google"
+msgid "Based on %s reviews"
+msgstr "Basat en %s ressenyes"
+
+msgid "review us on"
+msgstr "valoreu-nos a"
 
 msgid "Response from the owner"
 msgstr "Resposta del propietari"
 
 msgid "%s place profile"
-msgstr "Perfil de %s a Google"
+msgstr "Perfil del lloc %s"
+
+msgid "review us on Google"
+msgstr "valoreu-nos a Google"
 
 msgid "All reviews"
 msgstr "Totes les ressenyes"
 
 msgid "%s user profile"
-msgstr "Perfil d'usuari de %s"
+msgstr "Perfil d'usuari %s"
 
 msgid "opens in a new window"
 msgstr "s'obre en una finestra nova"

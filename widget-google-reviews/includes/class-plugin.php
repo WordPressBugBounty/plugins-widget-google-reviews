@@ -151,7 +151,10 @@ final class Plugin {
         $now = time();
         update_option('grw_activation_time', $now);
 
-        add_option('grw_is_multisite', $network_wide);
+        update_option('grw_is_multisite', $network_wide ? '1' : '0');
+        if (!is_multisite()) {
+            update_option('grw_is_multisite', '0');
+        }
 
         add_option('grw_do_activation', true);
 

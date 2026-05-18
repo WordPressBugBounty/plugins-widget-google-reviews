@@ -1,0 +1,54 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: hr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.2\n"
+
+msgid "Google Rating"
+msgstr "Google ocjena"
+
+msgid "See All Reviews"
+msgstr "Pogledajte sve recenzije"
+
+msgid "Google User"
+msgstr "Google korisnik"
+
+msgid "read more"
+msgstr "više"
+
+msgid "More reviews"
+msgstr "Više recenzija"
+
+msgid "Based on %s reviews"
+msgstr "Na temelju %s recenzija"
+
+msgid "review us on"
+msgstr "ocijenite nas na"
+
+msgid "Response from the owner"
+msgstr "Odgovor vlasnika"
+
+msgid "%s place profile"
+msgstr "Profil mjesta %s"
+
+msgid "review us on Google"
+msgstr "ocijenite nas na Googleu"
+
+msgid "All reviews"
+msgstr "Sve recenzije"
+
+msgid "%s user profile"
+msgstr "Profil korisnika %s"
+
+msgid "opens in a new window"
+msgstr "otvara se u novom prozoru"
+
+msgid "Rating: %s out of 5"
+msgstr "Ocjena: %s od 5"

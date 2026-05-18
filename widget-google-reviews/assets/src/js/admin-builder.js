@@ -968,13 +968,18 @@ function grw_connection_add($, el, conn, checked, append) {
     var connected_id = grw_connection_id(conn),
         connected_el = $('#' + connected_id);
 
-    if (connected_el.length && conn.props && conn.props.map_url) {
-        let propsEl = connected_el.children().eq(1);
-        let mapUrlEl = $('input[name="map_url"]', propsEl);
-        if (mapUrlEl.length) {
-            mapUrlEl.remove();
+    if (connected_el.length) {
+        if (conn.photo) {
+            grw_change_photo(connected_el, conn.photo);
         }
-        propsEl.prepend('<input type="hidden" name="map_url" value="' + conn.props.map_url + '" class="grw-connect-prop" readonly="">');
+        if (conn.props && conn.props.map_url) {
+            let propsEl = connected_el.children().eq(1);
+            let mapUrlEl = $('input[name="map_url"]', propsEl);
+            if (mapUrlEl.length) {
+                mapUrlEl.remove();
+            }
+            propsEl.prepend('<input type="hidden" name="map_url" value="' + conn.props.map_url + '" class="grw-connect-prop" readonly="">');
+        }
     } else if (!connected_el.length) {
         connected_el = $('<div class="grw-connection"></div>')[0];
         connected_el.id = connected_id;
@@ -1381,8 +1386,6 @@ function grw_change_photo(el, photo_url) {
     place_photo_hidden.val(photo_url);
     place_photo_img.attr('src', photo_url);
     place_photo_img.show();
-
-    grw_serialize_connections();
 }
 
 function grw_popup(url, width, height, cb) {

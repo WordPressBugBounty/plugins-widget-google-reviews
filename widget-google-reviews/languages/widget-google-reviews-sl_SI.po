@@ -15,16 +15,16 @@ msgid "Google Rating"
 msgstr "Google ocena"
 
 msgid "See All Reviews"
-msgstr "Oglejte si vsa mnenja"
+msgstr "Poglej vse ocene"
 
 msgid "Google User"
 msgstr "Google uporabnik"
 
 msgid "read more"
-msgstr "preberite več"
+msgstr "več"
 
 msgid "More reviews"
-msgstr "Naslednje mnenje"
+msgstr "Več ocen"
 
 msgid "Based on %s reviews"
 msgstr "Na podlagi %s ocen"
@@ -39,13 +39,13 @@ msgid "%s place profile"
 msgstr "Profil kraja %s"
 
 msgid "review us on Google"
-msgstr "Ocenite nas na Googlu"
+msgstr "ocenite nas v Googlu"
 
 msgid "All reviews"
 msgstr "Vse ocene"
 
 msgid "%s user profile"
-msgstr "Uporabniški profil %s"
+msgstr "Profil uporabnika %s"
 
 msgid "opens in a new window"
 msgstr "odpre se v novem oknu"

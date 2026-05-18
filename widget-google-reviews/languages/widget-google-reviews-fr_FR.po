@@ -12,10 +12,7 @@ msgstr ""
 "X-Generator: Poedit 3.4.2\n"
 
 msgid "Google Rating"
-msgstr "Evaluations Google"
-
-msgid "More reviews"
-msgstr "Avis suivants"
+msgstr "Note Google"
 
 msgid "See All Reviews"
 msgstr "Voir tous les avis"
@@ -26,11 +23,14 @@ msgstr "Utilisateur Google"
 msgid "read more"
 msgstr "plus"
 
+msgid "More reviews"
+msgstr "Plus d'avis"
+
 msgid "Based on %s reviews"
 msgstr "Basé sur %s avis"
 
 msgid "review us on"
-msgstr "notez-nous sur"
+msgstr "évaluez-nous sur"
 
 msgid "Response from the owner"
 msgstr "Réponse du propriétaire"
@@ -39,13 +39,13 @@ msgid "%s place profile"
 msgstr "Profil du lieu %s"
 
 msgid "review us on Google"
-msgstr "Laissez-nous un avis sur Google"
+msgstr "évaluez-nous sur Google"
 
 msgid "All reviews"
 msgstr "Tous les avis"
 
 msgid "%s user profile"
-msgstr "Profil utilisateur de %s"
+msgstr "Profil utilisateur %s"
 
 msgid "opens in a new window"
 msgstr "s'ouvre dans une nouvelle fenêtre"

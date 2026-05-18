@@ -1,0 +1,54 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ro_RO\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.2\n"
+
+msgid "Google Rating"
+msgstr "Evaluare Google"
+
+msgid "See All Reviews"
+msgstr "Vezi toate recenziile"
+
+msgid "Google User"
+msgstr "Utilizator Google"
+
+msgid "read more"
+msgstr "mai mult"
+
+msgid "More reviews"
+msgstr "Mai multe recenzii"
+
+msgid "Based on %s reviews"
+msgstr "Bazat pe %s recenzii"
+
+msgid "review us on"
+msgstr "evaluează-ne pe"
+
+msgid "Response from the owner"
+msgstr "Răspunsul proprietarului"
+
+msgid "%s place profile"
+msgstr "Profilul locului %s"
+
+msgid "review us on Google"
+msgstr "evaluează-ne pe Google"
+
+msgid "All reviews"
+msgstr "Toate recenziile"
+
+msgid "%s user profile"
+msgstr "Profilul utilizatorului %s"
+
+msgid "opens in a new window"
+msgstr "se deschide într-o fereastră nouă"
+
+msgid "Rating: %s out of 5"
+msgstr "Evaluare: %s din 5"

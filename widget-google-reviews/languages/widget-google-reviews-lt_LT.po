@@ -12,40 +12,40 @@ msgstr ""
 "X-Generator: Poedit 3.4.2\n"
 
 msgid "Google Rating"
-msgstr "Google reitingas"
+msgstr "Google įvertinimas"
 
 msgid "See All Reviews"
-msgstr "Matyti visus įvertinimus"
+msgstr "Žiūrėti visus atsiliepimus"
 
 msgid "Google User"
 msgstr "Google vartotojas"
 
 msgid "read more"
-msgstr "skaityti daugiau"
+msgstr "daugiau"
 
 msgid "More reviews"
-msgstr "Daugiau įvertinimų"
+msgstr "Daugiau atsiliepimų"
 
 msgid "Based on %s reviews"
-msgstr "Pateikta %s įvertinimų"
+msgstr "Remiantis %s atsiliepimais"
 
 msgid "review us on"
-msgstr "peržiūrėti vertinimus"
+msgstr "įvertinkite mus"
 
 msgid "Response from the owner"
-msgstr "Atsakymas iš savininko"
+msgstr "Savininko atsakymas"
 
 msgid "%s place profile"
 msgstr "%s vietos profilis"
 
 msgid "review us on Google"
-msgstr "Palikite atsiliepimą Google"
+msgstr "įvertinkite mus „Google“"
 
 msgid "All reviews"
-msgstr "Visos apžvalgos"
+msgstr "Visi atsiliepimai"
 
 msgid "%s user profile"
-msgstr "%s naudotojo profilis"
+msgstr "%s vartotojo profilis"
 
 msgid "opens in a new window"
 msgstr "atsidaro naujame lange"

@@ -18,25 +18,28 @@ msgid "See All Reviews"
 msgstr "Вижте всички отзиви"
 
 msgid "Google User"
-msgstr "Google Потребител"
+msgstr "Потребител на Google"
 
 msgid "read more"
-msgstr "още..."
+msgstr "още"
 
 msgid "More reviews"
 msgstr "Още отзиви"
 
-msgid "review us on Google"
-msgstr "Оставете отзив в Google"
-
 msgid "Based on %s reviews"
-msgstr "На база на %s отзива"
+msgstr "Въз основа на %s отзива"
+
+msgid "review us on"
+msgstr "оценете ни в"
 
 msgid "Response from the owner"
 msgstr "Отговор от собственика"
 
 msgid "%s place profile"
-msgstr "Профил на %s в Google"
+msgstr "Профил на мястото %s"
+
+msgid "review us on Google"
+msgstr "оценете ни в Google"
 
 msgid "All reviews"
 msgstr "Всички отзиви"
@@ -45,7 +48,7 @@ msgid "%s user profile"
 msgstr "Профил на потребителя %s"
 
 msgid "opens in a new window"
-msgstr "Отваря се в нов прозорец"
+msgstr "отваря се в нов прозорец"
 
 msgid "Rating: %s out of 5"
 msgstr "Оценка: %s от 5"

@@ -12,31 +12,34 @@ msgstr ""
 "X-Generator: Poedit 3.4.2\n"
 
 msgid "Google Rating"
-msgstr "Αξιολόγηση στο Google"
-
-msgid "More reviews"
-msgstr "Επόμενες κριτικές"
+msgstr "Βαθμολογία Google"
 
 msgid "See All Reviews"
 msgstr "Δείτε όλες τις κριτικές"
 
 msgid "Google User"
-msgstr "Google User"
+msgstr "Χρήστης Google"
 
 msgid "read more"
-msgstr "Διαβάστε περισσότερα"
+msgstr "περισσότερα"
+
+msgid "More reviews"
+msgstr "Περισσότερες κριτικές"
 
 msgid "Based on %s reviews"
 msgstr "Με βάση %s κριτικές"
 
+msgid "review us on"
+msgstr "αξιολογήστε μας στο"
+
 msgid "Response from the owner"
-msgstr "Απάντηση από τον ιδιοκτήτη"
+msgstr "Απάντηση του ιδιοκτήτη"
 
 msgid "%s place profile"
 msgstr "Προφίλ τοποθεσίας %s"
 
 msgid "review us on Google"
-msgstr "Αξιολογήστε μας στο Google"
+msgstr "αξιολογήστε μας στο Google"
 
 msgid "All reviews"
 msgstr "Όλες οι κριτικές"
@@ -48,4 +51,4 @@ msgid "opens in a new window"
 msgstr "ανοίγει σε νέο παράθυρο"
 
 msgid "Rating: %s out of 5"
-msgstr "Βαθμολογία: %s από 5"
+msgstr "Βαθμολογία: %s στα 5"

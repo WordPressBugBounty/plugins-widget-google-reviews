@@ -1,0 +1,54 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr_CA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.2\n"
+
+msgid "Google Rating"
+msgstr "Évaluation Google"
+
+msgid "See All Reviews"
+msgstr "Voir tous les avis"
+
+msgid "Google User"
+msgstr "Utilisateur Google"
+
+msgid "read more"
+msgstr "plus"
+
+msgid "More reviews"
+msgstr "Plus d'avis"
+
+msgid "Based on %s reviews"
+msgstr "Basé sur %s avis"
+
+msgid "review us on"
+msgstr "évaluez-nous sur"
+
+msgid "Response from the owner"
+msgstr "Réponse du propriétaire"
+
+msgid "%s place profile"
+msgstr "Profil du lieu %s"
+
+msgid "review us on Google"
+msgstr "évaluez-nous sur Google"
+
+msgid "All reviews"
+msgstr "Tous les avis"
+
+msgid "%s user profile"
+msgstr "Profil utilisateur %s"
+
+msgid "opens in a new window"
+msgstr "s'ouvre dans une nouvelle fenêtre"
+
+msgid "Rating: %s out of 5"
+msgstr "Évaluation : %s sur 5"

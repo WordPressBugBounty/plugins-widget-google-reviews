@@ -19,16 +19,16 @@ class View {
         }
 
         $style = '';
-        if (isset($max_width) && strlen($max_width) > 0) {
+        if (!empty($max_width)) {
             $style .= 'width:' . $max_width . '!important;';
         }
-        if (isset($max_height) && strlen($max_height) > 0) {
+        if (!empty($max_height)) {
             $style .= 'height:' . $max_height . '!important;overflow-y:auto!important;';
         }
         if ($options->centered) {
             $style .= 'margin:0 auto!important;';
         }
-        if (isset($options->style_vars) && strlen($options->style_vars) > 0) {
+        if (!empty($options->style_vars)) {
             $style .= $options->style_vars;
         }
 
@@ -37,8 +37,11 @@ class View {
             $cls .= ' wp-dark';
         }
 
-        ?><div class="wp-gr rpi<?php echo $cls; ?>"<?php if ($style) { ?> style="<?php echo esc_attr($style); ?>"<?php } ?> data-id="<?php echo esc_attr($feed_id); ?>" data-layout="<?php echo esc_attr($options->view_mode); ?>" data-exec="false" data-options='<?php echo esc_attr($this->options($options)); ?>'>
-            <svg xmlns="http://www.w3.org/2000/svg" style="display:none!important">
+        static $svg = false;
+
+        ?><div class="wp-gr rpi<?php echo $cls; ?>"<?php if ($style) { ?> style="<?php echo esc_attr($style); ?>"<?php } ?> data-id="<?php echo esc_attr($feed_id); ?>" data-layout="<?php echo esc_attr($options->view_mode); ?>" data-exec="false" data-options='<?php echo esc_attr($this->options($options)); ?>'><?php
+            if (!$svg) { $svg = true;
+            ?><svg xmlns="http://www.w3.org/2000/svg" style="display:none!important">
                 <symbol id="grw-tripadvisor" viewBox="0 0 713.496 713.496">
                     <g><circle fill="#34E0A1" cx="356.749" cy="356.748" r="356.748"/><path d="M577.095,287.152l43.049-46.836h-95.465c-47.792-32.646-105.51-51.659-167.931-51.659   c-62.342,0-119.899,19.054-167.612,51.659H93.432l43.049,46.836c-26.387,24.075-42.929,58.754-42.929,97.259   c0,72.665,58.914,131.578,131.579,131.578c34.519,0,65.968-13.313,89.446-35.077l42.172,45.919l42.172-45.879   c23.478,21.764,54.887,35.037,89.406,35.037c72.665,0,131.658-58.913,131.658-131.578   C620.024,345.866,603.483,311.188,577.095,287.152z M225.17,473.458c-49.188,0-89.047-39.859-89.047-89.047   s39.86-89.048,89.047-89.048c49.187,0,89.047,39.86,89.047,89.048S274.357,473.458,225.17,473.458z M356.788,381.82   c0-58.595-42.61-108.898-98.853-130.383c30.413-12.716,63.776-19.771,98.813-19.771s68.439,7.055,98.853,19.771   C399.399,272.962,356.788,323.226,356.788,381.82z M488.367,473.458c-49.188,0-89.048-39.859-89.048-89.047   s39.86-89.048,89.048-89.048s89.047,39.86,89.047,89.048S537.554,473.458,488.367,473.458z M488.367,337.694   c-25.79,0-46.677,20.887-46.677,46.677c0,25.789,20.887,46.676,46.677,46.676c25.789,0,46.676-20.887,46.676-46.676   C535.042,358.621,514.156,337.694,488.367,337.694z M271.846,384.411c0,25.789-20.887,46.676-46.676,46.676   s-46.676-20.887-46.676-46.676c0-25.79,20.887-46.677,46.676-46.677C250.959,337.694,271.846,358.621,271.846,384.411z"/></g>
                 </symbol>
@@ -46,6 +49,7 @@ class View {
                     <g fill="none" fill-rule="evenodd"><path d="M482.56 261.36c0-16.73-1.5-32.83-4.29-48.27H256v91.29h127.01c-5.47 29.5-22.1 54.49-47.09 71.23v59.21h76.27c44.63-41.09 70.37-101.59 70.37-173.46z" fill="#4285f4"/><path d="M256 492c63.72 0 117.14-21.13 156.19-57.18l-76.27-59.21c-21.13 14.16-48.17 22.53-79.92 22.53-61.47 0-113.49-41.51-132.05-97.3H45.1v61.15c38.83 77.13 118.64 130.01 210.9 130.01z" fill="#34a853"/><path d="M123.95 300.84c-4.72-14.16-7.4-29.29-7.4-44.84s2.68-30.68 7.4-44.84V150.01H45.1C29.12 181.87 20 217.92 20 256c0 38.08 9.12 74.13 25.1 105.99l78.85-61.15z" fill="#fbbc05"/><path d="M256 113.86c34.65 0 65.76 11.91 90.22 35.29l67.69-67.69C373.03 43.39 319.61 20 256 20c-92.25 0-172.07 52.89-210.9 130.01l78.85 61.15c18.56-55.78 70.59-97.3 132.05-97.3z" fill="#ea4335"/><path d="M20 20h472v472H20V20z"/></g>
                 </symbol>
             </svg><?php
+            }
             $rows = false;
             switch ($options->view_mode) {
                 case 'slider':
@@ -89,14 +93,14 @@ class View {
 
     private function render_slider($businesses, $reviews, $options, $is_admin = false) {
         ?><div class="grw-row grw-row-m" data-options='<?php
-            echo json_encode(
+            echo esc_attr(json_encode(
                 array(
                     'speed'       => $options->slider_speed ? $options->slider_speed : 3,
                     'autoplay'    => $options->slider_autoplay,
                     'mousestop'   => $options->slider_mousestop,
                     'breakpoints' => $options->slider_breakpoints
                 )
-            ); ?>'><?php
+            )); ?>'><?php
             if (count($businesses) > 0) {
                 $this->grw_place($businesses[0]->rating, $businesses[0], $businesses[0]->photo, $reviews, $options, true, true);
             }
@@ -142,11 +146,11 @@ class View {
             );
         }
         ?><div class="grw-row grw-row-m" data-options='<?php
-            echo json_encode(
+            echo esc_attr(json_encode(
                 array(
                     'breakpoints' => $options->slider_breakpoints
                 )
-            ); ?>'>
+            )); ?>'>
             <?php if (count($reviews) > 0) { ?>
             <div class="grw-content">
                 <div class="grw-content-inner">
@@ -339,13 +343,11 @@ class View {
     }
 
     function grw_place_review($review, $hr, $options, $is_admin = false) {
-        ?>
-        <div class="wp-google-review<?php if ($hr) { echo ' wp-google-hide'; } if ($is_admin && $review->hide != '') { echo ' wp-review-hidden'; } ?>">
-            <?php if (!$options->hide_avatar) { ?>
-            <div class="rpi-flx rpi-row12">
-                <?php
+        ?><div class="wp-google-review<?php if ($hr) { echo ' wp-google-hide'; } if ($is_admin && $review->hide != '') { echo ' wp-review-hidden'; } ?>"><?php
+            if (!$options->hide_avatar) {
+            ?><div class="rpi-flx rpi-row12"><?php
                 $default_avatar = GRW_ASSETS_URL . 'img/guest.png';
-                if (strlen($review->author_avatar) > 0) {
+                if (!empty($review->author_avatar)) {
                     $author_avatar = $review->author_avatar;
                 } else {
                     $author_avatar = $default_avatar;
@@ -357,29 +359,25 @@ class View {
                 $author_name = empty($review->author_name) ? __('Google User', 'widget-google-reviews') : $review->author_name;
                 $alt = empty($options->aria_label) ? sprintf(__('%s profile picture', 'widget-google-reviews'), $author_name) : '';
                 $this->grw_image($author_avatar, $alt, $options->lazy_load_img, $default_avatar);
-                ?>
-                <div class="rpi-flx rpi-col4">
-                    <?php
-                    if (strlen($review->author_url) > 0) {
+                ?><div class="rpi-flx rpi-col4"><?php
+                    if (!empty($review->author_url)) {
                         $aria_label = sprintf(__('%s user profile', 'widget-google-reviews'), $author_name);
                         $this->grw_anchor($review->author_url, 'wp-google-name', $author_name, $options, $aria_label);
                     } else {
                         ?><div class="wp-google-name"><?php echo esc_html($author_name); ?></div><?php
                     }
-                    ?>
-                    <div class="wp-google-time" data-time="<?php echo $review->time; ?>"><?php echo gmdate("H:i d M y", $review->time); ?></div>
-                    <div class="wp-google-feedback">
-                        <span class="rpi-stars" style="--rating:<?php echo $review->rating; ?>"></span>
-                        <span class="wp-google-text"><?php echo wp_kses_post($review->text); ?></span>
-                    </div>
-                    <?php if ($is_admin) {
+                    $this->review_time($review, $options);
+                    ?><div class="wp-google-feedback">
+                        <span class="rpi-stars" style="--rating:<?php echo $review->rating; ?>"></span><?php
+                        if (!empty($review->text)) { ?><span class="wp-google-text"><?php echo wp_kses_post($review->text); ?></span><?php }
+                    ?></div><?php
+                    if ($is_admin) {
                         echo '<a href="#" class="wp-review-hide" data-id=' . $review->id . '>' . ($review->hide == '' ? 'Hide' : 'Show') . ' review</a>';
-                    } ?>
-                </div>
-            </div>
-            <?php } ?>
-        </div>
-        <?php
+                    }
+                ?></div>
+            </div><?php
+            }
+        ?></div><?php
     }
 
     function grw_slider_review($review, $hr, $options, $is_admin = false) {
@@ -393,7 +391,7 @@ class View {
                 <div class="rpi-flx rpi-row12-center"><?php
                     // Google reviewer avatar
                     $default_avatar = GRW_ASSETS_URL . 'img/guest.png';
-                    if (strlen($review->author_avatar) > 0) {
+                    if (!empty($review->author_avatar)) {
                         $author_avatar = $review->author_avatar;
                     } else {
                         $author_avatar = $default_avatar;
@@ -415,17 +413,17 @@ class View {
                         } else {
                             ?><div class="wp-google-name"><?php echo esc_html($author_name); ?></div><?php
                         }
-                        ?><div class="wp-google-time" data-time="<?php echo $review->time; ?>"><?php echo gmdate("H:i d M y", $review->time); ?></div>
-                    </div>
+                        $this->review_time($review, $options);
+                    ?></div>
                 </div>
                 <span class="rpi-stars" style="--rating:<?php echo $review->rating; ?>"></span>
                 <div class="rpi-flx rpi-col4">
-                    <div class="wp-google-feedback grw-scroll" <?php if (strlen($options->slider_text_height) > 0) {?> style="height:<?php echo $options->slider_text_height; ?>!important"<?php } ?>>
-                        <?php if (strlen($review->text) > 0) { ?>
+                    <div class="wp-google-feedback grw-scroll" <?php if (!empty($options->slider_text_height)) {?> style="height:<?php echo $options->slider_text_height; ?>!important"<?php } ?>>
+                        <?php if (!empty($review->text)) { ?>
                         <span class="wp-google-text"><?php echo wp_kses_post($review->text); ?></span>
                         <?php } ?>
                     </div><?php
-                    if (isset($options->media) && $options->media && isset($review->images) && strlen($review->images) > 0) {
+                    if (isset($options->media) && $options->media && !empty($review->images)) {
                     ?><div class="wp-google-img"><?php
                         $images = explode(';', $review->images);
                         foreach ($images as $img) {
@@ -435,12 +433,12 @@ class View {
                     ?></div><?php
                     }
                 ?></div><?php
-                if (isset($options->reply) && $options->reply && isset($review->reply) && strlen($review->reply) > 0) {
+                if (isset($options->reply) && $options->reply && !empty($review->reply)) {
                 ?><div class="wp-google-reply grw-scroll">
                     <div>
                         <span class="grw-b"><?php echo __('Response from the owner', 'widget-google-reviews'); ?></span>
-                        <span class="wp-google-time" data-time="<?php echo $review->reply_time; ?>">
-                            <?php echo gmdate("H:i d M y", $review->reply_time); ?>
+                        <span class="wp-google-time" data-time="<?php echo esc_attr($review->reply_time); ?>">
+                            <?php echo esc_html($this->get_time($review->reply_time, $options)); ?>
                         </span>
                     </div><?php
                     echo wp_kses_post($review->reply);
@@ -452,6 +450,24 @@ class View {
                 $this->grw_provider($review);
             ?></div>
         </div><?php
+    }
+
+    private function review_time($review, $opts) {
+        if (!empty($review->time)) {
+            $rt = $review->time;
+            ?><div class="wp-google-time" data-time="<?php echo esc_attr($rt); ?>"><?php echo esc_html($this->get_time($rt, $opts)); ?></div><?php
+        }
+    }
+
+    private function get_time($rt, $opts) {
+        $time_format = empty($opts->time_format) ? null : $opts->time_format;
+        $time_int = (int)$rt;
+        $time = $time_int > 9999999999 ? (int)($time_int / 1000) : $time_int;
+
+        if (empty($time_format)) {
+            return sprintf(__('%s ago', 'default'), human_time_diff($time));
+        }
+        return function_exists('wp_date') ? wp_date($time_format, $time) : date_i18n($time_format, $time);
     }
 
     function is_hidden($id, $hidden) {

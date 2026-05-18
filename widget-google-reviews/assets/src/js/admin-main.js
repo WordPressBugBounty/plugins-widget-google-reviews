@@ -228,7 +228,7 @@ jQuery(document).ready(function($) {
                         (place.updated ?
                         '<div class="wp-google-powered">Last updated: ' +
                             '<span class="wp-google-time">' +
-                                rpi.Time.getTime(parseInt(place.updated), rpi.Utils.lang(), 'ago') +
+                                rpi.Time.getTimeAgo(parseInt(place.updated), rpi.Utils.lang()) +
                             '</span>' +
                         '</div>' : '')
                     );

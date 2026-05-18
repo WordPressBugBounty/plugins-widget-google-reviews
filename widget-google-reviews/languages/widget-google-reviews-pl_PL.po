@@ -21,25 +21,25 @@ msgid "Google User"
 msgstr "Użytkownik Google"
 
 msgid "read more"
-msgstr "czytaj więcej"
+msgstr "więcej"
 
 msgid "More reviews"
-msgstr "Następne Opinie"
-
-msgid "review us on Google"
-msgstr "Oceń nas w Google"
+msgstr "Więcej opinii"
 
 msgid "Based on %s reviews"
 msgstr "Na podstawie %s opinii"
 
 msgid "review us on"
-msgstr "oceń nas w"
+msgstr "oceń nas na"
 
 msgid "Response from the owner"
-msgstr "Odpowiedź od właściciela"
+msgstr "Odpowiedź właściciela"
 
 msgid "%s place profile"
 msgstr "Profil miejsca %s"
+
+msgid "review us on Google"
+msgstr "oceń nas w Google"
 
 msgid "All reviews"
 msgstr "Wszystkie opinie"
@@ -48,7 +48,7 @@ msgid "%s user profile"
 msgstr "Profil użytkownika %s"
 
 msgid "opens in a new window"
-msgstr "otwiera się w novym oknie"
+msgstr "otwiera się w nowym oknie"
 
 msgid "Rating: %s out of 5"
-msgstr "Ocena: %s z 5"
+msgstr "Ocena: %s na 5"

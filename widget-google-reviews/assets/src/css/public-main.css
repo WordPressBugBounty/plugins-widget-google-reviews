@@ -102,6 +102,18 @@
     --slider-dot-gap: 8px;
     --slider-dots-visible: 5;
     --slider-act-dot-color: var(--color);
+
+    position: relative !important;
+    display: block!important;
+    min-width: 0!important;
+    max-width: 100%!important;
+    margin: 0!important;
+    padding: 0!important;
+    line-height: normal!important;
+    text-align: start!important;
+    direction: ltr!important;
+    overflow-wrap: break-word!important;
+    box-sizing: border-box!important;
 }
 
 .wp-gr .wp-google-based,
@@ -276,16 +288,6 @@
 }
 
 /*-------------------------------- row --------------------------------*/
-.wp-gr {
-    display: block!important;
-    width: 100%!important;
-    margin: 0!important;
-    padding: 0!important;
-    text-align: left!important;
-    direction: ltr!important;
-    box-sizing: border-box!important;
-}
-
 .wp-gr .grw-row {
     display: -ms-flexbox!important;
     display: flex!important;

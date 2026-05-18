@@ -85,23 +85,42 @@ class Assets {
     }
 
     function style_async($tag, $handle) {
-        $css_assets = array(
-            'grw-admin-main-css'   => 'css/admin-main',
-            'grw-public-main-css'  => 'css/public-main',
-        );
-        if (isset($handle) && array_key_exists($handle, $css_assets)) {
-            return str_replace(" rel='stylesheet'", " rel='preload' as='style' onload='this.onload=null;this.rel=\"stylesheet\";window.dispatchEvent(new Event(\"resize\"))'", $tag);
+        $targets = array('grw-admin-main-css', 'grw-public-main-css');
+        if (!in_array($handle, $targets, true)) return $tag;
+
+        if (strpos($tag, 'rel=\'preload\'') !== false || strpos($tag, 'rel="preload"') !== false) return $tag;
+
+        if (strpos($tag, "rel='stylesheet'") !== false) {
+            return str_replace(
+                "rel='stylesheet'",
+                "rel='preload' as='style' onload='this.onload=null;this.rel=\"stylesheet\";window.dispatchEvent(new Event(\"resize\"))'",
+                $tag
+            );
+        }
+        if (strpos($tag, 'rel="stylesheet"') !== false) {
+            return str_replace(
+                'rel="stylesheet"',
+                'rel="preload" as="style" onload="this.onload=null;this.rel=\'stylesheet\';window.dispatchEvent(new Event(\'resize\'))"',
+                $tag
+            );
         }
         return $tag;
     }
 
     function rucss_safelist($safelist) {
-        $css_main = $this->get_css_asset('grw-public-main-css');
-        if (array_search($css_main, $safelist) !== false) {
-            return $safelist;
+        $css_main = $this->get_public_css_url();
+        if (array_search($css_main, $safelist) === false) {
+            $safelist[] = $css_main;
         }
-        $safelist[] = $css_main;
         return $safelist;
+    }
+
+    private function get_public_css_url() {
+        $href = $this->get_css_asset('grw-public-main-css');
+        if (is_rtl()) {
+            $href = preg_replace('/\.css$/', '-rtl.css', $href);
+        }
+        return $href;
     }
 
     public function register_styles() {
@@ -176,8 +195,8 @@ class Assets {
         }
 
         $handle = 'grw-public-main-css';
-        $inlinecss_off = get_option('grw_inlinecss_off');
-        if ($inlinecss_off !== 'true') {
+        $inlinecss = get_option('grw_inlinecss');
+        if ($inlinecss === 'true') {
             $css = $this->get_css_content('public-main');
             if (!empty($css)) {
                 wp_dequeue_style($handle);
@@ -188,6 +207,7 @@ class Assets {
                 return;
             }
         }
+
         wp_enqueue_style($handle);
         wp_style_add_data($handle, 'rtl', 'replace');
     }
@@ -207,24 +227,24 @@ class Assets {
 
     private function register_styles_loop($styles) {
         foreach ($styles as $style) {
-            wp_register_style($style, $this->get_css_asset($style), array(), $this->version);
+            wp_register_style($style, $this->get_css_asset($style), array(), null);
         }
     }
 
     private function register_scripts_loop($scripts) {
         foreach ($scripts as $script) {
-            wp_register_script($script, $this->get_js_asset($script), array(), $this->version);
+            wp_register_script($script, $this->get_js_asset($script), array(), null);
         }
     }
 
     public function get_css_asset($asset) {
         $css = self::$css_assets[$asset];
-        return strpos($css, 'https:') === 0 ? $css : $this->url . ($this->debug ? 'src/' : '') . $css . '.css';
+        return strpos($css, 'https:') === 0 ? $css : $this->url . ($this->debug ? 'src/' : $this->version . '/') . $css . '.css';
     }
 
     public function get_js_asset($asset) {
         $js = self::$js_assets[$asset];
-        return strpos($js, 'https:') === 0 ? $js : $this->url . ($this->debug ? 'src/' : '') . $js . '.js';
+        return strpos($js, 'https:') === 0 ? $js : $this->url . ($this->debug ? 'src/' : $this->version . '/') . $js . '.js';
     }
 
     public function version() {
@@ -238,7 +258,7 @@ class Assets {
             return $this->css_cache[$key];
         }
 
-        $file = GRW_PLUGIN_PATH . '/assets/' . ($this->debug ? 'src/' : '') . 'css/' . $key . '.css';
+        $file = GRW_PLUGIN_PATH . '/assets/' . ($this->debug ? 'src/' : $this->version . '/') . 'css/' . $key . '.css';
         if (!file_exists($file) || !is_readable($file)) {
             return $this->css_cache[$key] = '';
         }

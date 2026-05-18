@@ -76,8 +76,8 @@ class Google_Connect {
                     }
                 }
 
-                $lang = sanitize_text_field(wp_unslash($_POST['lang']));
-                $local_img = sanitize_text_field(wp_unslash($_POST['local_img']));
+                $lang = empty($_POST['lang']) ? null : sanitize_text_field(wp_unslash($_POST['lang']));
+                $local_img = isset($_POST['local_img']) ? filter_var(wp_unslash($_POST['local_img']), FILTER_VALIDATE_BOOLEAN) : true;
                 $key = get_option('grw_google_api_key');
 
                 if ($key && strlen($key) > 0) {
@@ -94,10 +94,9 @@ class Google_Connect {
                 } else {
 
                     $pid = sanitize_text_field(wp_unslash($_POST['id']));
-                    $lang = empty($_POST['lang']) ? null : sanitize_text_field(wp_unslash($_POST['lang']));
                     $token = empty($_POST['token']) ? null : sanitize_text_field(wp_unslash($_POST['token']));
 
-                    if (strlen($token) > 0) {
+                    if (!empty($token)) {
                         $siteurl = get_option('siteurl');
                         $authcode = get_option('grw_auth_code');
                         $app_url = 'https://app.richplugins.com/public/connect/reviews';
@@ -110,7 +109,12 @@ class Google_Connect {
                         if ($lang && strlen($lang) > 0) {
                             $args['lang'] = $lang;
                         }
-                        $response = $this->api_old->post($app_url, $args, null, $local_img);
+                        if ($this->is_playground()) {
+                            $app_url = add_query_arg($args, $app_url);
+                            $response = $this->api_old->call($app_url, null, $local_img);
+                        } else {
+                            $response = $this->api_old->post($app_url, $args, null, $local_img);
+                        }
                     }
                 }
 
@@ -127,6 +131,7 @@ class Google_Connect {
 
      public function place_autocomplete() {
         if (current_user_can('manage_options')) {
+            $result = null;
             if (isset($_POST['grw_nonce']) === false) {
                 $error = __('Unable to call request. Make sure you are accessing this page from the Wordpress dashboard.', 'widget-google-reviews');
                 $result = compact('error');
@@ -134,15 +139,21 @@ class Google_Connect {
                 check_admin_referer('grw_wpnonce', 'grw_nonce');
 
                 $key = get_option('grw_google_api_key');
-                if (strlen($key) > 0) {
+                if (!empty($key)) {
                     $input = sanitize_text_field(wp_unslash($_POST['input']));
-                    $url = GRW_GOOGLE_PLACE_API . 'autocomplete/json?input=' . $input . '&types=establishment&key=' . $key;
+                    $url = add_query_arg(
+                        array(
+                            'input' => $input,
+                            'types' => 'establishment',
+                            'key'   => $key,
+                        ),
+                        GRW_GOOGLE_PLACE_API . 'autocomplete/json'
+                    );
                     $res = wp_remote_get($url);
                     $body = wp_remote_retrieve_body($res);
                     $result = json_decode($body);
                 }
             }
-
             header('Content-type: text/json');
             echo json_encode($result);
             wp_die();
@@ -160,7 +171,7 @@ class Google_Connect {
             } else {
                 check_admin_referer('grw_wpnonce', 'grw_nonce');
 
-                $lang = isset($_POST['lang']) ? sanitize_text_field(wp_unslash($_POST['lang'])) : null;
+                $lang = empty($_POST['lang']) ? null : sanitize_text_field(wp_unslash($_POST['lang']));
                 $key = get_option('grw_google_api_key');
 
                 if ($key && strlen($key) > 0) {
@@ -177,10 +188,9 @@ class Google_Connect {
                 } else {
 
                     $pid = sanitize_text_field(wp_unslash($_POST['pid']));
-                    $lang = empty($_POST['lang']) ? null : sanitize_text_field(wp_unslash($_POST['lang']));
                     $token = empty($_POST['token']) ? null : sanitize_text_field(wp_unslash($_POST['token']));
 
-                    if (strlen($token) > 0) {
+                    if (!empty($token)) {
                         $siteurl = get_option('siteurl');
                         $authcode = get_option('grw_auth_code');
                         $app_url = 'https://app.richplugins.com/connector/place/json';
@@ -193,7 +203,12 @@ class Google_Connect {
                         if ($lang && strlen($lang) > 0) {
                             $args['lang'] = $lang;
                         }
-                        $response = $this->api_old->post($app_url, $args, null, false, false);
+                        if ($this->is_playground()) {
+                            $app_url = add_query_arg($args, $app_url);
+                            $response = $this->api_old->call($app_url, null, false, false);
+                        } else {
+                            $response = $this->api_old->post($app_url, $args, null, false, false);
+                        }
                     }
                 }
             }
@@ -221,4 +236,21 @@ class Google_Connect {
         }
     }
 
+    private function is_playground() {
+        if (isset($_SERVER['SERVER_SOFTWARE']) && stripos($_SERVER['SERVER_SOFTWARE'], 'PHP.wasm') !== false) {
+            return true;
+        }
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $host = $_SERVER['HTTP_HOST'];
+            if (stripos($host, 'playground.wordpress.net') !== false
+                || stripos($host, '.wasm.wordpress.net') !== false
+                || stripos($host, 'playground.test') !== false) {
+                return true;
+            }
+        }
+        if (defined('WP_PLAYGROUND') && WP_PLAYGROUND) {
+            return true;
+        }
+        return false;
+    }
 }

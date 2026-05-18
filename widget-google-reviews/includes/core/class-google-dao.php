@@ -37,6 +37,9 @@ class Google_Dao {
 
             foreach ($reviews as $review) {
                 $db_review_id = 0;
+
+                $review->provider = empty($review->provider) ? 'google' : $review->provider;
+
                 if (isset($review->author_url) && strlen($review->author_url) > 0) {
                     $where = " WHERE author_url = %s";
                     $where_params = array($review->author_url);
@@ -119,13 +122,14 @@ class Google_Dao {
         $name = $place->name;
         $rating = isset($place->rating) ? $place->rating : null;
         $review_count = isset($place->user_ratings_total) ? $place->user_ratings_total : (isset($place->reviews) ? count($place->reviews) : null);
+        $place->photo = $this->get_place_photo($place, $local_img);
 
         $atts = array(
             'place_id'     => $pid,
             'rating'       => $rating,
             'review_count' => $review_count,
             'name'         => $name,
-            'photo'        => $this->get_place_photo($place, $local_img),
+            'photo'        => $place->photo,
             'url'          => isset($place->url) ? $place->url     : null,
             'website'      => isset($place->website) ? $place->website : null,
             'icon'         => isset($place->icon) ? $place->icon : null,
@@ -151,15 +155,18 @@ class Google_Dao {
     public function update_place($place, $db_place_id, $local_img, &$log = []) {
         global $wpdb;
 
-        $name = $place->name;
-        $rating = $place->rating;
+        $name = empty($place->name) ? '' : $place->name;
+        $rating = empty($place->rating) ? '' : $place->rating;
 
         // Update Google place name and rating
-        $update_params = array(
-            'name'    => $name,
-            'rating'  => $rating,
-            'updated' => round(microtime(true) * 1000),
-        );
+        $update_params = array('updated' => round(microtime(true) * 1000));
+
+        if (!empty($name)) {
+            $update_params['name'] = $name;
+        }
+        if (!empty($rating)) {
+            $update_params['rating'] = $rating;
+        }
 
         // Update total reviews
         $review_count = isset($place->user_ratings_total) ? $place->user_ratings_total : 0;
@@ -169,7 +176,8 @@ class Google_Dao {
 
         // Update business photo
         if (!empty($place->business_photo)) {
-            $update_params['photo'] = $this->get_place_photo($place, $local_img);
+            $place->photo = $this->get_place_photo($place, $local_img);
+            $update_params['photo'] = $place->photo;
         }
 
         // Update map URL
@@ -181,7 +189,9 @@ class Google_Dao {
 
         array_push($log, 'up[' . $db_place_id . ',' . $name . ',' . $rating . ',' . $review_count . ']');
 
-        $this->update_stats($place->rating, $review_count, $db_place_id);
+        if (!empty($rating)) {
+            $this->update_stats($rating, $review_count, $db_place_id);
+        }
     }
 
     public function get_place_photo($place, $local_img) {
@@ -230,10 +240,19 @@ class Google_Dao {
     public function update_review($pid, $review, $review_lang, $author_img, $images, $reply, $reply_time, $db_review_id, &$log = []) {
         global $wpdb;
 
-        $update_params = array(
-            'rating' => $review->rating,
-            'text'   => $review->text
-        );
+        $update_params = array();
+
+        $rating = empty($review->rating) ? null : $review->rating;
+        $text = empty($review->text) ? null : $review->text;
+        $text_size = empty($text) ? 0 : strlen($text);
+        $author_name = empty($review->author_name) ? null : $review->author_name;
+
+        if (!empty($rating)) {
+            $update_params['rating'] = $rating;
+        }
+        if (!empty($text)) {
+            $update_params['text'] = $text;
+        }
         if ($author_img) {
             $update_params['profile_photo_url'] = $author_img;
         }
@@ -251,32 +270,31 @@ class Google_Dao {
             $update_params['provider'] = $review->provider;
         }
 
-        $wpdb->update($wpdb->prefix . Database::REVIEW_TABLE, $update_params, array('id' => $db_review_id));
+        if (!empty($update_params)) {
+            $wpdb->update($wpdb->prefix . Database::REVIEW_TABLE, $update_params, array('id' => $db_review_id));
+        }
 
-        $this->upsert_review_text($pid, $review, $review_lang, $review->text);
+        $this->upsert_review_text($pid, $review, $review_lang, $text);
 
-        array_push(
-            $log,
-            'ur[' .
-                $db_review_id . ',' .
-                $review->author_name . ',' .
-                $review->rating . ',' .
-                (isset($review->text) ? strlen($review->text) : '') . ',' .
-                $review_lang .
-            ']'
-        );
+        array_push($log, 'ur[' . $db_review_id . ',' . $author_name . ',' . $rating . ',' . $text_size . ',' . $review_lang . ']');
     }
 
     public function insert_review($pid, $review, $review_lang, $author_img, $images, $reply, $reply_time, $db_place_id, &$log = []) {
         global $wpdb;
 
+        $rating = empty($review->rating) ? null : $review->rating;
+        $text = empty($review->text) ? null : $review->text;
+        $text_size = empty($text) ? 0 : strlen($text);
+        $time = empty($review->time) ? null : $review->time;
+        $author_name = empty($review->author_name) ? null : $review->author_name;
+
         $wpdb->insert($wpdb->prefix . Database::REVIEW_TABLE, array(
             'google_place_id'   => $db_place_id,
-            'rating'            => $review->rating,
-            'text'              => $review->text,
-            'time'              => $review->time,
+            'rating'            => $rating,
+            'text'              => $text,
+            'time'              => $time,
             'language'          => $review_lang,
-            'author_name'       => $review->author_name,
+            'author_name'       => $author_name,
             'author_url'        => isset($review->author_url) ? $review->author_url : null,
             'profile_photo_url' => $author_img,
             'url'               => isset($review->url) ? $review->url : null,
@@ -288,17 +306,9 @@ class Google_Dao {
 
         $db_review_id = $wpdb->insert_id;
 
-        $this->upsert_review_text($pid, $review, $review_lang, $review->text);
+        $this->upsert_review_text($pid, $review, $review_lang, $text);
 
-        array_push(
-            $log,
-            'ir[' .
-                $review->author_name . ',' .
-                $review->rating . ',' .
-                (isset($review->text) ? strlen($review->text) : '') . ',' .
-                $review_lang .
-            ']'
-        );
+        array_push($log, 'ir[' . $author_name . ',' . $rating . ',' . $text_size . ',' . $review_lang . ']');
     }
 
     private function upsert_review_text($pid, $review, $lang, $text) {

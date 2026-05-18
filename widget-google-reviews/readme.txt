@@ -4,7 +4,7 @@ Tags: google, google reviews, reviews, testimonials, widget
 Requires at least: 4.7
 Requires PHP: 7.2
 Tested up to: 6.9
-Stable tag: 6.9.4.4
+Stable tag: 6.9.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,16 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 6.9.5 =
+* Fixed PHP 8 deprecation warnings
+* Fixed duplicate SVG symbols rendering when multiple widgets are on the same page
+* Fixed place photo not refreshing in the builder after reconnecting a Google account
+* Improved CSS isolation to reduce conflicts with theme styles
+* Switched to versioned asset URLs for reliable cache invalidation after updates
+* Improved RTL handling for WP Rocket "Remove Unused CSS" safelist
+* Inline CSS is now an opt-in setting; public CSS loads as a separate file by default
+* Added Estonian translation, updated several others
 
 = 6.9.4.4 =
 * Fixed security issues
