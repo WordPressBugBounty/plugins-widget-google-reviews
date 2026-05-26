@@ -21,6 +21,7 @@ class Core {
             'hide_backgnd'              => false,
             'show_round'                => false,
             'show_shadow'               => false,
+            //'all_langs'                 => false,
             'short_last_name'           => false,
             'media'                     => true,
             'reply'                     => true,
@@ -177,52 +178,9 @@ class Core {
 
         if ($place) {
 
-            // Get reviews
-            $hidden_ids  = array();
-            $where_plain = $is_admin ? '' : " AND r2.hide = ''";
-            $where_r     = $is_admin ? '' : " AND r.hide = ''";
-
-            if (isset($options->hidden) && !$is_admin) {
-                $hidden_ids = $this->parse_hidden_ids($options->hidden);
-                if (!empty($hidden_ids)) {
-                    $hidden_phs   = implode(',', array_fill(0, count($hidden_ids), '%d'));
-                    $where_plain .= ' AND r2.id NOT IN (' . $hidden_phs . ')';
-                    $where_r     .= ' AND r.id NOT IN (' . $hidden_phs . ')';
-                }
-            }
-
-            if (empty($biz->lang)) {
-
-                $sql = "SELECT r.*
-                        FROM {$wpdb->prefix}" . Database::REVIEW_TABLE . " r
-                        WHERE r.google_place_id = %d{$where_r}
-                            AND r.author_url IS NOT NULL
-                            AND NOT EXISTS (
-                                SELECT 1
-                                FROM {$wpdb->prefix}" . Database::REVIEW_TABLE . " r2
-                                WHERE r2.google_place_id = r.google_place_id
-                                    AND r2.author_url = r.author_url{$where_plain}
-                                    AND (
-                                        r2.time > r.time
-                                        OR (r2.time = r.time AND r2.id > r.id)
-                                    )
-                            )
-                        ORDER BY r.time DESC, r.id DESC";
-
-                $params = array_merge([$place->id], $hidden_ids, $hidden_ids);
-
-            } else {
-
-                $sql = "SELECT r2.*
-                        FROM {$wpdb->prefix}" . Database::REVIEW_TABLE . " r2
-                        WHERE r2.google_place_id = %d{$where_plain} AND (r2.language = %s OR r2.language IS NULL)
-                        ORDER BY r2.time DESC";
-
-                $params = array_merge([$place->id], $hidden_ids);
-                $params[] = $biz->lang;
-            }
-
-            $reviews = $wpdb->get_results($wpdb->prepare($sql, $params));
+            $lang = empty($biz->lang) ? substr(get_locale(), 0, 2) : $biz->lang;
+            $all_langs = isset($options->all_langs) ? (int)(bool)$options->all_langs : (empty($biz->lang) ? 1 : 0);
+            $reviews = $this->fetch_reviews([$place->id], $options, $lang, $all_langs, 0, $is_admin);
 
             // Setup photo
             $place_photo = empty($biz->photo) ? (empty($place->photo) ? GRW_GOOGLE_BIZ : $place->photo) : $biz->photo;
@@ -265,10 +223,9 @@ class Core {
             ));
 
             foreach ($reviews as $rev) {
-                if (isset($options->min_letter) && isset($rev->text) && strlen($rev->text) < $options->min_letter) {
-                    continue;
-                }
-                $text = isset($rev->text) && strlen($rev->text) > 0 ? nl2br(wp_encode_emoji($rev->text)) : null;
+                $text = empty($rev->lang_text) ? (empty($rev->text) ? null : $rev->text) : $rev->lang_text;
+                if (!empty($options->min_letter) && ($text === null || strlen($text) < $options->min_letter)) continue;
+
                 $review = json_decode(json_encode(
                     array(
                         'id'            => $rev->id,
@@ -276,7 +233,7 @@ class Core {
                         'biz_id'        => $biz->id,
                         'biz_url'       => empty($place->url) ? null : $place->url,
                         'rating'        => $rev->rating,
-                        'text'          => $text,
+                        'text'          => empty($text) ? null : nl2br(wp_encode_emoji($text)),
                         'author_avatar' => $rev->profile_photo_url,
                         'author_url'    => $rev->author_url,
                         'author_name'   => isset($options->short_last_name) && $options->short_last_name ?
@@ -293,6 +250,57 @@ class Core {
             }
         }
         return array('business' => $business, 'reviews' => $google_reviews);
+    }
+
+    private function fetch_reviews($place_ids, $options, $lang, $all_langs, $limit, $is_admin) {
+        global $wpdb;
+
+        $where_plain = $is_admin ? '' : " AND r2.hide = ''";
+        $where_r     = $is_admin ? '' : " AND r.hide = ''";
+
+        $hidden_ids = array();
+        if (isset($options->hidden) && !$is_admin) {
+            $hidden_ids = $this->parse_hidden_ids($options->hidden);
+            if (!empty($hidden_ids)) {
+                $hidden_phs   = implode(',', array_fill(0, count($hidden_ids), '%d'));
+                $where_plain .= ' AND r2.id NOT IN (' . $hidden_phs . ')';
+                $where_r     .= ' AND r.id NOT IN (' . $hidden_phs . ')';
+            }
+        }
+
+        if (!is_array($place_ids)) {
+            $place_ids = [$place_ids];
+        }
+        $place_ids_phs = implode(',', array_fill(0, count($place_ids), '%d'));
+
+        $sql = "SELECT r.*, t.text AS lang_text
+                FROM {$wpdb->prefix}" . Database::REVIEW_TABLE . " r
+                JOIN {$wpdb->prefix}" . Database::BUSINESS_TABLE . " p ON p.id = r.google_place_id
+                LEFT JOIN {$wpdb->prefix}" . Database::TEXT_TABLE . " t
+                    ON t.review_id = MD5(CONCAT(r.provider, ':', p.place_id, ':', r.author_url)) AND t.lang = %s
+                WHERE r.google_place_id IN ({$place_ids_phs}){$where_r}
+                  AND r.author_url IS NOT NULL
+                  AND (%d = 1 OR t.text IS NOT NULL OR r.language = %s OR r.language IS NULL OR r.language = '')
+                  AND NOT EXISTS (
+                      SELECT 1 FROM {$wpdb->prefix}" . Database::REVIEW_TABLE . " r2
+                      WHERE r2.google_place_id = r.google_place_id AND r2.author_url = r.author_url{$where_plain}
+                        AND (r2.time > r.time OR (r2.time = r.time AND r2.id > r.id))
+                  )
+                ORDER BY r.time DESC, r.id DESC";
+
+        if ($limit > 0) {
+            $sql .= " LIMIT " . (int)$limit;
+        }
+
+        $params = array_merge(
+            [$lang],
+            $place_ids,
+            $hidden_ids,
+            [$all_langs, $lang],
+            $hidden_ids
+        );
+
+        return $wpdb->get_results($wpdb->prepare($sql, $params));
     }
 
     public function get_overview($place_id = 0) {
@@ -338,23 +346,19 @@ class Core {
 
         // -------------- Get Google reviews --------------
         $google_reviews = array();
+        $site_lang      = substr(get_locale(), 0, 2);
 
-        $reviews = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT * FROM " . $wpdb->prefix . Database::REVIEW_TABLE .
-                " WHERE google_place_id IN (" . implode(', ', array_fill(0, count($google_place_ids), '%d')) . ")" .
-                " ORDER BY time DESC LIMIT 10",
-                $google_place_ids
-            )
-        );
+        $reviews = $this->fetch_reviews($google_place_ids, null, $site_lang, 1, 100, true);
 
         foreach ($reviews as $rev) {
+            $text = empty($rev->lang_text) ? (empty($rev->text) ? null : $rev->text) : $rev->lang_text;
+
             $review = json_decode(json_encode(
                 array(
                     'id'            => $rev->id,
                     'hide'          => $rev->hide,
                     'rating'        => $rev->rating,
-                    'text'          => $rev->text,
+                    'text'          => $text,
                     'author_url'    => $rev->author_url,
                     'author_name'   => $rev->author_name,
                     'time'          => $rev->time,

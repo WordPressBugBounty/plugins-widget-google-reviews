@@ -56,10 +56,10 @@ class Google_Dao {
                 if (isset($review->language)) {
                     $review_lang = ($review->language == 'en-US' ? 'en' : $review->language);
                     // TODO commentout
-                    if (strlen($review_lang) > 0) {
+                    /*if (strlen($review_lang) > 0) {
                         $where = $where . " AND language = %s";
                         array_push($where_params, $review_lang);
-                    }
+                    }*/
                 }
 
                 if ($db_place_id) {
@@ -67,7 +67,7 @@ class Google_Dao {
                     array_push($where_params, $db_place_id);
                 }
 
-                $sql = "SELECT id FROM " . $wpdb->prefix . Database::REVIEW_TABLE . $where/* . " ORDER BY id DESC LIMIT 1"*/;
+                $sql = "SELECT id FROM " . $wpdb->prefix . Database::REVIEW_TABLE . $where . " ORDER BY time DESC, id DESC LIMIT 1";
                 $db_review_id = $wpdb->get_var($wpdb->prepare($sql, $where_params));
 
                 $author_img = null;
@@ -250,9 +250,9 @@ class Google_Dao {
         if (!empty($rating)) {
             $update_params['rating'] = $rating;
         }
-        if (!empty($text)) {
+        /*if (!empty($text)) {
             $update_params['text'] = $text;
-        }
+        }*/
         if ($author_img) {
             $update_params['profile_photo_url'] = $author_img;
         }
@@ -291,7 +291,7 @@ class Google_Dao {
         $wpdb->insert($wpdb->prefix . Database::REVIEW_TABLE, array(
             'google_place_id'   => $db_place_id,
             'rating'            => $rating,
-            'text'              => $text,
+            //'text'              => $text,
             'time'              => $time,
             'language'          => $review_lang,
             'author_name'       => $author_name,

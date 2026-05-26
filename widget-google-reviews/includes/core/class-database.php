@@ -110,6 +110,7 @@ class Database {
                           WHERE r.text IS NOT NULL AND r.text <> ''
                             AND r.author_url IS NOT NULL AND r.author_url <> ''
                             AND r.provider IS NOT NULL AND r.provider <> ''
+                            AND r.language IS NOT NULL AND r.language <> ''
                           GROUP BY MD5(CONCAT(r.provider, ':', p.place_id, ':', r.author_url)), r.language
                       ) x
                       JOIN " . $wpdb->prefix . self::REVIEW_TABLE . " r ON r.id = x.max_id

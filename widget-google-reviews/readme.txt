@@ -3,8 +3,8 @@ Contributors: widgetpack
 Tags: google, google reviews, reviews, testimonials, widget
 Requires at least: 4.7
 Requires PHP: 7.2
-Tested up to: 6.9
-Stable tag: 6.9.5
+Tested up to: 7.0
+Stable tag: 6.9.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,14 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 6.9.6 =
+* Fixed duplicate reviews appearing in widgets for sites with reviews stored in multiple languages
+* Reviews now display text in the site language when a translation is available
+* When no language is selected, the widget now shows reviews in all languages with text adapted to the site language
+* Improved admin overview to deduplicate reviews and use the site language
+* Added support for additional reviews locales: Afrikaans, Albanian, Amharic, Kazakh, Khmer, Armenian, Azerbaijani, Kyrgyz, Lao, Belarusian, Bosnian, Macedonian, Malay, Burmese, Mongolian, Nepali, Chinese (Hong Kong), Punjabi, Estonian, Serbian (Latin script), Sinhalese, French (Canada), Swahili, Georgian, Urdu, Icelandic, Uzbek and Zulu
+* Update to WordPress 7.0
 
 = 6.9.5 =
 * Fixed PHP 8 deprecation warnings

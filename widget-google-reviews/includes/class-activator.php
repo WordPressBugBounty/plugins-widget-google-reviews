@@ -208,6 +208,9 @@ class Activator {
 
         if (version_compare($last_active_version, '6.9.5', '<')) {
             delete_option('grw_inlinecss_off');
+        }
+
+        if (version_compare($last_active_version, '6.9.6', '<')) {
             $wpdb->query("UPDATE " . $wpdb->prefix . Database::REVIEW_TABLE . " SET provider = 'google' WHERE provider IS NULL OR provider = ''");
             $this->database->create_text_table();
             $this->database->migrate_review_texts();
