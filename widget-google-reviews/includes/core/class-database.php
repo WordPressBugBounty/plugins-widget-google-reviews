@@ -39,6 +39,7 @@ class Database {
         $sql = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . self::REVIEW_TABLE . " (".
                "id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,".
                "google_place_id BIGINT(20) UNSIGNED NOT NULL,".
+               "review_id VARCHAR(80) NOT NULL,".
                "rating INTEGER NOT NULL,".
                "text VARCHAR(10000),".
                "time INTEGER NOT NULL,".
@@ -81,7 +82,7 @@ class Database {
 
         $sql = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . self::TEXT_TABLE . " (".
                "id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,".
-               "review_id CHAR(32) NOT NULL,".
+               "review_id VARCHAR(80) NOT NULL,".
                "lang VARCHAR(10) NOT NULL,".
                "text TEXT,".
                "PRIMARY KEY (`id`),".
@@ -103,15 +104,14 @@ class Database {
                       FROM (
                           SELECT
                               MAX(r.id) AS max_id,
-                              MD5(CONCAT(r.provider, ':', p.place_id, ':', r.author_url)) AS review_id,
+                              r.review_id AS review_id,
                               r.language AS lang
                           FROM " . $wpdb->prefix . self::REVIEW_TABLE . " r
-                          JOIN " . $wpdb->prefix . self::BUSINESS_TABLE . " p ON p.id = r.google_place_id
                           WHERE r.text IS NOT NULL AND r.text <> ''
-                            AND r.author_url IS NOT NULL AND r.author_url <> ''
-                            AND r.provider IS NOT NULL AND r.provider <> ''
+                            AND r.review_id IS NOT NULL AND r.review_id <> ''
+                            AND r.provider = 'google'
                             AND r.language IS NOT NULL AND r.language <> ''
-                          GROUP BY MD5(CONCAT(r.provider, ':', p.place_id, ':', r.author_url)), r.language
+                          GROUP BY r.review_id, r.language
                       ) x
                       JOIN " . $wpdb->prefix . self::REVIEW_TABLE . " r ON r.id = x.max_id
                       ON DUPLICATE KEY UPDATE text = VALUES(text)");

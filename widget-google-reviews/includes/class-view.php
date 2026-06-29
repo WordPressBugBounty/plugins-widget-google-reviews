@@ -309,7 +309,7 @@ class View {
     }
 
     function grw_powered() {
-        ?><div class="wp-google-powered">powered by <span><span style="color:#3c6df0!important">G</span><span style="color:#d93025!important">o</span><span style="color:#fb8e28!important">o</span><span style="color:#3c6df0!important">g</span><span style="color:#188038!important">l</span><span style="color:#d93025!important">e</span></span></div><?php
+        ?><div class="wp-google-powered" role="img" aria-label="<?php echo esc_attr__('powered by Google', 'widget-google-reviews'); ?>">powered by <span aria-hidden="true"><span style="color:#3c6df0!important">G</span><span style="color:#d93025!important">o</span><span style="color:#fb8e28!important">o</span><span style="color:#3c6df0!important">g</span><span style="color:#188038!important">l</span><span style="color:#d93025!important">e</span></span></div><?php
     }
 
     function grw_place_reviews($reviews, $options, $is_admin = false) {

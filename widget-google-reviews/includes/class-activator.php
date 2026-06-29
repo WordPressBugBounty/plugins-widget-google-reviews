@@ -115,23 +115,27 @@ class Activator {
     public function update_db($last_active_version) {
         global $wpdb;
 
+        $biz = $wpdb->prefix . Database::BUSINESS_TABLE;
+        $rev = $wpdb->prefix . Database::REVIEW_TABLE;
+
+        $biz_colms = $wpdb->get_col("SHOW COLUMNS FROM {$biz}", 0);
+        $rev_colms = $wpdb->get_col("SHOW COLUMNS FROM {$rev}", 0);
+
         if (version_compare($last_active_version, '1.8.2', '<')) {
-            $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::BUSINESS_TABLE . " ADD review_count INTEGER");
+            if (!in_array('review_count', $biz_colms, true)) {
+                $wpdb->query("ALTER TABLE {$biz} ADD review_count INTEGER");
+            }
         }
 
         if (version_compare($last_active_version, '1.8.7', '<')) {
-            $table = $wpdb->prefix . Database::REVIEW_TABLE;
-            $col = $wpdb->get_var($wpdb->prepare("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS " .
-                "WHERE table_schema = DATABASE() AND table_name = %s AND column_name = %s LIMIT 1", $table, 'hide'
-            ));
-            if (empty($col)) {
-                $wpdb->query("ALTER TABLE " . $table . " ADD hide VARCHAR(1) DEFAULT '' NOT NULL");
+            if (!in_array('hide', $rev_colms, true)) {
+                $wpdb->query("ALTER TABLE {$rev} ADD hide VARCHAR(1) DEFAULT '' NOT NULL");
             }
         }
 
         if (version_compare($last_active_version, '2.0.1', '<')) {
             $grw_auth_code = get_option('grw_auth_code');
-            if (!$grw_auth_code || strlen($grw_auth_code) == 0) {
+            if (empty($grw_auth_code)) {
                 update_option('grw_auth_code', $this->random_str(127));
             }
         }
@@ -159,12 +163,8 @@ class Activator {
                     return true;
                 }
             }
-            if (drop_index($wpdb->prefix . Database::REVIEW_TABLE, 'grp_google_review_hash')) {
-                maybe_drop_column(
-                    $wpdb->prefix . Database::REVIEW_TABLE,
-                    "hash",
-                    "ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " DROP COLUMN hash"
-                );
+            if (drop_index($rev, 'grp_google_review_hash')) {
+                maybe_drop_column($rev, "hash", "ALTER TABLE {$rev} DROP COLUMN hash");
             }
             $sql = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "grp_google_stats (".
                 "id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,".
@@ -180,26 +180,38 @@ class Activator {
 
         //if (version_compare($last_active_version, '4.2', '<')) {
             //$this->delete_duplicates();
-            //$wpdb->query("ALTER TABLE `" . $wpdb->prefix . Database::REVIEW_TABLE . "` ADD UNIQUE `grp_author_url_lang` (`author_url`, `language`)");
+            //$wpdb->query("ALTER TABLE {$rev} ADD UNIQUE `grp_author_url_lang` (`author_url`, `language`)");
         //}
 
         if (version_compare($last_active_version, '4.8.1', '<')) {
-            $wpdb->query("ALTER TABLE `" . $wpdb->prefix . Database::REVIEW_TABLE . "` MODIFY COLUMN `author_url` VARCHAR(127)");
+            $wpdb->query("ALTER TABLE {$rev} MODIFY COLUMN `author_url` VARCHAR(127)");
         }
 
         if (version_compare($last_active_version, '5.8', '<')) {
-            $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD images TEXT");
-            $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD reply TEXT");
-            $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD reply_time INTEGER");
+            if (!in_array('images', $rev_colms, true)) {
+                $wpdb->query("ALTER TABLE {$rev} ADD images TEXT");
+            }
+            if (!in_array('reply', $rev_colms, true)) {
+                $wpdb->query("ALTER TABLE {$rev} ADD reply TEXT");
+            }
+            if (!in_array('reply_time', $rev_colms, true)) {
+                $wpdb->query("ALTER TABLE {$rev} ADD reply_time INTEGER");
+            }
         }
 
         if (version_compare($last_active_version, '6.2', '<')) {
-            $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::BUSINESS_TABLE . " ADD map_url VARCHAR(512)");
+            if (!in_array('map_url', $biz_colms, true)) {
+                $wpdb->query("ALTER TABLE {$biz} ADD map_url VARCHAR(512)");
+            }
         }
 
         if (version_compare($last_active_version, '6.3', '<')) {
-            $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD url VARCHAR(255)");
-            $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::REVIEW_TABLE . " ADD provider VARCHAR(32)");
+            if (!in_array('url', $rev_colms, true)) {
+                $wpdb->query("ALTER TABLE {$rev} ADD url VARCHAR(255)");
+            }
+            if (!in_array('provider', $rev_colms, true)) {
+                $wpdb->query("ALTER TABLE {$rev} ADD provider VARCHAR(32)");
+            }
         }
 
         if (version_compare($last_active_version, '6.9.4.1', '<')) {
@@ -210,9 +222,38 @@ class Activator {
             delete_option('grw_inlinecss_off');
         }
 
-        if (version_compare($last_active_version, '6.9.6', '<')) {
-            $wpdb->query("UPDATE " . $wpdb->prefix . Database::REVIEW_TABLE . " SET provider = 'google' WHERE provider IS NULL OR provider = ''");
+        if (version_compare($last_active_version, '6.9.7', '<')) {
+
+            $wpdb->query("UPDATE {$rev} SET provider = 'google' WHERE provider IS NULL OR provider = ''");
+
+            if (!in_array('review_id', $rev_colms, true)) {
+                $wpdb->query("ALTER TABLE {$rev} ADD review_id VARCHAR(80)");
+            }
+
+            // Set review_id
+            $wpdb->query(
+                "UPDATE {$rev} r
+                 JOIN {$biz} b ON b.id = r.google_place_id
+                 SET r.review_id = MD5(CONCAT(
+                     r.provider, ':', b.place_id, ':',
+                     COALESCE(
+                         NULLIF(r.author_url, ''),
+                         CONCAT(COALESCE(NULLIF(r.author_name, ''), ''), ':', r.time)
+                     )
+                 ))
+                 WHERE r.review_id IS NULL OR r.review_id = ''"
+            );
+
+            // Delete orphan reviews
+            $orphan_revs = (int)$wpdb->get_var("SELECT COUNT(*) FROM {$rev} r LEFT JOIN {$biz} b ON b.id = r.google_place_id WHERE b.id IS NULL");
+            if ($orphan_revs > 0) {
+                $wpdb->query("DELETE r FROM {$rev} r LEFT JOIN {$biz} b ON b.id = r.google_place_id WHERE b.id IS NULL");
+            }
+
+            $wpdb->query("ALTER TABLE {$rev} MODIFY COLUMN `review_id` VARCHAR(80) NOT NULL");
+
             $this->database->create_text_table();
+            $wpdb->query("ALTER TABLE " . $wpdb->prefix . Database::TEXT_TABLE . " MODIFY COLUMN `review_id` VARCHAR(80) NOT NULL");
             $this->database->migrate_review_texts();
         }
 

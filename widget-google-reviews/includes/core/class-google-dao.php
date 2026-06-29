@@ -36,39 +36,29 @@ class Google_Dao {
             $reviews = $place->reviews;
 
             foreach ($reviews as $review) {
+                if (!is_object($review)) continue;
+
                 $db_review_id = 0;
 
                 $review->provider = empty($review->provider) ? 'google' : $review->provider;
 
-                if (isset($review->author_url) && strlen($review->author_url) > 0) {
-                    $where = " WHERE author_url = %s";
-                    $where_params = array($review->author_url);
-                } else {
-                    $where = " WHERE time = %s";
-                    $where_params = array($review->time);
-                    if (isset($review->author_name) && strlen($review->author_name) > 0) {
-                        $where = $where . " AND author_name = %s";
-                        array_push($where_params, $review->author_name);
-                    }
-                }
+                $rid = $this->review_id($place->place_id, $review);
+                if (empty($rid)) continue;
 
-                $review_lang = null;
-                if (isset($review->language)) {
-                    $review_lang = ($review->language == 'en-US' ? 'en' : $review->language);
-                    // TODO commentout
-                    /*if (strlen($review_lang) > 0) {
-                        $where = $where . " AND language = %s";
-                        array_push($where_params, $review_lang);
-                    }*/
-                }
+                $db_review_id = $wpdb->get_var(
+                    $wpdb->prepare(
+                        "SELECT id FROM " . $wpdb->prefix . Database::REVIEW_TABLE . "
+                         WHERE google_place_id = %d AND provider = %s AND review_id = %s
+                         LIMIT 1",
+                        $db_place_id,
+                        $review->provider,
+                        $rid
+                    )
+                );
 
-                if ($db_place_id) {
-                    $where = $where . " AND google_place_id = %d";
-                    array_push($where_params, $db_place_id);
+                if (empty($db_review_id)) {
+                    $db_review_id = $this->old_review_id($db_place_id, $review);
                 }
-
-                $sql = "SELECT id FROM " . $wpdb->prefix . Database::REVIEW_TABLE . $where . " ORDER BY time DESC, id DESC LIMIT 1";
-                $db_review_id = $wpdb->get_var($wpdb->prepare($sql, $where_params));
 
                 $author_img = null;
                 if (isset($review->profile_photo_url)) {
@@ -102,6 +92,11 @@ class Google_Dao {
                     $reply_time = $review->reply_time;
                 }
 
+                $review_lang = null;
+                if (isset($review->language)) {
+                    $review_lang = ($review->language == 'en-US' ? 'en' : $review->language);
+                }
+
                 if ($db_review_id) {
                     $this->update_review($place->place_id, $review, $review_lang, $author_img, $images, $reply, $reply_time, $db_review_id, $log);
                 } else {
@@ -112,6 +107,34 @@ class Google_Dao {
         }
 
         update_option('grw_save_log', implode('_', $log));
+    }
+
+    private function old_review_id($db_place_id, $review) {
+        global $wpdb;
+
+        $where = " WHERE";
+        $where_params = array();
+
+        if (!empty($review->author_url)) {
+            $where .= " author_url = %s";
+            array_push($where_params, $review->author_url);
+        } else {
+            $where .= " time = %d";
+            array_push($where_params, $this->review_time($review));
+
+            if (!empty($review->author_name)) {
+                $where .= " AND author_name = %s";
+                array_push($where_params, $review->author_name);
+            }
+        }
+
+        if ($db_place_id) {
+            $where .= " AND google_place_id = %d";
+            array_push($where_params, $db_place_id);
+        }
+
+        $sql = "SELECT id FROM " . $wpdb->prefix . Database::REVIEW_TABLE . $where . " ORDER BY time DESC, id DESC LIMIT 1";
+        return $wpdb->get_var($wpdb->prepare($sql, $where_params));
     }
 
     public function insert_place($place, $local_img, &$log = []) {
@@ -247,6 +270,10 @@ class Google_Dao {
         $text_size = empty($text) ? 0 : strlen($text);
         $author_name = empty($review->author_name) ? null : $review->author_name;
 
+        $review_id = $this->review_id($pid, $review);
+        if (!empty($review_id)) {
+            $update_params['review_id'] = $review_id;
+        }
         if (!empty($rating)) {
             $update_params['rating'] = $rating;
         }
@@ -282,14 +309,18 @@ class Google_Dao {
     public function insert_review($pid, $review, $review_lang, $author_img, $images, $reply, $reply_time, $db_place_id, &$log = []) {
         global $wpdb;
 
+        $review_id = $this->review_id($pid, $review);
+        if (empty($review_id)) return;
+
         $rating = empty($review->rating) ? null : $review->rating;
         $text = empty($review->text) ? null : $review->text;
         $text_size = empty($text) ? 0 : strlen($text);
-        $time = empty($review->time) ? null : $review->time;
+        $time = $this->review_time($review);
         $author_name = empty($review->author_name) ? null : $review->author_name;
 
         $wpdb->insert($wpdb->prefix . Database::REVIEW_TABLE, array(
             'google_place_id'   => $db_place_id,
+            'review_id'         => $review_id,
             'rating'            => $rating,
             //'text'              => $text,
             'time'              => $time,
@@ -314,16 +345,48 @@ class Google_Dao {
     private function upsert_review_text($pid, $review, $lang, $text) {
         global $wpdb;
 
-        if (empty($pid) || empty($review->provider) || empty($review->author_url) || empty($lang) || empty($text)) {
+        if (empty($lang) || !isset($text) || $text === '') {
             return;
         }
 
-        $review_id = md5($review->provider . ':' . $pid . ':' . $review->author_url);
+        $review_id = $this->review_id($pid, $review);
+        if (empty($review_id)) {
+            return;
+        }
 
         $wpdb->query($wpdb->prepare('INSERT INTO ' . $wpdb->prefix . Database::TEXT_TABLE . ' (review_id, lang, text) ' .
             'VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE text = VALUES(text)', $review_id, $lang, $text));
 
         $this->log_last_error($wpdb);
+    }
+
+    private function review_id($pid, $review) {
+        if (empty($review->provider)) return;
+
+        if (!empty($review->id)) {
+            return $review->provider . ':' . $review->id;
+        }
+
+        if (empty($pid)) return;
+
+        $time = (string)$this->review_time($review);
+
+        return md5($review->provider . ':' . $pid . ':' . (
+            empty($review->author_url)
+                ? (empty($review->author_name) ? $time : $review->author_name . ':' . $time)
+                : $review->author_url
+        ));
+    }
+
+    private function review_time($review) {
+        if (!empty($review->time)) return (int)$review->time;
+
+        if (!empty($review->time_str)) {
+            $ts = strtotime($review->time_str);
+            if ($ts) return (int)$ts;
+        }
+
+        return 0;
     }
 
     private function log_last_error($wpdb) {

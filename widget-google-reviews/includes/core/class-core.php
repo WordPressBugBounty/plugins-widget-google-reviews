@@ -273,14 +273,17 @@ class Core {
         }
         $place_ids_phs = implode(',', array_fill(0, count($place_ids), '%d'));
 
+        $lang_aliases = $this->get_lang_aliases($lang);
+        $lang_phs = implode(',', array_fill(0, count($lang_aliases), '%s'));
+
         $sql = "SELECT r.*, t.text AS lang_text
                 FROM {$wpdb->prefix}" . Database::REVIEW_TABLE . " r
                 JOIN {$wpdb->prefix}" . Database::BUSINESS_TABLE . " p ON p.id = r.google_place_id
                 LEFT JOIN {$wpdb->prefix}" . Database::TEXT_TABLE . " t
-                    ON t.review_id = MD5(CONCAT(r.provider, ':', p.place_id, ':', r.author_url)) AND t.lang = %s
+                    ON t.review_id = r.review_id AND t.lang IN ({$lang_phs})
                 WHERE r.google_place_id IN ({$place_ids_phs}){$where_r}
                   AND r.author_url IS NOT NULL
-                  AND (%d = 1 OR t.text IS NOT NULL OR r.language = %s OR r.language IS NULL OR r.language = '')
+                  AND (%d = 1 OR t.text IS NOT NULL OR r.language IN ({$lang_phs}) OR r.language IS NULL OR r.language = '')
                   AND NOT EXISTS (
                       SELECT 1 FROM {$wpdb->prefix}" . Database::REVIEW_TABLE . " r2
                       WHERE r2.google_place_id = r.google_place_id AND r2.author_url = r.author_url{$where_plain}
@@ -293,10 +296,11 @@ class Core {
         }
 
         $params = array_merge(
-            [$lang],
+            $lang_aliases,
             $place_ids,
             $hidden_ids,
-            [$all_langs, $lang],
+            [$all_langs],
+            $lang_aliases,
             $hidden_ids
         );
 
@@ -487,6 +491,20 @@ class Core {
         }
         $ids = array_values(array_unique($ids));
         return $ids;
+    }
+
+    private function get_lang_aliases($lang) {
+        $key = strtolower(str_replace('_', '-', trim((string)$lang)));
+        $traditional = array('zh-TW', 'zh-HK', 'zh-MO', 'zh-Hant', 'zh-Hant-TW', 'zh-Hant-HK', 'zh-Hant-MO');
+        $simplified  = array('zh', 'zh-CN', 'zh-SG', 'zh-Hans', 'zh-Hans-CN', 'zh-Hans-SG');
+
+        if (in_array($key, array_map('strtolower', $traditional), true)) {
+            return array_merge($traditional, array('zh'));
+        }
+        if (in_array($key, array_map('strtolower', $simplified), true)) {
+            return $simplified;
+        }
+        return array($lang);
     }
 
     private function _strlen($str) {

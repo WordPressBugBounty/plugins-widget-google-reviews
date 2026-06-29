@@ -1,18 +1,18 @@
 === Rich Showcase for Google Reviews ===
 Contributors: widgetpack
-Tags: google, google reviews, reviews, testimonials, widget
+Tags: google, google reviews, reviews, rating, widget
 Requires at least: 4.7
 Requires PHP: 7.2
 Tested up to: 7.0
-Stable tag: 6.9.6
+Stable tag: 6.9.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Display up to 10 Google reviews in less than a minute. Continue collecting new reviews. No limits on connected places, widgets, shortcodes and blocks.
+Show real Google reviews on your WordPress site in under a minute. Free, GDPR-compliant, with unlimited widgets and locations.
 
 == Description ==
 
-This plugin allows you to display up to 10 **Google Business reviews** and immediately show them on your WordPress website. The setup process is extremely simple and takes less than a minute.
+Build instant trust with visitors by showing your real Google reviews and star rating right on your WordPress site. Setup takes less than a minute — no coding, no API key required for the first 10 reviews.
 
 There are no limits on how many Google business locations you can connect, and you can create as many widgets or shortcodes as needed to place reviews across your site. The plugin is easy to use and helps build trust with your visitors by displaying real Google reviews and your overall rating.
 
@@ -45,6 +45,23 @@ Want to see how it works? Watch the short demo below to see how quickly you can 
 
 ⭐ [Live demo](https://richplugins.com/demos/)
 
+== Frequently Asked Questions ==
+
+= Do I need a Google API key? =
+No, you can connect and display up to 10 Google reviews without any API key - just paste your Google Maps URL or Place ID and you're done. An API key is only needed if you want reviews to update automatically. We provide a step-by-step guide in the plugin's Support section showing how to create a free Google API key.
+
+= Is the plugin GDPR-compliant? =
+Yes. All review data, business photos, and reviewer avatars are stored locally on your WordPress site after the initial connection. No external requests are made when visitors load your pages, so no personal data is shared with Google or any third party on page view. There's also an option to display only the first name and initial of the reviewer's last name.
+
+= Can I connect multiple Google Business locations? =
+Yes, there are no limits on the number of Google Business places you can connect. Reviews from multiple locations can be combined in a single widget and sorted by date, or you can create separate widgets for each location.
+
+= Will reviews update automatically? =
+Yes, when you add your own free Google API key, the plugin will refresh reviews on a daily schedule. Without an API key, the initial 10 reviews are loaded once and remain static until you manually reconnect the place.
+
+= Does it work with Elementor, Gutenberg, and WPBakery? =
+Yes. The plugin provides a native Gutenberg block, a shortcode that works in any page builder (Elementor, WPBakery, Beaver Builder, Divi, SiteOrigin), and a classic sidebar widget. You can mix all three on the same site.
+
 == Screenshots ==
 
 1. Google Reviews slider
@@ -75,6 +92,16 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 6.9.7 =
+* Updated the Google Reviews Gutenberg block to Block API v3 for better compatibility with the latest WordPress editor.
+* Fixed an outdated Block API warning shown in browser DevTools.
+* Bugfix: Google reviews could appear blank or be filtered incorrectly when using Traditional Chinese locales such as zh-TW, zh-HK, or zh-MO.
+* Improved accessibility of the “powered by Google” attribution so screen readers announce it correctly instead of reading the Google word letter by letter.
+* Improved review synchronization reliability by adding a more stable internal review identifier.
+* Improved review text storage and language handling for existing and newly synced Google reviews.
+* Improved database migration safety for existing installations during plugin updates.
+* Fixed an issue where some review text translations could be matched using an older legacy identifier format.
 
 = 6.9.6 =
 * Fixed duplicate reviews appearing in widgets for sites with reviews stored in multiple languages

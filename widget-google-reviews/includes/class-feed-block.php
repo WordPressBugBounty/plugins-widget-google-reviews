@@ -32,8 +32,9 @@ class Feed_Block {
         wp_register_script(
             self::$name,
             plugins_url('build/index.js', GRW_PLUGIN_FILE),
-            array('wp-block-editor', 'wp-blocks'),
-            $this->assets->version()
+            $assets['dependencies'],
+            $this->assets->version(),
+            true
         );
 
         wp_localize_script(
