@@ -29,7 +29,6 @@ class Admin_Rateus_Ajax {
 
         $request = wp_remote_post('https://admin.richplugins.com/plugins/feedback', array(
             'timeout'   => 15,
-            'sslverify' => false,
             'body'      => array(
                 'rate'  => $rate,
                 'email' => $email,

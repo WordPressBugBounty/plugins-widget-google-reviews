@@ -4,7 +4,7 @@ Tags: google, google reviews, reviews, rating, widget
 Requires at least: 4.7
 Requires PHP: 7.2
 Tested up to: 7.0
-Stable tag: 6.9.7
+Stable tag: 6.9.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -92,6 +92,9 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 6.9.8 =
+* Fixed a database collation compatibility issue from version 6.9.7 that could prevent reviews from loading on some existing installations after updating.
 
 = 6.9.7 =
 * Updated the Google Reviews Gutenberg block to Block API v3 for better compatibility with the latest WordPress editor.

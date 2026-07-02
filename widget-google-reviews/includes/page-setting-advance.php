@@ -69,7 +69,7 @@ $dm_disp = $grw_debug_mode ? 'flex' : 'none';
         </div>
         <div class="wp-review-field-option">
             <input type="button" value="Copy Debug Information" name="reset_all" onclick="window.grw_debug_info.select();document.execCommand('copy');window.grw_debug_msg.innerHTML='Debug Information copied, please paste it to your email to support';" class="button" />
-            <textarea id="grw_debug_info" style="display:block;width:30em;height:250px;margin-top:10px" onclick="window.grw_debug_info.select();document.execCommand('copy');window.grw_debug_msg.innerHTML='Debug Information copied, please paste it to your email to support';" readonly><?php $this->debug_info->render(); ?></textarea>
+            <textarea id="grw_debug_info" style="display:block;width:30em;height:250px;margin-top:10px" onclick="window.grw_debug_info.select();document.execCommand('copy');window.grw_debug_msg.innerHTML='Debug Information copied, please paste it to your email to support';" readonly><?php ob_start(); $this->debug_info->render(); echo esc_textarea(ob_get_clean()); ?></textarea>
             <p id="grw_debug_msg"></p>
         </div>
     </div>
