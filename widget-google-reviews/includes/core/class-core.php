@@ -234,6 +234,7 @@ class Core {
                         'biz_url'       => empty($place->url) ? null : $place->url,
                         'rating'        => $rev->rating,
                         'text'          => empty($text) ? null : nl2br(wp_encode_emoji($text)),
+                        'lang'          => isset($biz->lang) ? $biz->lang : null,
                         'author_avatar' => $rev->profile_photo_url,
                         'author_url'    => $rev->author_url,
                         'author_name'   => isset($options->short_last_name) && $options->short_last_name ?
@@ -499,7 +500,7 @@ class Core {
         $simplified  = array('zh', 'zh-CN', 'zh-SG', 'zh-Hans', 'zh-Hans-CN', 'zh-Hans-SG');
 
         if (in_array($key, array_map('strtolower', $traditional), true)) {
-            return array_merge($traditional, array('zh'));
+            return $traditional;
         }
         if (in_array($key, array_map('strtolower', $simplified), true)) {
             return $simplified;

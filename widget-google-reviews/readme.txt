@@ -1,10 +1,10 @@
 === Rich Showcase for Google Reviews ===
 Contributors: widgetpack
-Tags: google, google reviews, reviews, rating, widget
+Tags: google reviews, google business, google places reviews, reviews, widget
 Requires at least: 4.7
 Requires PHP: 7.2
 Tested up to: 7.0
-Stable tag: 6.9.8
+Stable tag: 6.9.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -92,6 +92,11 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 6.9.9 =
+* Bugfix: Traditional Chinese reviews could appear duplicated in some cases.
+* Improved Traditional Chinese locale handling for zh-TW, zh-HK, zh-MO, and zh-Hant review texts.
+* Improved review timestamp localization to better match the selected widget language.
 
 = 6.9.8 =
 * Fixed a database collation compatibility issue from version 6.9.7 that could prevent reviews from loading on some existing installations after updating.

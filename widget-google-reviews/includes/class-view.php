@@ -436,11 +436,9 @@ class View {
                 if (isset($options->reply) && $options->reply && !empty($review->reply)) {
                 ?><div class="wp-google-reply grw-scroll">
                     <div>
-                        <span class="grw-b"><?php echo __('Response from the owner', 'widget-google-reviews'); ?></span>
-                        <span class="wp-google-time" data-time="<?php echo esc_attr($review->reply_time); ?>">
-                            <?php echo esc_html($this->get_time($review->reply_time, $options)); ?>
-                        </span>
-                    </div><?php
+                        <span class="grw-b"><?php echo __('Response from the owner', 'widget-google-reviews'); ?></span><?php
+                        $this->review_time($review, $options, true);
+                    ?></div><?php
                     echo wp_kses_post($review->reply);
                 ?></div><?php
                 }
@@ -452,10 +450,13 @@ class View {
         </div><?php
     }
 
-    private function review_time($review, $opts) {
-        if (!empty($review->time)) {
-            $rt = $review->time;
-            ?><div class="wp-google-time" data-time="<?php echo esc_attr($rt); ?>"><?php echo esc_html($this->get_time($rt, $opts)); ?></div><?php
+    private function review_time($review, $opts, $reply = false) {
+        $rt = $reply ? (empty($review->reply_time) ? null : $review->reply_time) : (empty($review->time) ? null : $review->time);
+        if (!empty($rt)) {
+            $lang = empty($review->lang) ? '' : str_replace('_', '-', $review->lang);
+            ?><div class="wp-google-time" data-time="<?php echo esc_attr($rt); ?>"<?php if ($lang) { ?> data-lang="<?php echo esc_attr($lang); ?>"<?php } ?>><?php
+                echo esc_html($this->get_time($rt, $opts));
+            ?></div><?php
         }
     }
 
