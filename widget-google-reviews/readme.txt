@@ -4,7 +4,7 @@ Tags: google reviews, google business, google places reviews, reviews, widget
 Requires at least: 4.7
 Requires PHP: 7.2
 Tested up to: 7.0
-Stable tag: 6.9.9
+Stable tag: 6.9.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -92,6 +92,10 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 6.9.10 =
+* Fixed an issue with unsafe handling of the review pagination shortcode parameter.
+* Improved output escaping for diagnostic information shown in the plugin settings.
 
 = 6.9.9 =
 * Bugfix: Traditional Chinese reviews could appear duplicated in some cases.

@@ -177,7 +177,7 @@ class Plugin_Settings {
                                         if (!empty($body)) {
                                             $parts = explode(',', $body);
                                             if (count($parts) > 1) {
-                                                ?><p>If you wish to restrict your API key, please use <b>Application restrictions</b> - <b>IP addresses</b> and add the IP address: <b><u><?php echo $parts[1]; ?></u></b></p><?php
+                                                ?><p>If you wish to restrict your API key, please use <b>Application restrictions</b> - <b>IP addresses</b> and add the IP address: <b><u><?php echo esc_html(trim($parts[1])); ?></u></b></p><?php
                                             }
                                         }
                                     }

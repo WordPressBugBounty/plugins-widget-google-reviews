@@ -133,6 +133,7 @@ class View {
     }
 
     private function render_grid($businesses, $reviews, $options, $is_admin = false) {
+        $pagination = max(0, (int) $options->pagination);
         $hr = false;
         if (count($businesses) > 0) {
             $this->grw_place(
@@ -159,7 +160,7 @@ class View {
                         if (count($reviews) > 0) {
                             $i = 0;
                             foreach ($reviews as $review) {
-                                if ($options->pagination > 0 && $options->pagination <= $i++) {
+                                if ($pagination > 0 && $pagination <= $i++) {
                                     $hr = true;
                                 }
                                 $this->grw_slider_review($review, $hr, $options, $is_admin);
@@ -168,8 +169,8 @@ class View {
                         ?>
                     </div>
                 </div>
-                <?php if ($options->pagination > 0 && $hr) { ?>
-                <a class="wp-google-url" href="#" onclick="return rplg_next_reviews.call(this, 'grw', <?php echo $options->pagination; ?>);">
+                <?php if ($pagination > 0 && $hr) { ?>
+                <a class="wp-google-url" href="#" onclick="return rplg_next_reviews.call(this, 'grw', <?php echo $pagination; ?>);">
                     <?php echo __('More reviews', 'widget-google-reviews'); ?>
                 </a>
                 <?php } ?>
@@ -313,6 +314,7 @@ class View {
     }
 
     function grw_place_reviews($reviews, $options, $is_admin = false) {
+        $pagination = max(0, (int) $options->pagination);
         ?><div class="rpi-flx rpi-col16"><?php
         $place_id = null;
         $place_url = null;
@@ -325,15 +327,15 @@ class View {
                     $place_id = $review->biz_id;
                     $place_url = $review->biz_url;
                 }
-                if ($options->pagination > 0 && $options->pagination <= $i++) {
+                if ($pagination > 0 && $pagination <= $i++) {
                     $hr = true;
                 }
                 $this->grw_place_review($review, $hr, $options, $is_admin);
             }
         }
         ?></div><?php
-        if ($options->pagination > 0 && $hr) {
-        ?><a class="wp-google-url" href="#" onclick="return rplg_next_reviews.call(this, 'wp-google', <?php echo $options->pagination; ?>);"><?php
+        if ($pagination > 0 && $hr) {
+        ?><a class="wp-google-url" href="#" onclick="return rplg_next_reviews.call(this, 'wp-google', <?php echo $pagination; ?>);"><?php
             echo __('More reviews', 'widget-google-reviews');
         ?></a><?php
         } else {
