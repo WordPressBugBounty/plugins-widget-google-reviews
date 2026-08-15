@@ -12,7 +12,7 @@ class Admin_Rateus_Ajax {
     public function rateus_ajax() {
         $this->check_nonce();
 
-        $rate = trim(sanitize_text_field(wp_unslash($_POST['rate'])));
+        $rate = isset($_POST['rate']) ? trim(sanitize_text_field(wp_unslash($_POST['rate']))) : '';
         update_option('grw_rate_us', time() . ':' . $rate);
         echo json_encode(array('rate' => $rate));
 
@@ -22,9 +22,9 @@ class Admin_Rateus_Ajax {
     public function rateus_ajax_feedback() {
         $this->check_nonce();
 
-        $rate  = trim(sanitize_text_field(wp_unslash($_POST['rate'])));
-        $email = trim(sanitize_text_field(wp_unslash($_POST['email'])));
-        $msg   = trim(sanitize_text_field(wp_unslash($_POST['msg'])));
+        $rate  = isset($_POST['rate'])  ? trim(sanitize_text_field(wp_unslash($_POST['rate'])))  : '';
+        $email = isset($_POST['email']) ? trim(sanitize_text_field(wp_unslash($_POST['email']))) : '';
+        $msg   = isset($_POST['msg'])   ? trim(sanitize_text_field(wp_unslash($_POST['msg'])))   : '';
         update_option('grw_rate_us', time() . ':' . $rate);
 
         $request = wp_remote_post('https://admin.richplugins.com/plugins/feedback', array(

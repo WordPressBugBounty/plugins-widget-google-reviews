@@ -26,9 +26,6 @@ class Feed_Old {
         'reviews_lang'         => '',
     );
 
-    public function __construct() {
-    }
-
     public function get_feed($id, $params) {
         $feed_content = array();
         $conn = array();

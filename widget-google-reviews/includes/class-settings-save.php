@@ -142,16 +142,6 @@ class Settings_Save {
             }
             update_option('grw_revupd_cron', $revupd_cron);
             $notice_code = 'settings_revupd_cron_' . $revupd_cron;
-
-            /*$api_key = get_option('grw_google_api_key');
-            if ($api_key) {
-                update_option('grw_revupd_cron', $revupd_cron);
-                $notice_code = 'settings_revupd_cron_' . $revupd_cron;
-            } else {
-                update_option('grw_notice_type', 'error');
-                update_option('grw_notice_msg', 'To make the reviews automatically updated, please create your own Google API key. The extrimly detailed instruction how to do it, you can <a href="' . admin_url('admin.php?page=grw-support&grw_tab=fig#fig_api_key') . '" target="_blank">find here</a>.');
-                $notice_code = 'custom_msg';
-            }*/
         }
 
         $this->redirect_to_tab($notice_code);
@@ -178,7 +168,7 @@ class Settings_Save {
     }
 
     private function check_nonce() {
-        $nonce_actions = array('active', 'save', 'create_db', 'reset', 'reset_all', 'debug_mode', 'update_db', 'del_dup_revs');
+        $nonce_actions = array('active', 'save', 'create_db', 'reset_all', 'debug_mode', 'update_db', 'del_dup_revs');
         $nonce_form_prefix = 'grw-form_nonce_';
         $nonce_action_prefix = 'grw-wpnonce_';
         foreach ($nonce_actions as $key => $value) {

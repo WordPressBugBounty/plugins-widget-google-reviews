@@ -59,6 +59,32 @@ function grw_init(el, layout) {
         card : 'grw-review'
     }).init();
 
+    const popupEl = rootEl.querySelector('.grw-popup');
+
+    if (popupEl && rpi.Lightbox) {
+        const open = function() {
+            popupEl.classList.add('grw-popup-on');
+            rpi.Lightbox(popupEl).show(true);
+            return false;
+        };
+
+        const headerEls = rootEl.getElementsByClassName('grw-header-inner');
+        for (let i = 0; i < headerEls.length; i++) {
+            headerEls[i].setAttribute('role', 'button');
+            headerEls[i].setAttribute('tabindex', '0');
+            headerEls[i].onclick = function(e) {
+                if (e.target.closest('a')) return;
+                open();
+            };
+            headerEls[i].onkeydown = function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    open();
+                }
+            };
+        }
+    }
+
     if (rootEl.getElementsByClassName('grw-review')[0] && (layout == 'slider' || layout == 'grid')) {
         // Init Slider or Grid
         const row = rootEl.getElementsByClassName('grw-row')[0];

@@ -3,7 +3,6 @@
 namespace WP_Rplg_Google_Reviews\Includes;
 
 use WP_Rplg_Google_Reviews\Includes\Core\Core;
-use WP_Rplg_Google_Reviews\Includes\Core\Database;
 
 class Builder_Page {
 
@@ -22,20 +21,12 @@ class Builder_Page {
     }
 
     public function init() {
-        if (isset($_GET['grw_notice'])) {
-            $this->add_admin_notice();
-        }
-
         $feed = null;
         if (isset($_GET[Post_Types::FEED_POST_TYPE . '_id'])) {
             $feed = $this->feed_deserializer->get_feed(sanitize_text_field(wp_unslash($_GET[Post_Types::FEED_POST_TYPE . '_id'])));
         }
 
         $this->render($feed);
-    }
-
-    public function add_admin_notice($notice_code = 0) {
-
     }
 
     public function render($feed) {

@@ -164,6 +164,14 @@ const GRW_HTML_CONTENT =
                     'Hide rating header, leave only reviews' +
                 '</label>' +
             '</div>' +
+            '<div class="grw-builder-option">' +
+                '<label>' +
+                    '<input type="checkbox" name="rating_popup" value="" checked>' +
+                    'Open reviews in a popup on click' +
+                '</label>' +
+                '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
+                '<div class="grw-quest-help" style="display:none;">Only for the <b>Rating</b> layout: the rating block becomes clickable and opens the reviews in a popup, so the compact badge stays compact.</div>' +
+            '</div>' +
             /*'<div class="grw-builder-option">' +
                 '<label>' +
                     '<input type="checkbox" name="hide_reviews" value="">' +
@@ -364,6 +372,14 @@ const GRW_HTML_CONTENT =
                 '</label>' +
                 '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
                 '<div class="grw-quest-help" style="display:none;">If the direct link to all reviews <b>https://search.google.com/local/reviews?placeid=&lt;PLACE_ID&gt;</b> does not work with your Google place (leads to 404), please use this option to use the default reviews link to Google map.</div>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<label>' +
+                    '<input type="checkbox" name="disable_biz_link">' +
+                    'Disable link on business name' +
+                '</label>' +
+                '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
+                '<div class="grw-quest-help" style="display:none;">Show the business name as plain text instead of a link to the Google Local Business Page.</div>' +
             '</div>' +
             '<div class="grw-builder-option">' +
                 'Reviewer avatar size' +

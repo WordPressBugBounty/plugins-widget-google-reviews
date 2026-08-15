@@ -27,15 +27,23 @@ class Google_Connect {
             } else {
                 check_admin_referer('grw_wpnonce', 'grw_wpnonce');
 
-                $review = $wpdb->get_row(
+                $review_id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+
+                $review = $review_id ? $wpdb->get_row(
                     $wpdb->prepare(
                         "SELECT * FROM " . $wpdb->prefix . Database::REVIEW_TABLE .
-                        " WHERE id = %d", $_POST['id']
+                        " WHERE id = %d", $review_id
                     )
-                );
+                ) : null;
+
+                if (!$review) {
+                    header('Content-type: text/javascript');
+                    echo json_encode(array('error' => __('Review not found.', 'widget-google-reviews')));
+                    die();
+                }
 
                 $hide = $review->hide == '' ? 'y' : '';
-                $wpdb->update($wpdb->prefix . Database::REVIEW_TABLE, array('hide' => $hide), array('id' => $_POST['id']));
+                $wpdb->update($wpdb->prefix . Database::REVIEW_TABLE, array('hide' => $hide), array('id' => $review_id));
 
                 // Cache clear
                 if (isset($_POST['feed_id'])) {
@@ -82,7 +90,7 @@ class Google_Connect {
 
                 if ($key && strlen($key) > 0) {
 
-                    $pid = sanitize_text_field(wp_unslash($_POST['id']));
+                    $pid = isset($_POST['id']) ? sanitize_text_field(wp_unslash($_POST['id'])) : '';
                     $gpa_old = get_option('grw_gpa_old');
 
                     if ($gpa_old === 'true') {
@@ -93,7 +101,7 @@ class Google_Connect {
 
                 } else {
 
-                    $pid = sanitize_text_field(wp_unslash($_POST['id']));
+                    $pid = isset($_POST['id']) ? sanitize_text_field(wp_unslash($_POST['id'])) : '';
                     $token = empty($_POST['token']) ? null : sanitize_text_field(wp_unslash($_POST['token']));
 
                     if (!empty($token)) {
@@ -140,7 +148,7 @@ class Google_Connect {
 
                 $key = get_option('grw_google_api_key');
                 if (!empty($key)) {
-                    $input = sanitize_text_field(wp_unslash($_POST['input']));
+                    $input = isset($_POST['input']) ? sanitize_text_field(wp_unslash($_POST['input'])) : '';
                     $url = add_query_arg(
                         array(
                             'input' => $input,
@@ -176,7 +184,7 @@ class Google_Connect {
 
                 if ($key && strlen($key) > 0) {
 
-                    $pid = sanitize_text_field(wp_unslash($_POST['pid']));
+                    $pid = isset($_POST['pid']) ? sanitize_text_field(wp_unslash($_POST['pid'])) : '';
                     $gpa_old = get_option('grw_gpa_old');
 
                     if ($gpa_old === 'true') {
@@ -187,7 +195,7 @@ class Google_Connect {
 
                 } else {
 
-                    $pid = sanitize_text_field(wp_unslash($_POST['pid']));
+                    $pid = isset($_POST['pid']) ? sanitize_text_field(wp_unslash($_POST['pid'])) : '';
                     $token = empty($_POST['token']) ? null : sanitize_text_field(wp_unslash($_POST['token']));
 
                     if (!empty($token)) {

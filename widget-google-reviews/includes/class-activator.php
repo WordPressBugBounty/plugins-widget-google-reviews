@@ -178,11 +178,6 @@ class Activator {
             dbDelta($sql);
         }
 
-        //if (version_compare($last_active_version, '4.2', '<')) {
-            //$this->delete_duplicates();
-            //$wpdb->query("ALTER TABLE {$rev} ADD UNIQUE `grp_author_url_lang` (`author_url`, `language`)");
-        //}
-
         if (version_compare($last_active_version, '4.8.1', '<')) {
             $wpdb->query("ALTER TABLE {$rev} MODIFY COLUMN `author_url` VARCHAR(127)");
         }
@@ -421,28 +416,37 @@ class Activator {
 
         $last_error = array();
 
-        // Delete duplicte reviews
-        $wpdb->query($wpdb->prepare(
-            "DELETE `" . $wpdb->prefix . Database::REVIEW_TABLE . "` " .
-            "FROM `" . $wpdb->prefix . Database::REVIEW_TABLE . "` INNER JOIN (" .
-                "SELECT MIN(id) AS last_id, author_url, language FROM `" . $wpdb->prefix . Database::REVIEW_TABLE . "` " .
+        $rev = $wpdb->prefix . Database::REVIEW_TABLE;
+
+        // Delete duplicte reviews. No placeholders here, so no prepare().
+        $wpdb->query(
+            "DELETE `" . $rev . "` " .
+            "FROM `" . $rev . "` INNER JOIN (" .
+                "SELECT MIN(id) AS last_id, author_url, language FROM `" . $rev . "` " .
                 "WHERE author_url IN (" .
-                    "SELECT author_url FROM `" . $wpdb->prefix . Database::REVIEW_TABLE . "` " .
+                    "SELECT author_url FROM `" . $rev . "` " .
                     "GROUP BY author_url, language HAVING COUNT(*) > 1" .
                 ") GROUP BY author_url, language" .
-            ") DUPLIC ON DUPLIC.author_url = `" . $wpdb->prefix . Database::REVIEW_TABLE . "`.author_url " .
-                    "AND DUPLIC.language = `" . $wpdb->prefix . Database::REVIEW_TABLE . "`.language " .
-            "WHERE `" . $wpdb->prefix . Database::REVIEW_TABLE . "`.ID > DUPLIC.last_id;"));
+            ") DUPLIC ON DUPLIC.author_url = `" . $rev . "`.author_url " .
+                    "AND DUPLIC.language = `" . $rev . "`.language " .
+            "WHERE `" . $rev . "`.ID > DUPLIC.last_id;");
 
         if (!empty($wpdb->last_error)) {
             array_push($last_error, $wpdb->last_error);
         }
 
-        // Add unique index for author_url and lang
-        $wpdb->query("ALTER TABLE `" . $wpdb->prefix . Database::REVIEW_TABLE . "` ADD UNIQUE `grp_author_url_lang` (`author_url`, `language`)");
+        // Database::create() already declares an index of this name, so adding it
+        // again is a guaranteed "Duplicate key name" error on an existing install.
+        $index = $wpdb->get_results($wpdb->prepare(
+            "SHOW INDEX FROM `" . $rev . "` WHERE Key_name = %s", 'grp_author_url_lang'
+        ));
 
-        if (!empty($wpdb->last_error)) {
-            array_push($last_error, $wpdb->last_error);
+        if (empty($index)) {
+            $wpdb->query("ALTER TABLE `" . $rev . "` ADD UNIQUE `grp_author_url_lang` (`author_url`, `language`)");
+
+            if (!empty($wpdb->last_error)) {
+                array_push($last_error, $wpdb->last_error);
+            }
         }
 
         if (count($last_error) > 0) {

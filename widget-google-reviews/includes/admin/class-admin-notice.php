@@ -11,7 +11,6 @@ class Admin_Notice {
         'settings_active_1'      => 'Plugin enabled successfully.',
         'settings_save'          => 'Settings saved successfully.',
         'settings_create_db'     => 'Database re-created successfully.',
-        'settings_reset'         => 'Settings deleted successfully.',
         'settings_install'       => 'Plugin installed from scratch successfully.',
         'settings_reset_all'     => 'All data including settings and reviews deleted successfully.',
         'settings_debug_mode_0'  => 'Debug mode disabled successfully.',
@@ -42,6 +41,12 @@ class Admin_Notice {
 
     public function render_notices() {
         if (empty($this->notice_id) || !$this->is_valid_screen()) {
+            return;
+        }
+
+        // The code arrives from the URL, so it can be anything.
+        if ($this->notice_id !== 'custom_msg' && !isset(self::$plugin_notices[$this->notice_id])) {
+            $this->notice_id = '';
             return;
         }
 

@@ -11,7 +11,6 @@ class Feed_Page {
     }
 
     public function register() {
-        $render_func;
         $feed_ids = get_option('grw_feed_ids');
         if (empty($feed_ids)) {
             $render_func = array($this, 'connect');

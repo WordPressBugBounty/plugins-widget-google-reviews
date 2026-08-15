@@ -10,20 +10,32 @@ class Feed_Serializer {
 
     public function feed_save() {
 
-        $raw_data_array = $_POST[Post_Types::FEED_POST_TYPE];
+        // admin-post.php fires this for GET too, so the payload may be absent entirely.
+        $raw_data_array = isset($_POST[Post_Types::FEED_POST_TYPE]) && is_array($_POST[Post_Types::FEED_POST_TYPE])
+            ? $_POST[Post_Types::FEED_POST_TYPE]
+            : array();
 
-        $post_id = $this->save($raw_data_array['post_id'], $raw_data_array['title'], $raw_data_array['content']);
+        $post_id = $this->save(
+            isset($raw_data_array['post_id']) ? $raw_data_array['post_id'] : '',
+            isset($raw_data_array['title'])   ? $raw_data_array['title']   : '',
+            isset($raw_data_array['content']) ? $raw_data_array['content'] : ''
+        );
 
         // NOT: $referer = empty(wp_get_referer()) ? $raw_data_array['current_url'] : wp_get_referer();
         // COZ: Fatal error: Can't use function return value in write context in .../includes/class-feed-serializer.php on line ...
-        $referer = wp_get_referer();
-        $referer = empty($referer) ? sanitize_text_field(wp_unslash($raw_data_array['current_url'])) : wp_get_referer();
+        $args = array();
+        if ($post_id) {
+            $args[Post_Types::FEED_POST_TYPE . '_id'] = $post_id;
+        }
 
-        wp_safe_redirect(
-            add_query_arg(array(
-                Post_Types::FEED_POST_TYPE . '_id' => $post_id,
-            ), $referer)
-        );
+        $referer = wp_get_referer();
+        if (empty($referer)) {
+            $referer = isset($raw_data_array['current_url'])
+                ? sanitize_text_field(wp_unslash($raw_data_array['current_url']))
+                : admin_url('admin.php?page=grw-builder');
+        }
+
+        wp_safe_redirect(add_query_arg($args, $referer));
         exit;
     }
 
@@ -35,10 +47,17 @@ class Feed_Serializer {
 
         check_admin_referer('grw_wpnonce', 'grw_nonce');
 
+        $json = $this->sanitize_json(wp_unslash($content));
+
+        // Storing a broken payload leaves a widget that cannot be rendered or repaired.
+        if ($json === false) {
+            return false;
+        }
+
         $post_id = wp_insert_post(array(
             'ID'           => sanitize_text_field(wp_unslash($post_id)),
             'post_title'   => sanitize_text_field(wp_unslash($title)),
-            'post_content' => $this->sanitize_json(wp_unslash($content)),
+            'post_content' => $json,
             'post_type'    => Post_Types::FEED_POST_TYPE,
             'post_status'  => 'publish',
         ));

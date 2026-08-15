@@ -2,8 +2,6 @@
 
 namespace WP_Rplg_Google_Reviews\Includes;
 
-use WP_Rplg_Google_Reviews\Includes\Core\Core;
-
 class Plugin_Overview {
 
     private $builder_page;
@@ -13,9 +11,6 @@ class Plugin_Overview {
     }
 
     public function register() {
-        add_action('grw_admin_page_grw', array($this, 'init'));
-
-        $render_function;
         $feed_ids = get_option('grw_feed_ids');
         if (empty($feed_ids)) {
             $render_function = array($this, 'connect');
@@ -24,10 +19,6 @@ class Plugin_Overview {
         }
 
         add_action('grw_admin_page_grw', $render_function);
-    }
-
-    public function init() {
-
     }
 
     public function connect() {

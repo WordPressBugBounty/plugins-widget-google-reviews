@@ -51,7 +51,7 @@ class Google_Api_New {
                 'name'               => $json->displayName->text,
                 'rating'             => $json->rating,
                 'user_ratings_total' => $json->userRatingCount,
-                'photo'              => strlen($json->business_photo) ? $json->business_photo : GRW_GOOGLE_BIZ,
+                'photo'              => empty($json->business_photo) ? GRW_GOOGLE_BIZ : $json->business_photo,
                 'reviews'            => isset($json->reviews) ? $json->reviews : null
             );
             $status = 'success';
@@ -69,7 +69,7 @@ class Google_Api_New {
 
     private function url($pid, $key, $fields = [], $lang = '') {
         $url = GRW_GOOGLE_PLACE_API_NEW . $pid . '?fields=' . implode(',', $fields) . '&key=' . $key;
-        if (strlen($lang) > 0) {
+        if (!empty($lang)) {
             $url = $url . '&languageCode=' . $lang;
         }
         return $url;

@@ -8,11 +8,13 @@ class Admin_Feed_Columns {
 
     private $feed_deserializer;
 
+    // 'badge' is not offered by the builder any more, but widgets saved with it still render.
     private static $plugin_themes = array(
         'list'   => 'List',
         'slider' => 'Slider',
         'grid'   => 'Grid',
-        'rating' => 'Rating'
+        'rating' => 'Rating',
+        'badge'  => 'Badge'
     );
 
     public function __construct($feed_deserializer) {
@@ -40,7 +42,6 @@ class Admin_Feed_Columns {
     }
 
     public function get_columns($columns) {
-        $columns = $columns;
         $columns = array(
             'cb'            => '<input type="checkbox">',
             'title'         => __('Title', 'widget-google-reviews'),
@@ -75,7 +76,8 @@ class Admin_Feed_Columns {
                 echo $feed->ID;
                 break;
             case 'grw_theme':
-                echo isset($connection->options->view_mode) ? self::$plugin_themes[$connection->options->view_mode] : 'List';
+                $view_mode = isset($connection->options->view_mode) ? $connection->options->view_mode : '';
+                echo isset(self::$plugin_themes[$view_mode]) ? self::$plugin_themes[$view_mode] : 'List';
                 break;
             case 'grw_shortcode':
                 echo '<input type="text" value="[grw id=' . $feed->ID . ']" onclick="this.select(); document.execCommand(\'copy\');var sm=this.nextSibling;sm.className=\'\';setTimeout(function() {sm.className=\'grw_hide\';},10);" readonly=""><small>shortcode copied</small>';

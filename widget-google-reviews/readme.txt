@@ -1,10 +1,10 @@
 === Rich Showcase for Google Reviews ===
 Contributors: widgetpack
-Tags: google reviews, google business, google places reviews, reviews, widget
+Tags: google reviews, google, reviews, rating, reviews plugin
 Requires at least: 4.7
 Requires PHP: 7.2
 Tested up to: 7.0
-Stable tag: 6.9.10
+Stable tag: 6.9.11
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -92,6 +92,15 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 6.9.11 =
+* New option for the Rating layout: open the reviews in a popup when the rating block is clicked. Enabled for newly created widgets; existing widgets keep their current look.
+* New option to show the business name as plain text instead of a link to the Google Local Business Page.
+* Bugfix: in older widgets configured to hide reviewer avatars, the List layout hid the whole review instead of just the avatar, leaving the reviews blank.
+* Bugfix: a widget whose connected place was no longer in the database rendered an empty business header and filled the PHP error log on every page view.
+* Bugfix: a widget could be stored in an unusable state if the browser submitted an incomplete configuration.
+* Fixed PHP notices and warnings reported on some hosts by the widgets list, the review hide/show action and the "Remove duplicate reviews" tool.
+* Housekeeping: removed unused code and files that were still being shipped with the plugin.
 
 = 6.9.10 =
 * Fixed an issue with unsafe handling of the review pagination shortcode parameter.

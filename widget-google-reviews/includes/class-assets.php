@@ -218,7 +218,7 @@ class Assets {
             wp_enqueue_script('rpi-utils-js');
             wp_enqueue_script('rpi-column-js');
             wp_enqueue_script('rpi-common-js');
-            // TODO: wp_enqueue_script('rpi-lightbox-js');
+            wp_enqueue_script('rpi-lightbox-js');
             wp_enqueue_script('rpi-media-js');
             wp_enqueue_script('rpi-slider-js');
         }

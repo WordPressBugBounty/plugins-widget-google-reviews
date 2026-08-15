@@ -277,9 +277,6 @@ class Google_Dao {
         if (!empty($rating)) {
             $update_params['rating'] = $rating;
         }
-        /*if (!empty($text)) {
-            $update_params['text'] = $text;
-        }*/
         if ($author_img) {
             $update_params['profile_photo_url'] = $author_img;
         }
@@ -322,7 +319,6 @@ class Google_Dao {
             'google_place_id'   => $db_place_id,
             'review_id'         => $review_id,
             'rating'            => $rating,
-            //'text'              => $text,
             'time'              => $time,
             'language'          => $review_lang,
             'author_name'       => $author_name,

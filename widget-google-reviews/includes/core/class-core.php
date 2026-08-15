@@ -4,16 +4,13 @@ namespace WP_Rplg_Google_Reviews\Includes\Core;
 
 class Core {
 
-    public function __construct() {
-    }
-
     public static function get_default_options() {
         return array(
             'view_mode'                 => 'list',
+            'rating_popup'              => null,
             'pagination'                => '10',
             'text_size'                 => '',
             'min_letter'                => '',
-            'disable_user_link'         => false,
             'hide_based_on'             => false,
             'hide_writereview'          => false,
             'hide_reviews'              => false,
@@ -21,13 +18,11 @@ class Core {
             'hide_backgnd'              => false,
             'show_round'                => false,
             'show_shadow'               => false,
-            //'all_langs'                 => false,
             'short_last_name'           => false,
             'media'                     => true,
             'reply'                     => true,
 
             'slider_autoplay'           => true,
-            'slider_hide_border'        => false,
             'slider_hide_prevnext'      => false,
             'slider_hide_dots'          => false,
             'slider_text_height'        => '',
@@ -35,7 +30,6 @@ class Core {
             'slider_mousestop'          => true,
             'slider_breakpoints'        => '',
 
-            'header_merge_social'       => false,
             'header_hide_social'        => false,
             'header_center'             => false,
             'header_hide_photo'         => false,
@@ -52,7 +46,7 @@ class Core {
             'lazy_load_img'             => true,
             'aria_label'                => false,
             'google_def_rev_link'       => false,
-            'star_style'                => '',
+            'disable_biz_link'          => false,
             'reviewer_avatar_size'      => 56,
             'reviews_limit'             => '',
             'hidden'                    => '',
@@ -121,8 +115,10 @@ class Core {
 
     public function get_data($connection, $is_admin = false) {
 
-        if ($connection == null) {
-            return null;
+        // A widget whose post_content is empty or not valid JSON decodes to null.
+        // Every caller indexes the result straight away, so hand back an empty feed.
+        if (!is_object($connection)) {
+            $connection = new \stdClass();
         }
 
         $options = $this->get_ops($connection);
@@ -138,7 +134,8 @@ class Core {
                         // break;
                     default:
                         $result = $this->get_db_reviews($conn, $options, $is_admin);
-                        if (!$options->header_hide_social) {
+                        // Null when the connected place is not in the database yet.
+                        if (!$options->header_hide_social && $result['business']) {
                             array_push($biz, $result['business']);
                         }
                         if (!$options->hide_reviews) {
@@ -404,53 +401,6 @@ class Core {
                 'stats'        => $stats,
                 'stats_minmax' => $stats_minmax
             );
-    }
-
-    public function merge_biz($businesses, $id = '', $name = '', $url = '', $photo = '', $provider = '') {
-        $count = 0;
-        $rating = 0;
-        $review_count = array();
-        $review_count_manual = array();
-        $business_platform = array();
-        $biz_merge = null;
-        foreach ($businesses as $business) {
-            if ($business->rating < 1) {
-                continue;
-            }
-
-            $count++;
-            $rating += $business->rating;
-
-            if (isset($business->review_count_manual) && $business->review_count_manual > 0) {
-                $review_count_manual[$business->id] = $business->review_count_manual;
-            } else {
-                $review_count[$business->id] = $business->review_count;
-            }
-
-            array_push($business_platform, $business->provider);
-
-            if ($biz_merge == null) {
-                $biz_merge = json_decode(json_encode(
-                    array(
-                        'id'           => strlen($id)       > 0 ? $id       : $business->id,
-                        'name'         => strlen($name)     > 0 ? $name     : $business->name,
-                        'url'          => strlen($url)      > 0 ? $url      : $business->url,
-                        'photo'        => strlen($photo)    > 0 ? $photo    : $business->photo,
-                        'provider'     => strlen($provider) > 0 ? $provider : $business->provider,
-                        'review_count' => 0,
-                    )
-                ));
-            }
-            $rating_tmp = round($rating / $count, 1);
-            $rating_tmp = number_format((float)$rating_tmp, 1, '.', '');
-            $biz_merge->rating = $rating_tmp;
-        }
-        $review_count = array_merge($review_count, $review_count_manual);
-        foreach ($review_count as $id => $count) {
-            $biz_merge->review_count += $count;
-        }
-        $biz_merge->platform = array_unique($business_platform);
-        return $biz_merge;
     }
 
     private function get_short_name($author_name){

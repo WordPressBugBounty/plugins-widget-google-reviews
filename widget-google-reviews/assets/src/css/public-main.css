@@ -236,11 +236,67 @@
     text-align: center!important
 }
 
+/*-------------------------------- Rating popup --------------------------------*/
+/* Four classes on purpose: .wp-gr .wp-google-list .grw-header-inner sits lower in this file. */
+.wp-gr .wp-google-list.grw-rating .grw-header-inner {
+    padding: 16px!important;
+    cursor: pointer!important;
+    border-radius: 8px!important;
+    transition: box-shadow 200ms ease-out!important;
+}
+
+/* The column clips at its edge, cutting the shadow off the 'review us on' button. */
+.wp-gr .wp-google-list.grw-rating .grw-header-inner > .rpi-flx {
+    overflow: visible!important;
+}
+
+.wp-gr .wp-google-list.grw-rating .grw-header-inner:hover,
+.wp-gr .wp-google-list.grw-rating .grw-header-inner:focus-visible {
+    box-shadow: 0 0 2px rgba(0, 0, 0, .12), 0 2px 8px rgba(0, 0, 0, .18)!important;
+}
+
+/* common.css forces .wp-gr to display:block!important, so nothing weaker can hide the popup. */
+.wp-gr.grw-popup {
+    display: none!important;
+}
+
+.wp-gr.grw-popup.grw-popup-on {
+    display: flex!important;
+    flex-direction: column!important;
+    align-self: stretch!important;
+    width: 100%!important;
+    max-width: 720px!important;
+    height: 100%!important;
+    padding: 16px!important;
+    overflow-y: auto!important;
+    background-color: #fff!important;
+}
+
+/* Without this the review list is shrunk to the panel height and clipped, so it never scrolls. */
+.wp-gr.grw-popup.grw-popup-on > * {
+    flex-shrink: 0!important;
+}
+
+/*
+ * lightbox.css keeps 80px of backdrop above and below; the reviews panel runs edge to edge.
+ * Matched through the content so the shared lightbox goes back to its centred window as soon
+ * as another consumer -- a review photo, the connect wizard -- takes it over.
+ */
+.rpi-lightbox-inner:has(.grw-popup) {
+    height: 100%!important;
+    max-height: 100%!important;
+}
+
+.wp-gr.wp-dark.grw-popup {
+    background-color: #1e1e1e!important;
+}
+
 .wp-gr.wp-dark .wp-google-name {
     color: #eee!important
 }
 
-.wp-gr.rpi.wp-dark .wp-google-name a {
+.wp-gr.rpi.wp-dark .wp-google-name a,
+.wp-gr.rpi.wp-dark .wp-google-name span {
     color: var(--head-based-color, #eeeeee)!important
 }
 
@@ -273,7 +329,8 @@
     display: none
 }
 
-.wp-gr.rpi .wp-google-name a {
+.wp-gr.rpi .wp-google-name a,
+.wp-gr.rpi .wp-google-name span {
     color: var(--head-name-color, #333333)!important;
     font-size: 18px!important;
     text-decoration: none!important

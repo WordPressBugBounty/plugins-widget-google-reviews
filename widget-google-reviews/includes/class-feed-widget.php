@@ -2,8 +2,6 @@
 
 namespace WP_Rplg_Google_Reviews\Includes;
 
-use WP_Rplg_Google_Reviews\Includes\Core\Core;
-
 class Feed_Widget extends \WP_Widget {
 
     public static $static_core;

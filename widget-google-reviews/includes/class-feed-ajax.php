@@ -22,17 +22,23 @@ class Feed_Ajax {
 
     public function save_ajax() {
 
-        $post_id = $this->feed_serializer->save($_POST['post_id'], $_POST['title'], $_POST['content']);
+        $post_id = $this->feed_serializer->save(
+            isset($_POST['post_id']) ? $_POST['post_id'] : '',
+            isset($_POST['title'])   ? $_POST['title']   : '',
+            isset($_POST['content']) ? $_POST['content'] : ''
+        );
 
-        if (isset($post_id)) {
+        if ($post_id) {
             $feed = $this->feed_deserializer->get_feed($post_id);
 
-            $data = $this->core->get_reviews($feed, true);
-            $businesses = $data['businesses'];
-            $reviews = $data['reviews'];
-            $options = $data['options'];
+            if ($feed) {
+                $data = $this->core->get_reviews($feed, true);
+                $businesses = $data['businesses'];
+                $reviews = $data['reviews'];
+                $options = $data['options'];
 
-            echo $this->view->render($feed->ID, $businesses, $reviews, $options, true);
+                echo $this->view->render($feed->ID, $businesses, $reviews, $options, true);
+            }
         }
 
         wp_die();
