@@ -78,8 +78,19 @@ class Google_Api_Old {
             if (isset($json->credits)) {
                 $result['credits'] = $json->credits;
             }
+            if (!empty($json->cached)) {
+                $result['cached'] = true;
+            }
             if (isset($data->map_url) && strlen($data->map_url) > 0) {
                 $result['map_url'] = $data->map_url;
+            }
+            if (isset($data->address_components)) {
+                foreach ($data->address_components as $component) {
+                    if (isset($component->types) && in_array('country', $component->types) && isset($component->short_name)) {
+                        $result['country'] = strtoupper($component->short_name);
+                        break;
+                    }
+                }
             }
             $status = 'success';
         } else {

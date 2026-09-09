@@ -8,6 +8,7 @@ use WP_Rplg_Google_Reviews\Includes\Admin\Admin_Notice;
 use WP_Rplg_Google_Reviews\Includes\Admin\Admin_Feed_Columns;
 use WP_Rplg_Google_Reviews\Includes\Admin\Admin_Rev;
 use WP_Rplg_Google_Reviews\Includes\Admin\Admin_Rateus_Ajax;
+use WP_Rplg_Google_Reviews\Includes\Admin\Admin_Deactivate;
 
 use WP_Rplg_Google_Reviews\Includes\Core\Core;
 use WP_Rplg_Google_Reviews\Includes\Core\Database;
@@ -69,7 +70,12 @@ final class Plugin {
 
         $view = new View();
 
-        $builder_page = new Builder_Page($feed_deserializer, $core, $view);
+        $connect_helper = new Connect_Helper();
+        $google_dao = new Google_Dao($connect_helper);
+
+        $plugin_places = new Plugin_Places($google_dao);
+
+        $builder_page = new Builder_Page($feed_deserializer, $core, $view, $google_dao, $plugin_places);
         $builder_page->register();
 
         $feed_page = new Feed_Page($builder_page);
@@ -92,11 +98,9 @@ final class Plugin {
         $feed_block = new Feed_Block($feed_deserializer, $core, $view, $assets);
         $feed_block->register();
 
-        $connect_helper = new Connect_Helper();
-        $google_dao = new Google_Dao($connect_helper);
         $google_api_old = new Google_Api_Old($google_dao, $connect_helper);
         $google_api_new = new Google_Api_New($google_dao, $connect_helper);
-        $google_utils = new Google_Utils($google_api_old, $google_api_new);
+        $google_utils = new Google_Utils($google_api_old, $google_api_new, $google_dao);
 
         $reviews_cron = new Reviews_Cron($google_utils, $feed_deserializer);
         $reviews_cron->register();
@@ -125,6 +129,8 @@ final class Plugin {
             $plugin_overview = new Plugin_Overview($builder_page);
             $plugin_overview->register();
 
+            $plugin_places->register($builder_page);
+
             $settings_save = new Settings_Save($activator, $reviews_cron);
             $settings_save->register();
 
@@ -140,6 +146,9 @@ final class Plugin {
             $admin_rev->register();
 
             $rateus_ajax = new Admin_Rateus_Ajax();
+
+            $admin_deactivate = new Admin_Deactivate();
+            $admin_deactivate->register();
         }
     }
 

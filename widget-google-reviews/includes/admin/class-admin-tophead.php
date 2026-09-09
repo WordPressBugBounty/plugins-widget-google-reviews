@@ -15,7 +15,7 @@ class Admin_Tophead {
             return;
         }
 
-        if (strpos($current_screen->id, 'grw') !== false) {
+        if (Admin_Menu::is_plugin_screen($current_screen->id)) {
 
             $current_screen->render_screen_meta();
 

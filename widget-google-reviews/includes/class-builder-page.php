@@ -3,17 +3,22 @@
 namespace WP_Rplg_Google_Reviews\Includes;
 
 use WP_Rplg_Google_Reviews\Includes\Core\Core;
+use WP_Rplg_Google_Reviews\Includes\Core\Google_Dao;
 
 class Builder_Page {
 
     private $view;
     private $core;
     private $feed_deserializer;
+    private $dao;
+    private $places;
 
-    public function __construct(Feed_Deserializer $feed_deserializer, Core $core, View $view) {
+    public function __construct(Feed_Deserializer $feed_deserializer, Core $core, View $view, Google_Dao $dao, Plugin_Places $places) {
         $this->feed_deserializer = $feed_deserializer;
         $this->core = $core;
         $this->view = $view;
+        $this->dao = $dao;
+        $this->places = $places;
     }
 
     public function register() {
@@ -24,9 +29,27 @@ class Builder_Page {
         $feed = null;
         if (isset($_GET[Post_Types::FEED_POST_TYPE . '_id'])) {
             $feed = $this->feed_deserializer->get_feed(sanitize_text_field(wp_unslash($_GET[Post_Types::FEED_POST_TYPE . '_id'])));
+        } else if (!empty($_GET['grw_place_id'])) {
+            $feed = $this->place_feed(sanitize_text_field(wp_unslash($_GET['grw_place_id'])));
         }
 
         $this->render($feed);
+    }
+
+    // An unsaved widget preconnected to a place from the Places page; ID stays empty until the first save.
+    private function place_feed($place_id) {
+        $place = $this->dao->get_place($place_id);
+        if (!$place) {
+            return null;
+        }
+        return (object) array(
+            'ID'           => '',
+            'post_title'   => $place->name,
+            'post_content' => wp_json_encode(array(
+                'connections' => array($this->places->connection($place)),
+                'options'     => new \stdClass(),
+            ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+        );
     }
 
     public function render($feed) {
@@ -80,7 +103,7 @@ class Builder_Page {
                             <input id="grw_title" class="grw-toolbar-title-input" type="text" name="<?php echo Post_Types::FEED_POST_TYPE; ?>[title]" value="<?php if (!empty($feed_post_title)) echo esc_attr($feed_post_title); ?>" placeholder="Enter a widget name" maxlength="255" autofocus>
                         </div>
                         <div class="grw-toolbar-control">
-                            <?php if ($feed_inited) { ?>
+                            <?php if ($feed_inited && $feed_id !== '') { ?>
                             <label>
                                 <span id="grw_sc_msg">Copy Shortcode </span>
                                 <input id="grw_sc" type="text" value="[grw id=<?php echo esc_attr($feed_id); ?>]" data-grw-shortcode="[grw id=<?php echo esc_attr($feed_id); ?>]" onclick="this.select(); document.execCommand('copy'); window.grw_sc_msg.innerHTML = 'Shortcode Copied! Paste on page. ';" readonly/>
@@ -114,6 +137,7 @@ class Builder_Page {
         <div id="grw-rate_us-wrap">
             <div id="grw-rate_us">
                 <div class="grw-rate_us-content">
+                    <button type="button" class="grw-rate_us-close" aria-label="Close">&times;</button>
                     <div class="grw-rate_us-head">
                         How's RichPlugins so far?
                     </div>
@@ -142,7 +166,7 @@ class Builder_Page {
 
         <div id="dialog" title="Google API key required" style="display:none;">
             <p style="font-size:16px;">
-                This plugin uses our default <b>Google Places API key which is mandatory for retrieving Google reviews</b> through official way approved by Google (without crawling). Our API key can make 5 requests to Google API for each WordPress server and it's exceeded at the moment.
+                This plugin uses our default <b>Google Places API key which is mandatory for retrieving Google reviews</b> through official way approved by Google (without crawling). Requests with our API key are limited per WordPress server for every 3 days, and the limit is exceeded at the moment.
             </p>
             <p style="font-size:16px;">
                 To continue working with Google API and daily reviews refreshing, please create your own API key by <a href="<?php echo esc_url(admin_url('admin.php?page=grw-support&grw_tab=fig#fig_api_key')); ?>" target="_blank">this instruction</a> and save it on the settings page of the plugin.

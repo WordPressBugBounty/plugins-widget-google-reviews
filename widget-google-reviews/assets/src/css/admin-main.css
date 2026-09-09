@@ -434,7 +434,20 @@
     transition: opacity 150ms ease;
 }
 
+.grw-rate_us-close {
+    position: absolute;
+    top: 2px;
+    right: 6px;
+    border: 0;
+    background: none;
+    color: #999;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
 .grw-rate_us-content {
+    position: relative;
     padding: 15px;
     background: #fff;
     border-radius: 5px;
@@ -1235,5 +1248,136 @@ img.grw-connect-photo {
     }
     100% {
         opacity: .25;
+    }
+}
+/*-------------------------------- Deactivation survey --------------------------------*/
+#grw-deactivate-dialog {
+    font-size: 14px;
+}
+
+.grw-deactivate-reason {
+    display: block;
+    margin: 4px 0;
+}
+
+#grw-deactivate-msg {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.grw-deactivate-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0;
+}
+
+/*-------------------------------- Places page --------------------------------*/
+.grw-places-workspace {
+    margin: 20px;
+    font-size: 14px;
+}
+
+.grw-places-workspace .description {
+    margin: 0 0 12px;
+}
+
+.grw-places .grw-col-rating,
+.grw-places .grw-col-reviews {
+    width: 14%;
+}
+
+.grw-places .grw-col-updated {
+    width: 12%;
+}
+
+.grw-place {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.grw-place img {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.grw-place-text {
+    min-width: 0;
+}
+
+.grw-place-name {
+    display: block;
+    font-size: 14px;
+}
+
+.grw-place-address {
+    display: block;
+    color: #646970;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.grw-places .rpi-stars {
+    font-size: 14px;
+}
+
+.grw-places .grw-col-actions {
+    width: 110px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.grw-place-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin-left: 2px;
+    border-radius: 4px;
+    text-align: center;
+    color: #50575e;
+    text-decoration: none;
+}
+
+.grw-place-btn:hover,
+.grw-place-btn:focus {
+    color: #2271b1;
+    background: #f0f0f1;
+    box-shadow: none;
+}
+
+.grw-place-btn.grw-place-delete:hover,
+.grw-place-btn.grw-place-delete:focus {
+    color: #b32d2e;
+}
+
+.grw-place-confirm {
+    margin-top: 6px;
+    color: #b32d2e;
+}
+
+.grw-place-confirm .button {
+    margin-left: 4px;
+    vertical-align: baseline;
+}
+
+.grw-place-busy {
+    opacity: .6;
+    pointer-events: none;
+}
+
+.grw-place-busy .grw-place-update .dashicons {
+    animation: grw-spin 1s linear infinite;
+}
+
+@media screen and (max-width: 782px) {
+    .grw-places .grw-col-actions {
+        text-align: left;
     }
 }

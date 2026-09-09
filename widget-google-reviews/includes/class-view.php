@@ -225,6 +225,7 @@ class View {
     }
 
     private function render_badge($businesses, $reviews, $options) {
+        wp_enqueue_style('grw-public-badge-css');
         ?>
         <script type="text/javascript">
         function grw_badge_init(el) {
@@ -323,7 +324,7 @@ class View {
         $aria_label = $this->grw_aria_label($opts, sprintf(__('Rating: %s out of 5', 'widget-google-reviews'), $rating), 'img');
         ?><span class="rpi-stars"<?php echo $aria_label; ?> style="--rating:<?php echo $rating; ?>"><?php echo $rating; ?></span><?php
         if (!$opts->hide_based_on && isset($review_count)) {
-        ?><div class="wp-google-based"><?php echo vsprintf(__('Based on %s reviews', 'widget-google-reviews'), $this->grw_array($review_count)); ?></div><?php
+        ?><div class="wp-google-based"><?php echo sprintf(__('Based on %s reviews', 'widget-google-reviews'), number_format_i18n((int) $review_count)); ?></div><?php
         }
     }
 
@@ -511,13 +512,5 @@ class View {
 
     function grw_image($src, $alt, $lazy, $def_ava = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', $atts = '') {
         ?><div class="grw-img-wrap"><img class="grw-img" src="<?php echo esc_url($src); ?>"<?php if ($lazy) { ?> loading="lazy"<?php } ?> alt="<?php echo esc_attr($alt); ?>" width="50" height="50" onerror="if(this.src!='<?php echo $def_ava; ?>')this.src='<?php echo $def_ava; ?>';" <?php echo $atts; ?>></div><?php
-    }
-
-    function grw_array($params=null) {
-        if (!is_array($params)) {
-            $params = func_get_args();
-            $params = array_slice($params, 0);
-        }
-        return $params;
     }
 }

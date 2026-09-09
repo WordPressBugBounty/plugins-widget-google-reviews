@@ -217,10 +217,114 @@ class Google_Dao {
         }
     }
 
+    public function get_places() {
+        global $wpdb;
+
+        return $wpdb->get_results(
+            "SELECT p.*, (SELECT COUNT(DISTINCT COALESCE(r.author_url, r.review_id)) FROM " . $wpdb->prefix . Database::REVIEW_TABLE . " r WHERE r.google_place_id = p.id) AS db_review_count" .
+            " FROM " . $wpdb->prefix . Database::BUSINESS_TABLE . " p ORDER BY p.name ASC"
+        );
+    }
+
+    public function get_place($place_id) {
+        global $wpdb;
+
+        return $wpdb->get_row(
+            $wpdb->prepare("SELECT * FROM " . $wpdb->prefix . Database::BUSINESS_TABLE . " WHERE place_id = %s", $place_id)
+        );
+    }
+
+    // Languages the reviews of a place were fetched in, most recent first. The review row only keeps
+    // the language of the last fetch, so the per-language text table is the source; older rows without texts fall back.
+    public function get_place_langs($db_place_id) {
+        global $wpdb;
+
+        $langs = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT t.lang FROM " . $wpdb->prefix . Database::TEXT_TABLE . " t" .
+                " JOIN " . $wpdb->prefix . Database::REVIEW_TABLE . " r ON r.review_id = t.review_id" .
+                " WHERE r.google_place_id = %d AND t.lang <> ''" .
+                " GROUP BY t.lang ORDER BY MAX(t.id) DESC", $db_place_id
+            )
+        );
+        if (!empty($langs)) {
+            return $langs;
+        }
+        return $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT language FROM " . $wpdb->prefix . Database::REVIEW_TABLE .
+                " WHERE google_place_id = %d AND language IS NOT NULL AND language <> ''" .
+                " GROUP BY language ORDER BY MAX(id) DESC", $db_place_id
+            )
+        );
+    }
+
+    public function has_local_images($db_place_id) {
+        global $wpdb;
+
+        $base_url = wp_upload_dir(null, false)['baseurl'];
+        return (bool) $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT 1 FROM " . $wpdb->prefix . Database::REVIEW_TABLE .
+                " WHERE google_place_id = %d AND profile_photo_url LIKE %s LIMIT 1",
+                $db_place_id, $wpdb->esc_like($base_url) . '%'
+            )
+        );
+    }
+
+    public function get_place_by_id($db_place_id) {
+        global $wpdb;
+
+        return $wpdb->get_row(
+            $wpdb->prepare("SELECT * FROM " . $wpdb->prefix . Database::BUSINESS_TABLE . " WHERE id = %d", $db_place_id)
+        );
+    }
+
+    public function delete_place($db_place_id) {
+        global $wpdb;
+
+        $review_table = $wpdb->prefix . Database::REVIEW_TABLE;
+
+        $urls = $wpdb->get_col($wpdb->prepare("SELECT photo FROM " . $wpdb->prefix . Database::BUSINESS_TABLE . " WHERE id = %d", $db_place_id));
+        foreach ($wpdb->get_results($wpdb->prepare("SELECT profile_photo_url, images FROM " . $review_table . " WHERE google_place_id = %d", $db_place_id)) as $row) {
+            $urls[] = $row->profile_photo_url;
+            $urls = array_merge($urls, explode(';', (string) $row->images));
+        }
+        $this->delete_local_files($urls);
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM " . $wpdb->prefix . Database::TEXT_TABLE .
+                " WHERE review_id IN (SELECT review_id FROM " . $review_table . " WHERE google_place_id = %d)", $db_place_id
+            )
+        );
+        $wpdb->delete($review_table, array("google_place_id" => $db_place_id));
+        $wpdb->delete($wpdb->prefix . Database::STATS_TABLE, array("google_place_id" => $db_place_id));
+        return $wpdb->delete($wpdb->prefix . Database::BUSINESS_TABLE, array("id" => $db_place_id)) !== false;
+    }
+
+    // Images saved by Connect_Helper::upload_image live in uploads and are named after the place, so nothing else refers to them.
+    private function delete_local_files($urls) {
+        $upload_dir = wp_upload_dir(null, false);
+        $base_url = trailingslashit($upload_dir['baseurl']);
+        $base_dir = trailingslashit($upload_dir['basedir']);
+        foreach (array_unique(array_filter($urls)) as $url) {
+            if (strpos($url, $base_url) !== 0) {
+                continue;
+            }
+            $path = $base_dir . str_replace('..', '', substr($url, strlen($base_url)));
+            if (is_file($path)) {
+                wp_delete_file($path);
+            }
+        }
+    }
+
     public function get_place_photo($place, $local_img) {
         $photo = null;
         if (!empty($place->business_photo)) {
-            if ($local_img === true || $local_img == 'true') {
+            // The new Places API path uploads the photo before saving, so it is already local.
+            if (strpos($place->business_photo, wp_upload_dir(null, false)['baseurl']) === 0) {
+                $photo = $place->business_photo;
+            } else if ($local_img === true || $local_img == 'true') {
                 $photo = $this->helper->upload_image($place->business_photo, $place->place_id);
             } else {
                 $photo = $place->business_photo;

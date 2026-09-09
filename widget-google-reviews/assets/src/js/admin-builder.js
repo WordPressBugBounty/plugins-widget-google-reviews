@@ -770,6 +770,17 @@ function grw_set_place(pid, place) {
     window.grw_place_list.style.display = 'none';
     window.grw_place.style.display = 'block';
 
+    // Default review language from the place's own country (rpi.Langs ships
+    // in this bundle from the CDN), site locale as the fallback. Only while
+    // the select is untouched — a manual pick always wins.
+    if (window.grw_place_lang && !window.grw_place_lang.value) {
+        const site = GRW_VARS.lang ? GRW_VARS.lang.toLowerCase().split(/[_-]/)[0] : '';
+        const lang = (typeof rpi !== 'undefined' && rpi.Langs && rpi.Langs.langForCountry(place.country)) || site;
+        if (lang && GRW_LANGS.some(l => l[0] === lang)) {
+            window.grw_place_lang.value = lang;
+        }
+    }
+
     window.grw_place_btn.onclick = function(e) {
         e.preventDefault();
 

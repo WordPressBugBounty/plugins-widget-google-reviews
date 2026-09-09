@@ -53,6 +53,8 @@ jQuery(document).ready(function($) {
             $rateus_stars.attr('data-rating', $(this).index() + 1);
         });
 
+        $('.grw-rate_us-close').click(grw_rateus_close);
+
         $('.grw-rate_us-cancel').click(function() {
             $rateus_dlg.dialog('close');
         });
@@ -223,7 +225,7 @@ jQuery(document).ready(function($) {
                     $rating.html(
                         '<div class="grw-overview-h">' + place.name + '</div>' +
                         '<span class="rpi-stars" style="--rpi-star-size:26px;--rating:' + res.rating + '">' + res.rating + '</span>' +
-                        '<div class="wp-google-powered">Based on ' + res.review_count + ' reviews</div>' +
+                        '<div class="wp-google-powered">Based on ' + Number(res.review_count).toLocaleString() + ' reviews</div>' +
 
                         (place.updated ?
                         '<div class="wp-google-powered">Last updated: ' +
@@ -406,6 +408,198 @@ jQuery(document).ready(function($) {
                 }
             });
         }
+    }
+
+    /**
+     * Deactivation survey (Plugins page)
+     */
+    var $deactivate = $('#grw-deactivate-dialog');
+    if ($deactivate.length) {
+        var deactivateUrl = '';
+
+        $('tr[data-plugin="' + $deactivate.data('plugin') + '"] .deactivate a').click(function() {
+            deactivateUrl = this.href;
+            $deactivate.prop('hidden', false).dialog({modal: true, width: 440, draggable: false, resizable: false});
+            return false;
+        });
+
+        $('.grw-deactivate-submit, .grw-deactivate-skip', $deactivate).click(function() {
+            var $btn = $(this), skip = $btn.hasClass('grw-deactivate-skip'),
+                reason = $('input[name="grw_deactivate_reason"]:checked', $deactivate).val() || '',
+                msg = $('#grw-deactivate-msg', $deactivate).val();
+
+            $('button', $deactivate).prop('disabled', true);
+            if (skip || (!reason && !msg)) {
+                window.location.href = deactivateUrl;
+                return;
+            }
+            $.post(ajaxurl, {reason: reason, msg: msg, action: 'grw_deactivate_feedback', grw_nonce: $('#grw_deactivate_nonce').val()})
+                .always(function() { window.location.href = deactivateUrl; });
+        });
+    }
+
+    /**
+     * Places page
+     */
+    var $placesTable = $('#grw-places');
+    if ($placesTable.length) {
+
+        var hasKey = $placesTable.data('key') == 1,
+            nonce = $('#grw_nonce').val(),
+            iframe = null,
+            iframeReady = false,
+            iframeQueue = [],
+            iframeCb = null,
+            iframeTimer = null;
+
+        if (!hasKey) {
+            var lang = GRW_VARS.lang ? GRW_VARS.lang.toLowerCase().split(/[_-]/)[0] : '';
+            iframe = document.createElement('iframe');
+            iframe.id = 'gpidc';
+            iframe.src = 'https://app.richplugins.com/public/connect?authcode=' + encodeURIComponent($placesTable.data('authcode')) + '&lang=' + encodeURIComponent(lang);
+            iframe.style.display = 'none';
+            iframe.onload = function() {
+                iframeReady = true;
+                while (iframeQueue.length) iframe.contentWindow.postMessage(iframeQueue.shift(), '*');
+            };
+            document.body.appendChild(iframe);
+
+            window.onmessage = function(e) {
+                if (e.origin !== 'https://app.richplugins.com' || !e.data) return;
+                var gdata = e.data;
+                if (gdata.action === 'get_place') {
+                    $.post(ajaxurl, {pid: gdata.pid, lang: gdata.lang, token: gdata.token, action: 'grw_get_place', grw_nonce: nonce}, function(res) {
+                        if (res.status == 'success') {
+                            res.result.place_id = gdata.pid;
+                            iframe.contentWindow.postMessage({data: res, action: 'set_place'}, '*');
+                        } else {
+                            iframeDone({status: 'failed', result: res.result});
+                        }
+                    });
+                } else if (gdata.action === 'connect') {
+                    connect(gdata, function(res) {
+                        iframe.contentWindow.postMessage({action: 'connect_done'}, '*');
+                        iframeDone(res);
+                    });
+                }
+            };
+        }
+
+        function iframeSend(msg, cb) {
+            iframeCb = cb;
+            clearTimeout(iframeTimer);
+            iframeTimer = setTimeout(function() {
+                iframeDone({status: 'failed', result: {error_message: 'No response from the connection service, please try again later.'}});
+            }, 60000);
+            if (iframeReady) iframe.contentWindow.postMessage(msg, '*'); else iframeQueue.push(msg);
+        }
+
+        function iframeDone(res) {
+            clearTimeout(iframeTimer);
+            var cb = iframeCb;
+            iframeCb = null;
+            cb && cb(res);
+        }
+
+        function connect(params, cb) {
+            $.post(ajaxurl, {
+                id          : params.id,
+                url         : params.url,
+                lang        : params.lang,
+                local_img   : params.local_img,
+                token       : params.token,
+                action      : 'grw_connect_google',
+                grw_wpnonce : nonce,
+                v           : new Date().getTime()
+            }, cb, 'json').fail(function() {
+                cb({status: 'failed', result: {error_message: 'Request failed, please try again.'}});
+            });
+        }
+
+        function updatePlace($row) {
+            var conns = $row.data('conns') || [],
+                i = 0, credits = -1, last = null, cached = false;
+
+            // The iframe answers one request at a time, so only one row may be in flight.
+            if ($('.grw-place-busy', $placesTable).length) return;
+            $row.addClass('grw-place-busy');
+
+            function finish(err) {
+                $row.removeClass('grw-place-busy');
+                if (err) {
+                    GRW_TOAST.show({msg: err, type: 'error'});
+                    return;
+                }
+                if (last) {
+                    if (last.rating) {
+                        $('.grw-col-rating', $row).html('<span class="rpi-stars" style="--rating:' + last.rating + '">' + last.rating + '</span>');
+                    }
+                    if (last.user_ratings_total) {
+                        $('.grw-place-count', $row).text(Number(last.user_ratings_total).toLocaleString());
+                    }
+                    if (last.photo) {
+                        $('.grw-place img', $row).attr('src', last.photo);
+                    }
+                }
+                $('.grw-place-updated', $row).text('just now');
+                GRW_TOAST.show({
+                    msg: cached ?
+                        'Reviews are up to date: without your API key they are refreshed from Google at most once every 3 days, so no attempt was used.' :
+                        'Reviews updated successfully. ' + (credits > -1 ? '<br><b>' + credits + ' attempts remaining (without your API key).</b>' : ''),
+                    type: 'success'
+                });
+            }
+
+            function next() {
+                if (i >= conns.length) return finish();
+                var c = conns[i++],
+                    params = {id: $row.data('pid'), url: $row.data('url'), lang: c.lang, local_img: c.local_img, event: 'refresh'};
+                if (hasKey) {
+                    connect(params, handle);
+                } else {
+                    iframeSend({params: params, action: 'connect'}, handle);
+                }
+            }
+
+            function handle(res) {
+                if (res && res.status == 'success') {
+                    last = res.result;
+                    if (res.result.credits > -1) credits = res.result.credits;
+                    if (res.result.cached) cached = true;
+                    next();
+                } else {
+                    finish(grw_get_error(res) || 'Update failed, please try again later.');
+                }
+            }
+
+            next();
+        }
+
+        $placesTable.on('click', '.grw-place-update', function() {
+            updatePlace($(this).closest('tr'));
+            return false;
+        });
+
+        $placesTable.on('click', '.grw-place-delete, .grw-place-delete-no', function() {
+            $('.grw-place-confirm', $(this).closest('tr')).prop('hidden', $(this).hasClass('grw-place-delete-no'));
+            return false;
+        });
+
+        $placesTable.on('click', '.grw-place-delete-yes', function() {
+            var $row = $(this).closest('tr');
+            if ($row.hasClass('grw-place-busy')) return false;
+            $row.addClass('grw-place-busy');
+            $.post(ajaxurl, {id: $row.data('id'), action: 'grw_delete_place', grw_nonce: nonce}, function(res) {
+                if (res.status == 'success') {
+                    $row.remove();
+                    if (!$('tbody tr', $placesTable).length) window.location.reload();
+                } else {
+                    $row.removeClass('grw-place-busy');
+                    GRW_TOAST.show({msg: grw_get_error(res) || 'Delete failed', type: 'error'});
+                }
+            }, 'json');
+            return false;
+        });
     }
 
 });

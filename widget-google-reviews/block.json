@@ -13,6 +13,7 @@
     ],
     "icon": "star-filled",
     "textdomain": "widget-google-reviews",
+    "editorScript": "grw-reviews-block",
     "attributes": {
         "id": {
             "type": "string"

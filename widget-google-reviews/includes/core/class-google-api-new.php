@@ -6,7 +6,7 @@ class Google_Api_New {
 
     const FIELDS = ['id', 'displayName', 'photos', 'googleMapsUri', 'websiteUri', 'formattedAddress', 'rating', 'userRatingCount', 'reviews'];
 
-    const PLACE_FIELDS = ['id', 'displayName', 'photos', 'googleMapsUri', 'websiteUri', 'rating', 'userRatingCount'];
+    const PLACE_FIELDS = ['id', 'displayName', 'photos', 'googleMapsUri', 'websiteUri', 'rating', 'userRatingCount', 'addressComponents'];
 
     const ISOTIME_9D_REGEXP = '/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.(\d{9})Z/';
 
@@ -54,6 +54,14 @@ class Google_Api_New {
                 'photo'              => empty($json->business_photo) ? GRW_GOOGLE_BIZ : $json->business_photo,
                 'reviews'            => isset($json->reviews) ? $json->reviews : null
             );
+            if (isset($json->addressComponents)) {
+                foreach ($json->addressComponents as $component) {
+                    if (isset($component->types) && in_array('country', $component->types) && isset($component->shortText)) {
+                        $result['country'] = strtoupper($component->shortText);
+                        break;
+                    }
+                }
+            }
             $status = 'success';
         } else {
             if (isset($json->error)) {
@@ -97,6 +105,7 @@ class Google_Api_New {
             'user_ratings_total' => isset($new_place->userRatingCount)  ? $new_place->userRatingCount  : 0,
             'name'               => $new_place->displayName->text,
             'photo'              => isset($new_place->business_photo)   ? $new_place->business_photo   : null,
+            'business_photo'     => isset($new_place->business_photo)   ? $new_place->business_photo   : null,
             'url'                => isset($new_place->googleMapsUri)    ? $new_place->googleMapsUri    : null,
             'website'            => isset($new_place->websiteUri)       ? $new_place->websiteUri       : null,
             'formatted_address'  => isset($new_place->formattedAddress) ? $new_place->formattedAddress : null,

@@ -1,14 +1,14 @@
 === Rich Showcase for Google Reviews ===
 Contributors: widgetpack
-Tags: google reviews, google, reviews, rating, reviews plugin
+Tags: google reviews, google reviews widget, review slider, social proof, reviews
 Requires at least: 4.7
 Requires PHP: 7.2
-Tested up to: 7.0
-Stable tag: 6.9.11
+Tested up to: 7.1
+Stable tag: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Show real Google reviews on your WordPress site in under a minute. Free, GDPR-compliant, with unlimited widgets and locations.
+Show real Google reviews on your WordPress site as a slider, grid, list or rating badge. Free, GDPR-compliant, unlimited widgets and locations.
 
 == Description ==
 
@@ -16,32 +16,39 @@ Build instant trust with visitors by showing your real Google reviews and star r
 
 There are no limits on how many Google business locations you can connect, and you can create as many widgets or shortcodes as needed to place reviews across your site. The plugin is easy to use and helps build trust with your visitors by displaying real Google reviews and your overall rating.
 
-It’s already trusted by over a thousand WordPress users who use it daily to show their best customer feedback.
+Active on 100,000+ WordPress sites.
 
 Want to see how it works? Watch the short demo below to see how quickly you can get started - or simply try it in the Live Preview.
 
 [youtube https://www.youtube.com/watch?v=rMbwqCjDc80]
 
-### ⚡ Plugin highlights
+### Google reviews slider, grid, list and rating
 
-* **No limits on created widgets or shortcodes**
-* **Show up to 10 Google reviews on initial setup**
-* **Connect multiple Google business places**
-* **Fully GDPR-compliant** — no external requests, all data loads from your own website
-* **Automatically updates reviews** and ratings (when using your own API key)
-* Option to hide reviews without text
-* Responsive layouts: Slider, Grid, List, and Rating
-* '**review us on Google**' button to collect new reviews
-* Choose which reviews to display or hide
-* Display reviews using shortcode, widget, block, or page builders (Elementor, Gutenberg, etc.)
-* Upload a custom business photo
+* Responsive layouts: Slider, Grid, List and Rating
+* Rating layout can open the reviews in a popup on click
+* Pagination for List and Grid layouts
 * Trim long reviews with a "read more" link
-* Pagination support for List and Grid layouts
-* Optimized for performance: small CSS/JS files and lazy loading
-* **UI options to customize star, text, rating, and review colors**
+* UI options to customize star, text, rating and review colors
 * Additional styling with your own CSS
-* Supports multiple languages
 * Works with dark themes
+* Upload a custom business photo
+
+### Embed Google reviews with Elementor, Gutenberg, WPBakery or a shortcode
+
+* Display reviews using shortcode, widget, block, or page builders (Elementor, WPBakery, Divi, Beaver Builder, SiteOrigin)
+* No limits on created widgets or shortcodes
+* Optimized for performance: one CSS and one JS file, about 14 KB compressed in total, lazy-loaded images
+
+### Google reviews, updates and privacy
+
+* Show up to 10 Google reviews on initial setup, no API key required
+* Connect multiple Google business places
+* Places page: every connected place with its rating and last update; update reviews, create a widget or delete the place from there
+* Automatically updates reviews and ratings when using your own API key
+* Fully GDPR-compliant: no external requests, all data loads from your own website
+* Choose which reviews to display or hide, option to hide reviews without text
+* "review us on Google" button to collect new reviews
+* Supports multiple languages
 
 ⭐ [Live demo](https://richplugins.com/demos/)
 
@@ -57,18 +64,35 @@ Yes. All review data, business photos, and reviewer avatars are stored locally o
 Yes, there are no limits on the number of Google Business places you can connect. Reviews from multiple locations can be combined in a single widget and sorted by date, or you can create separate widgets for each location.
 
 = Will reviews update automatically? =
-Yes, when you add your own free Google API key, the plugin will refresh reviews on a daily schedule. Without an API key, the initial 10 reviews are loaded once and remain static until you manually reconnect the place.
+Yes, when you add your own free Google API key, the plugin will refresh reviews on a daily schedule. Without an API key, the initial 10 reviews are loaded once; you can fetch the latest reviews at any time from the Places page.
 
 = Does it work with Elementor, Gutenberg, and WPBakery? =
 Yes. The plugin provides a native Gutenberg block, a shortcode that works in any page builder (Elementor, WPBakery, Beaver Builder, Divi, SiteOrigin), and a classic sidebar widget. You can mix all three on the same site.
 
+= How do I embed Google reviews on a WordPress page? =
+Open Google Reviews in the admin menu, find your business in the connection wizard and save the widget. Paste its shortcode into any page, add the Google Reviews block in the editor, or place the classic widget in a sidebar.
+
+= Why do I get only 5 reviews with my own API key? =
+The Google Places API returns 5 reviews per request. The plugin checks daily and keeps every new review it sees, so the list grows over time.
+
+= Can I hide some reviews? =
+Yes. Every review has a hide button in the widget builder, and there is an option to hide reviews without text.
+
+= Can I show only the rating without reviews? =
+Yes. The Rating layout shows the stars, the score and the number of reviews, and can open the reviews in a popup on click.
+
+= Does the plugin slow down my site? =
+No. Reviews are served from your own database, and the plugin loads one CSS and one JS file, about 14 KB compressed in total, with lazy-loaded images.
+
 == Screenshots ==
 
-1. Google Reviews slider
-2. Google Reviews list
-3. Google Reviews widget
-4. Google Reviews shortcode builder
-5. Google Reviews sidebar widget
+1. Google reviews slider with the rating header
+2. Google reviews grid
+3. Google reviews list
+4. Rating layout: stars, score and number of reviews
+5. Slider on a dark background
+6. Widget builder with live preview and layout options
+7. Places page: connected places, update reviews, create a widget or delete a place
 
 == Support ==
 
@@ -87,11 +111,18 @@ Email support in English is also available on weekdays: support@richplugins.com
 == Roadmap ==
 
 * New feature: minimal rating layout (rating, stars and total reviews)
-* New feature: possibility to hide (or delete) the connected place to exclude from Overview page
 * Improve: adapt review connection modal for mobile devices
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 7.0 =
+* New: Places page with every connected Google place, its rating, review count and last update.
+* New: update reviews of a place, create a widget from it or delete it with its reviews from the Places page.
+* New: the review language is preselected from the country of the connected place.
+* New: optional feedback form on deactivation; only the chosen reason and the plugin version are sent.
+* Improved: review counts are shown with thousands separators.
+* Fixed: the plugin header could appear on admin pages of other plugins.
 
 = 6.9.11 =
 * New option for the Rating layout: open the reviews in a popup when the rating block is clicked. Enabled for newly created widgets; existing widgets keep their current look.

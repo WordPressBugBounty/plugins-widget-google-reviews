@@ -109,7 +109,7 @@ class Reviews_Cron {
 
                         // Check execution time
                         $end_time = floor(microtime(true) * 1000) - $start_time;
-                        if ($end_time > 500) {
+                        if ($end_time > 5000) {
                             break;
                         }
 

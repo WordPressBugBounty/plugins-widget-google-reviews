@@ -34,6 +34,7 @@ class Assets {
         'rpi-common-js'           => 'https://cdn.reviewsplugin.com/assets/js/common.js',
         'rpi-lightbox-js'         => 'https://cdn.reviewsplugin.com/assets/js/lightbox.js',
         'rpi-toast-js'            => 'https://cdn.reviewsplugin.com/assets/js/toast.js',
+        'rpi-langs-js'            => 'https://cdn.reviewsplugin.com/assets/js/langs.js',
         'rpi-media-js'            => 'https://cdn.reviewsplugin.com/assets/js/media.js',
         'rpi-slider-js'           => 'https://cdn.reviewsplugin.com/assets/js/slider.js'
     );
@@ -147,6 +148,7 @@ class Assets {
             array_push($scripts, 'rpi-common-js');
             array_push($scripts, 'rpi-lightbox-js');
             array_push($scripts, 'rpi-toast-js');
+            array_push($scripts, 'rpi-langs-js');
             array_push($scripts, 'rpi-media-js');
             array_push($scripts, 'rpi-slider-js');
         }
@@ -175,6 +177,7 @@ class Assets {
         if ($this->debug) {
             wp_enqueue_script('rpi-toast-js');
             wp_enqueue_script('rpi-lightbox-js');
+            wp_enqueue_script('rpi-langs-js');
             wp_localize_script('grw-admin-builder-js', 'GRW_VARS', $vars);
             wp_enqueue_script('grw-admin-builder-js');
         } else {

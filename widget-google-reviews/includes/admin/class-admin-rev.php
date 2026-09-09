@@ -6,6 +6,16 @@ class Admin_Rev {
 
     public function register() {
         add_action('admin_notices', array($this, 'leaverev'));
+        add_action('wp_ajax_grw_rev_notice', array($this, 'snooze'));
+    }
+
+    public function snooze() {
+        if (!current_user_can('edit_posts')) {
+            die('The account you\'re logged in to doesn\'t have permission to access this page.');
+        }
+        check_admin_referer('grw_wpnonce', 'grw_nonce');
+        update_option('grw_rev_notice_hide', 'later:' . time());
+        wp_send_json(array('status' => 'success'));
     }
 
     public function leaverev() {
@@ -18,19 +28,22 @@ class Admin_Rev {
 
         $rev_notice = isset($_GET['grw_rev_notice']) ? $_GET['grw_rev_notice'] : '';
         if ($rev_notice == 'later') {
-            $activation_time = time() - 86400*2;
-            update_option('grw_activation_time', $activation_time);
-            update_option('grw_rev_notice_hide', 'later');
+            update_option('grw_rev_notice_hide', 'later:' . time());
         } else if ($rev_notice == 'never') {
             update_option('grw_rev_notice_hide', 'never');
         }
 
-        $rev_notice_hide = get_option('grw_rev_notice_hide');
+        $rev_notice_hide = (string) get_option('grw_rev_notice_hide');
+        if ($rev_notice_hide === 'later') {
+            $rev_notice_hide = 'later:' . time();
+            update_option('grw_rev_notice_hide', $rev_notice_hide);
+        }
         $rev_notice_show = get_option('rplg_rev_notice_show');
+        $snoozed = strpos($rev_notice_hide, 'later:') === 0 && time() - (int) substr($rev_notice_hide, 6) < 86400 * 5;
 
         if ($rev_notice_show == '' || $rev_notice_show == 'grw') {
 
-            if ($rev_notice_hide != 'never' && $activation_time < (time() - 86400*3)) {
+            if ($rev_notice_hide != 'never' && !$snoozed && $activation_time < (time() - 86400*3)) {
                 update_option('rplg_rev_notice_show', 'grw');
                 $class = 'notice notice-info is-dismissible';
                 $url = remove_query_arg(array('taction', 'tid', 'sortby', 'sortdir', 'opt'));
@@ -38,7 +51,7 @@ class Admin_Rev {
                 $url_never = esc_url(add_query_arg('grw_rev_notice', 'never', $url));
 
                 $notice = '<p style="font-weight:normal;font-size:15px;">' .
-                              'Hey, I am happy to see that you\'ve been using <b>Plugin for Google Reviews</b> for a while now – that’s awesome!<br>' .
+                              'Hey, I am happy to see that you\'ve been using <b>Rich Showcase for Google Reviews</b> for a while now – that’s awesome!<br>' .
                               'Could you tell about your site and experience with the plugin in <a href="https://wordpress.org/support/plugin/widget-google-reviews/reviews/#new-post" style="color:#ffb900;line-height:90%;font-size:1.5em;letter-spacing:0.03em;position:relative;top:0.08em;text-decoration:none;" target="_blank">★★★★★</a> WordPress review?<br><br>' .
                               '--<br>Thanks!<br>Daniel K. founder of RichPlugins Ltd' .
                           '</p>' .
@@ -58,7 +71,9 @@ class Admin_Rev {
                               'you can do it today <a href="https://richplugins.com/business-reviews-bundle-wordpress-plugin?promo=GRGROW24" target="_blank"><b><u>WITH A HUGE 35% OFF DISCOUNT</u></b></a>.' .
                           '</p>';
 
-                printf('<div class="%1$s" style="position:fixed;bottom:50px;right:20px;padding-right:30px;z-index:2;margin-left:20px">%2$s</div>', esc_attr($class), $notice);
+                printf('<div id="grw-rev-notice" class="%1$s" style="position:fixed;bottom:50px;right:20px;padding-right:30px;z-index:2;margin-left:20px">%2$s</div>', esc_attr($class), $notice);
+                // The dismiss button WP adds only hides the box, so treat it as "later" on the server too.
+                echo '<script>document.addEventListener("click",function(e){if(e.target.closest("#grw-rev-notice .notice-dismiss")){jQuery.post(ajaxurl,{action:"grw_rev_notice",grw_nonce:' . wp_json_encode(wp_create_nonce('grw_wpnonce')) . '});}});</script>';
             } else {
                 update_option('rplg_rev_notice_show', '');
             }

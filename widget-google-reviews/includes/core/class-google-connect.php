@@ -45,18 +45,7 @@ class Google_Connect {
                 $hide = $review->hide == '' ? 'y' : '';
                 $wpdb->update($wpdb->prefix . Database::REVIEW_TABLE, array('hide' => $hide), array('id' => $review_id));
 
-                // Cache clear
-                if (isset($_POST['feed_id'])) {
-                    delete_transient('grw_feed_' . GRW_VERSION . '_' . $_POST['feed_id'] . '_reviews', false);
-                } else {
-                    $feed_ids = get_option('grw_feed_ids');
-                    if (!empty($feed_ids)) {
-                        $ids = explode(",", $feed_ids);
-                        foreach ($ids as $id) {
-                            delete_transient('grw_feed_' . GRW_VERSION . '_' . $id . '_reviews', false);
-                        }
-                    }
-                }
+                $this->clear_feed_cache(isset($_POST['feed_id']) ? $_POST['feed_id'] : null);
 
                 $response = array('hide' => $hide);
             }
@@ -126,14 +115,19 @@ class Google_Connect {
                     }
                 }
 
-                if (isset($_POST['feed_id'])) {
-                    delete_transient('grw_feed_' . GRW_VERSION . '_' . $_POST['feed_id'] . '_reviews', false);
-                }
+                $this->clear_feed_cache(isset($_POST['feed_id']) ? $_POST['feed_id'] : null);
             }
 
             header('Content-type: text/javascript');
             echo json_encode($response);
             die();
+        }
+    }
+
+    private function clear_feed_cache($feed_id) {
+        $ids = $feed_id !== null ? array($feed_id) : explode(',', (string) get_option('grw_feed_ids'));
+        foreach (array_filter($ids) as $id) {
+            delete_transient('grw_feed_' . GRW_VERSION . '_' . $id . '_reviews', false);
         }
     }
 

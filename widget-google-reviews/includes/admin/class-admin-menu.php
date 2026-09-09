@@ -36,6 +36,20 @@ class Admin_Menu {
             'grw'
         );
         $overview_page->add_page();
+
+        $places_page = new Admin_Page(
+            'grw',
+            'Places',
+            'Places',
+            'manage_options',
+            'grw-places'
+        );
+        $places_page->add_page();
+    }
+
+    // Screen ids are toplevel_page_grw, google-reviews_page_grw-*, edit-grw_feed, grw_feed.
+    public static function is_plugin_screen($screen_id) {
+        return (bool) preg_match('/(^|[_-])grw([_-]|$)/', (string) $screen_id);
     }
 
     public function add_subpages() {
@@ -88,11 +102,7 @@ class Admin_Menu {
     public function add_admin_body_class($classes) {
         $current_screen = get_current_screen();
 
-        if (empty($current_screen)) {
-            return;
-        }
-
-        if (strpos($current_screen->id, 'grw') !== false) {
+        if (!empty($current_screen) && self::is_plugin_screen($current_screen->id)) {
             $classes .= ' grw-admin ';
         }
         return $classes;

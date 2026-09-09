@@ -70,7 +70,7 @@ class Admin_Notice {
             $screen_id = $screen->id;
         }
 
-        return ($screen_id === 'dashboard' || $screen_id === 'plugins' || strpos($screen_id, 'grw') !== false) ? true : false;
+        return $screen_id === 'dashboard' || $screen_id === 'plugins' || Admin_Menu::is_plugin_screen($screen_id);
     }
 
     protected function needs_repositioned($screen_id = '') {
