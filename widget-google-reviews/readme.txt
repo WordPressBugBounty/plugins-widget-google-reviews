@@ -1,14 +1,13 @@
 === Rich Showcase for Google Reviews ===
 Contributors: widgetpack
-Tags: google reviews, google reviews widget, review slider, social proof, reviews
-Requires at least: 4.7
+Tags: google reviews, google badge, review slider, social proof, reviews
 Requires PHP: 7.2
 Tested up to: 7.1
-Stable tag: 7.0
+Stable tag: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Show real Google reviews on your WordPress site as a slider, grid, list or rating badge. Free, GDPR-compliant, unlimited widgets and locations.
+Show real Google reviews on your WordPress site as a badge, slider, grid, list or rating. Free, GDPR-compliant, multiple places, widgets and shortcodes.
 
 == Description ==
 
@@ -26,6 +25,7 @@ Want to see how it works? Watch the short demo below to see how quickly you can 
 
 * Responsive layouts: Slider, Grid, List and Rating
 * Rating layout can open the reviews in a popup on click
+* Floating Google rating badge with review count and a live line from your reviews, shown on every page of the site or only where you add it
 * Pagination for List and Grid layouts
 * Trim long reviews with a "read more" link
 * UI options to customize star, text, rating and review colors
@@ -44,6 +44,7 @@ Want to see how it works? Watch the short demo below to see how quickly you can 
 * Show up to 10 Google reviews on initial setup, no API key required
 * Connect multiple Google business places
 * Places page: every connected place with its rating and last update; update reviews, create a widget or delete the place from there
+* Badges page: pick a preset, set position, tone and size, then publish the badge on the whole site in one click
 * Automatically updates reviews and ratings when using your own API key
 * Fully GDPR-compliant: no external requests, all data loads from your own website
 * Choose which reviews to display or hide, option to hide reviews without text
@@ -81,6 +82,12 @@ Yes. Every review has a hide button in the widget builder, and there is an optio
 = Can I show only the rating without reviews? =
 Yes. The Rating layout shows the stars, the score and the number of reviews, and can open the reviews in a popup on click.
 
+= How do I add a Google rating badge to every page? =
+Open Google Reviews / Badges, find your place, choose a preset and click "Display on the site" on the Publish step. The badge floats in a corner or as a top or bottom bar on every page; one badge at a time is shown site-wide. To show a badge only on some pages, use its shortcode or the Google Reviews block instead.
+
+= Can one badge show the rating of several locations? =
+Yes. Connect several places to one badge and it shows their combined rating, weighted by the number of reviews, and the total review count.
+
 = Does the plugin slow down my site? =
 No. Reviews are served from your own database, and the plugin loads one CSS and one JS file, about 14 KB compressed in total, with lazy-loaded images.
 
@@ -115,6 +122,16 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 7.1 =
+* New: Badge page. A floating badge with your Google rating, review count and a live line that rotates sentences from your reviews and facts like the date of the latest review.
+* New: the badge is shown on every page of the site with one click, or on chosen pages with the shortcode or the block.
+* New: presets to start from, then position (four corners or a top/bottom bar), tone (light, dark, glass), size, width, corners, one-star mode, an optional Top rated label.
+* New: connect several places to one badge to show their combined rating.
+* Change: on a new install without widgets, the plugin opens the Badge page after activation instead of the widget builder.
+* Change: the old badge layout from the first versions is replaced by the new one.
+* Fixed: review dates were rounded up, so a review could read a month older than on Google.
+* Fixed: in some themes and page builders the slider stretched the page sideways on mobile.
 
 = 7.0 =
 * New: Places page with every connected Google place, its rating, review count and last update.

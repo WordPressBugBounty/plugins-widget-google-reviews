@@ -13,18 +13,20 @@ class Assets {
     private static $css_assets = array(
         'grw-admin-main-css'      => 'css/admin-main',
         'grw-public-main-css'     => 'css/public-main',
-        'grw-public-badge-css'    => 'css/public-badge',
 
         'rpi-flex-css'            => 'https://cdn.reviewsplugin.com/assets/css/flex.css',
         'rpi-stars-css'           => 'https://cdn.reviewsplugin.com/assets/css/stars.css',
         'rpi-slider-css'          => 'https://cdn.reviewsplugin.com/assets/css/slider.css',
         'rpi-common-css'          => 'https://cdn.reviewsplugin.com/assets/css/common.css',
-        'rpi-lightbox-css'        => 'https://cdn.reviewsplugin.com/assets/css/lightbox.css'
+        'rpi-lightbox-css'        => 'https://cdn.reviewsplugin.com/assets/css/lightbox.css',
+        'rpi-icons-css'           => 'https://cdn.reviewsplugin.com/assets/css/icons.css',
+        'rpi-badge-css'           => 'https://cdn.reviewsplugin.com/assets/css/badge.css'
     );
 
     private static $js_assets = array(
         'grw-admin-main-js'       => 'js/admin-main',
         'grw-admin-builder-js'    => 'js/admin-builder',
+        'grw-admin-badge-js'      => 'js/admin-badge',
         'grw-admin-apexcharts-js' => 'js/admin-apexcharts',
         'grw-public-main-js'      => 'js/public-main',
 
@@ -36,7 +38,8 @@ class Assets {
         'rpi-toast-js'            => 'https://cdn.reviewsplugin.com/assets/js/toast.js',
         'rpi-langs-js'            => 'https://cdn.reviewsplugin.com/assets/js/langs.js',
         'rpi-media-js'            => 'https://cdn.reviewsplugin.com/assets/js/media.js',
-        'rpi-slider-js'           => 'https://cdn.reviewsplugin.com/assets/js/slider.js'
+        'rpi-slider-js'           => 'https://cdn.reviewsplugin.com/assets/js/slider.js',
+        'rpi-badge-js'            => 'https://cdn.reviewsplugin.com/assets/js/badge.js'
     );
 
     public function __construct($url, $version, $debug) {
@@ -128,12 +131,13 @@ class Assets {
         $styles = array(
             'grw-admin-main-css',
             'grw-public-main-css',
-            'grw-public-badge-css',
             'rpi-flex-css',
             'rpi-stars-css',
             'rpi-slider-css',
             'rpi-common-css',
-            'rpi-lightbox-css'
+            'rpi-lightbox-css',
+            'rpi-icons-css',
+            'rpi-badge-css'
         );
         $this->register_styles_loop($styles);
     }
@@ -142,6 +146,7 @@ class Assets {
         $scripts = array('grw-admin-main-js', 'grw-public-main-js', 'grw-admin-apexcharts-js');
         if ($this->debug) {
             array_push($scripts, 'grw-admin-builder-js');
+            array_push($scripts, 'grw-admin-badge-js');
             array_push($scripts, 'rpi-time-js');
             array_push($scripts, 'rpi-utils-js');
             array_push($scripts, 'rpi-column-js');
@@ -151,6 +156,7 @@ class Assets {
             array_push($scripts, 'rpi-langs-js');
             array_push($scripts, 'rpi-media-js');
             array_push($scripts, 'rpi-slider-js');
+            array_push($scripts, 'rpi-badge-js');
         }
         $this->register_scripts_loop($scripts);
     }
@@ -180,6 +186,7 @@ class Assets {
             wp_enqueue_script('rpi-langs-js');
             wp_localize_script('grw-admin-builder-js', 'GRW_VARS', $vars);
             wp_enqueue_script('grw-admin-builder-js');
+            wp_enqueue_script('grw-admin-badge-js');
         } else {
             wp_localize_script('grw-admin-main-js', 'GRW_VARS', $vars);
         }
@@ -195,6 +202,8 @@ class Assets {
             wp_enqueue_style('rpi-slider-css');
             wp_enqueue_style('rpi-common-css');
             wp_enqueue_style('rpi-lightbox-css');
+            wp_enqueue_style('rpi-icons-css');
+            wp_enqueue_style('rpi-badge-css');
         }
 
         $handle = 'grw-public-main-css';
@@ -224,6 +233,7 @@ class Assets {
             wp_enqueue_script('rpi-lightbox-js');
             wp_enqueue_script('rpi-media-js');
             wp_enqueue_script('rpi-slider-js');
+            wp_enqueue_script('rpi-badge-js');
         }
         wp_enqueue_script('grw-public-main-js');
     }
@@ -242,12 +252,17 @@ class Assets {
 
     public function get_css_asset($asset) {
         $css = self::$css_assets[$asset];
-        return strpos($css, 'https:') === 0 ? $css : $this->url . ($this->debug ? 'src/' : $this->version . '/') . $css . '.css';
+        return strpos($css, 'https:') === 0 ? $this->cdn($css) : $this->url . ($this->debug ? 'src/' : $this->version . '/') . $css . '.css';
     }
 
     public function get_js_asset($asset) {
         $js = self::$js_assets[$asset];
-        return strpos($js, 'https:') === 0 ? $js : $this->url . ($this->debug ? 'src/' : $this->version . '/') . $js . '.js';
+        return strpos($js, 'https:') === 0 ? $this->cdn($js) : $this->url . ($this->debug ? 'src/' : $this->version . '/') . $js . '.js';
+    }
+
+    private function cdn($url) {
+        $base = apply_filters('grw_cdn_url', 'https://cdn.reviewsplugin.com');
+        return $base === 'https://cdn.reviewsplugin.com' ? $url : str_replace('https://cdn.reviewsplugin.com', rtrim($base, '/'), $url);
     }
 
     public function version() {

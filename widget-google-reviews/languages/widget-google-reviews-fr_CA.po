@@ -11,44 +11,71 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-msgid "Google Rating"
-msgstr "Évaluation Google"
-
-msgid "See All Reviews"
-msgstr "Voir tous les avis"
-
-msgid "Google User"
-msgstr "Utilisateur Google"
-
 msgid "read more"
 msgstr "plus"
 
 msgid "More reviews"
 msgstr "Plus d'avis"
 
-msgid "Based on %s reviews"
-msgstr "Basé sur %s avis"
+msgid "Top rated"
+msgstr "Excellent"
+
+msgid "Latest review %s"
+msgstr "Dernier avis %s"
+
+msgid "%1 of the last %2 reviews are 5 stars"
+msgstr "5 étoiles pour %1 des %2 derniers avis"
+
+msgid "%1 reviews on %2"
+msgstr "%1 avis sur %2"
+
+msgid "%1 reviews"
+msgstr "%1 avis"
+
+msgid "%1 left %2 review"
+msgstr "%1 a laissé un avis %2"
+
+msgid "%s place picture"
+msgstr "Photo de l'établissement %s"
+
+msgid "%s place profile"
+msgstr "Profil de l'établissement %s"
 
 msgid "review us on"
 msgstr "évaluez-nous sur"
 
-msgid "Response from the owner"
-msgstr "Réponse du propriétaire"
-
-msgid "%s place profile"
-msgstr "Profil du lieu %s"
-
 msgid "review us on Google"
 msgstr "évaluez-nous sur Google"
+
+msgid "Rating: %s out of 5"
+msgstr "Évaluation : %s sur 5"
+
+msgid "Based on %s reviews"
+msgstr "D'après %s avis"
+
+msgid "powered by Google"
+msgstr "propulsé par Google"
+
+msgid "See All Reviews"
+msgstr "Voir tous les avis"
 
 msgid "All reviews"
 msgstr "Tous les avis"
 
+msgid "Google User"
+msgstr "Utilisateur Google"
+
+msgid "%s profile picture"
+msgstr "Photo de profil de %s"
+
 msgid "%s user profile"
-msgstr "Profil utilisateur %s"
+msgstr "Profil de %s"
+
+msgid "Photo from customer review"
+msgstr "Photo jointe à un avis de client"
+
+msgid "Response from the owner"
+msgstr "Réponse du propriétaire"
 
 msgid "opens in a new window"
 msgstr "s'ouvre dans une nouvelle fenêtre"
-
-msgid "Rating: %s out of 5"
-msgstr "Évaluation : %s sur 5"

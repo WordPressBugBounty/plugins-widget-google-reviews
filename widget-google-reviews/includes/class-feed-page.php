@@ -12,7 +12,7 @@ class Feed_Page {
 
     public function register() {
         $feed_ids = get_option('grw_feed_ids');
-        if (empty($feed_ids)) {
+        if (empty($feed_ids) && !Plugin_Badge::is_list()) {
             $render_func = array($this, 'connect');
         } else {
             $render_func = array($this, 'render');
@@ -26,6 +26,8 @@ class Feed_Page {
     }
 
     public function render() {
-        ?><div class="grw-admin-feeds"><a class="button button-primary" href="<?php echo admin_url('admin.php'); ?>?page=grw-builder">Create Widget</a></div><?php
+        $badges = Plugin_Badge::is_list();
+        $url = admin_url('admin.php?page=' . ($badges ? 'grw-badge&new=1' : 'grw-builder'));
+        ?><div class="grw-admin-feeds"><a class="button button-primary" href="<?php echo esc_url($url); ?>"><?php echo $badges ? esc_html__('Create Badge', 'widget-google-reviews') : esc_html__('Create Widget', 'widget-google-reviews'); ?></a></div><?php
     }
 }

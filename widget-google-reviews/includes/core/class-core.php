@@ -35,6 +35,26 @@ class Core {
             'header_hide_photo'         => false,
             'header_hide_name'          => false,
 
+            'badge_style'               => 'live',
+            'badge_pos'                 => 'right',
+            'badge_bar'                 => false,
+            'badge_click'               => 'sidebar',
+            'badge_close'               => false,
+            'hide_float_badge'          => false,
+            'badge_logo_hide'           => false,
+            'badge_based_hide'          => false,
+            'badge_tone'                => 'light',
+            'badge_size'                => '',
+            'badge_width'               => '',
+            'badge_onestar'             => false,
+            'badge_compact'             => false,
+            'badge_order'               => '',
+            'badge_dot'                 => false,
+            'badge_author_hide'         => false,
+            'badge_toprated'            => false,
+            'badge_icon'                => 'medal',
+            'badge_interval'            => '',
+
             'dark_theme'                => false,
             'centered'                  => false,
             'max_width'                 => '',
@@ -101,6 +121,13 @@ class Core {
             set_transient($connection_cache_key, $serialized_connection, $expiration);
         }
         return $data;
+    }
+
+    // hide_float_badge is a badge key too, the one without the prefix.
+    public static function badge_option_keys() {
+        return array_values(array_filter(array_keys(self::get_default_options()), function($key) {
+            return strpos($key, 'badge_') === 0 || $key === 'hide_float_badge';
+        }));
     }
 
     private function get_ops($connection) {

@@ -11,44 +11,71 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-msgid "Google Rating"
-msgstr "Evaluare Google"
-
-msgid "See All Reviews"
-msgstr "Vezi toate recenziile"
-
-msgid "Google User"
-msgstr "Utilizator Google"
-
 msgid "read more"
 msgstr "mai mult"
 
 msgid "More reviews"
 msgstr "Mai multe recenzii"
 
-msgid "Based on %s reviews"
-msgstr "Bazat pe %s recenzii"
+msgid "Top rated"
+msgstr "Foarte apreciat"
 
-msgid "review us on"
-msgstr "evaluează-ne pe"
+msgid "Latest review %s"
+msgstr "Ultima recenzie: %s"
 
-msgid "Response from the owner"
-msgstr "Răspunsul proprietarului"
+msgid "%1 of the last %2 reviews are 5 stars"
+msgstr "%1 din ultimele %2 recenzii au 5 stele"
+
+msgid "%1 reviews on %2"
+msgstr "Recenzii pe %2: %1"
+
+msgid "%1 reviews"
+msgstr "Recenzii: %1"
+
+msgid "%1 left %2 review"
+msgstr "%1 a dat %2"
+
+msgid "%s place picture"
+msgstr "Fotografia locului %s"
 
 msgid "%s place profile"
 msgstr "Profilul locului %s"
 
+msgid "review us on"
+msgstr "evaluează-ne pe"
+
 msgid "review us on Google"
 msgstr "evaluează-ne pe Google"
+
+msgid "Rating: %s out of 5"
+msgstr "Evaluare: %s din 5"
+
+msgid "Based on %s reviews"
+msgstr "Recenzii: %s"
+
+msgid "powered by Google"
+msgstr "furnizat de Google"
+
+msgid "See All Reviews"
+msgstr "Vezi toate recenziile"
 
 msgid "All reviews"
 msgstr "Toate recenziile"
 
+msgid "Google User"
+msgstr "Utilizator Google"
+
+msgid "%s profile picture"
+msgstr "Fotografia de profil a utilizatorului %s"
+
 msgid "%s user profile"
 msgstr "Profilul utilizatorului %s"
 
+msgid "Photo from customer review"
+msgstr "Fotografie din recenzia clientului"
+
+msgid "Response from the owner"
+msgstr "Răspunsul proprietarului"
+
 msgid "opens in a new window"
 msgstr "se deschide într-o fereastră nouă"
-
-msgid "Rating: %s out of 5"
-msgstr "Evaluare: %s din 5"

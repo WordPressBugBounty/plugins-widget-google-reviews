@@ -11,44 +11,71 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-msgid "Google Rating"
-msgstr "Google Beoordelingen"
-
-msgid "See All Reviews"
-msgstr "Bekijk alle beoordelingen"
-
-msgid "Google User"
-msgstr "Google gebruiker"
-
 msgid "read more"
 msgstr "lees meer"
 
 msgid "More reviews"
-msgstr "Volgende beoordelingen"
+msgstr "Meer beoordelingen"
 
-msgid "Based on %s reviews"
-msgstr "Gebaseerd op %s recensies"
+msgid "Top rated"
+msgstr "Hoog gewaardeerd"
+
+msgid "Latest review %s"
+msgstr "Laatste beoordeling %s"
+
+msgid "%1 of the last %2 reviews are 5 stars"
+msgstr "5 sterren voor %1 van de laatste %2 beoordelingen"
+
+msgid "%1 reviews on %2"
+msgstr "%1 beoordelingen op %2"
+
+msgid "%1 reviews"
+msgstr "%1 beoordelingen"
+
+msgid "%1 left %2 review"
+msgstr "%1 gaf een beoordeling van %2"
+
+msgid "%s place picture"
+msgstr "Foto van %s"
+
+msgid "%s place profile"
+msgstr "Bedrijfsprofiel van %s"
 
 msgid "review us on"
 msgstr "beoordeel ons op"
 
-msgid "Response from the owner"
-msgstr "Antwoord van de eigenaar"
-
-msgid "%s place profile"
-msgstr "%s plaatsprofiel"
-
 msgid "review us on Google"
 msgstr "Beoordeel ons op Google"
+
+msgid "Rating: %s out of 5"
+msgstr "Waardering: %s van de 5"
+
+msgid "Based on %s reviews"
+msgstr "Gebaseerd op %s beoordelingen"
+
+msgid "powered by Google"
+msgstr "mogelijk gemaakt door Google"
+
+msgid "See All Reviews"
+msgstr "Bekijk alle beoordelingen"
 
 msgid "All reviews"
 msgstr "Alle beoordelingen"
 
+msgid "Google User"
+msgstr "Google-gebruiker"
+
+msgid "%s profile picture"
+msgstr "Profielfoto van %s"
+
 msgid "%s user profile"
-msgstr "%s gebruikersprofiel"
+msgstr "Profiel van %s"
+
+msgid "Photo from customer review"
+msgstr "Foto bij een klantbeoordeling"
+
+msgid "Response from the owner"
+msgstr "Reactie van de eigenaar"
 
 msgid "opens in a new window"
 msgstr "opent in een nieuw venster"
-
-msgid "Rating: %s out of 5"
-msgstr "Beoordeling: %s van de 5"

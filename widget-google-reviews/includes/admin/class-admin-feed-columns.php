@@ -8,7 +8,7 @@ class Admin_Feed_Columns {
 
     private $feed_deserializer;
 
-    // 'badge' is not offered by the builder any more, but widgets saved with it still render.
+    // 'badge' widgets are created and edited on the Badge page, the builder never offers it.
     private static $plugin_themes = array(
         'list'   => 'List',
         'slider' => 'Slider',
@@ -35,10 +35,18 @@ class Admin_Feed_Columns {
             if (empty($screen) || $screen->post_type !== Post_Types::FEED_POST_TYPE) {
                 return $link;
             }
-            return admin_url('admin.php?page=grw-builder&' . Post_Types::FEED_POST_TYPE . '_id=' . $id);
+            $badge = $this->is_badge($id);
+            return admin_url('admin.php?page=' . ($badge ? 'grw-badge' : 'grw-builder') . '&' . Post_Types::FEED_POST_TYPE . '_id=' . $id . ($badge ? '&step=1' : ''));
         } else {
             return;
         }
+    }
+
+    private function is_badge($id) {
+        $feed = $this->feed_deserializer->get_feed($id);
+        if (!$feed) return false;
+        $content = json_decode($feed->post_content);
+        return isset($content->options->view_mode) && $content->options->view_mode === 'badge';
     }
 
     public function get_columns($columns) {

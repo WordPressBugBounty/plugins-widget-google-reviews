@@ -45,6 +45,15 @@ class Admin_Menu {
             'grw-places'
         );
         $places_page->add_page();
+
+        $badge_page = new Admin_Page(
+            'grw',
+            'Badges',
+            'Badges',
+            'manage_options',
+            'grw-badge'
+        );
+        $badge_page->add_page();
     }
 
     // Screen ids are toplevel_page_grw, google-reviews_page_grw-*, edit-grw_feed, grw_feed.

@@ -580,14 +580,12 @@ jQuery(document).ready(function($) {
             return false;
         });
 
-        $placesTable.on('click', '.grw-place-delete, .grw-place-delete-no', function() {
-            $('.grw-place-confirm', $(this).closest('tr')).prop('hidden', $(this).hasClass('grw-place-delete-no'));
-            return false;
-        });
-
-        $placesTable.on('click', '.grw-place-delete-yes', function() {
+        // Deleting a place is final and reaches every widget that shows it, so the confirm asks for the word.
+        $placesTable.on('click', '.grw-place-delete', function() {
             var $row = $(this).closest('tr');
             if ($row.hasClass('grw-place-busy')) return false;
+            var word = prompt('Deleting ' + $row.data('name') + ' also deletes all of its ' + $row.data('reviews') + ' stored reviews.\nWidgets and badges that include this place will stop showing it.\n\nType delete to confirm');
+            if (word === null || word.trim().toLowerCase() !== 'delete') return false;
             $row.addClass('grw-place-busy');
             $.post(ajaxurl, {id: $row.data('id'), action: 'grw_delete_place', grw_nonce: nonce}, function(res) {
                 if (res.status == 'success') {
@@ -690,4 +688,10 @@ function grw_s2dmy(s) {
         return Math.round(d / 30) + ' months';
     }
     return d + ' days';
+}
+
+const GRW_TOAST = rpi.Toast({timeout: 25});
+
+function grw_get_error(res) {
+    return res?.result?.error_message?.message || res?.result?.error_message || null;
 }

@@ -11,41 +11,71 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-msgid "Google Rating"
-msgstr "ເຣດຕິ້ງກູເກິລ"
+msgid "read more"
+msgstr "ອ່ານເພີ່ມເຕີມ"
 
 msgid "More reviews"
-msgstr "ຣີວິວຕໍ່ໄປ"
+msgstr "ຣີວິວເພີ່ມເຕີມ"
 
-msgid "See All Reviews"
-msgstr "ເບິ່ງຣີວິວທັງໝົດ"
+msgid "Top rated"
+msgstr "ຄະແນນສູງ"
 
-msgid "Google User"
-msgstr "ຜູ້ໃຊ້ກູເກິລ"
+msgid "Latest review %s"
+msgstr "ຣີວິວຫຼ້າສຸດ %s"
 
-msgid "read more"
-msgstr "ອ່ານເພີ່ມ"
+msgid "%1 of the last %2 reviews are 5 stars"
+msgstr "%1 ຈາກ %2 ຣີວິວຫຼ້າສຸດໃຫ້ 5 ດາວ"
 
-msgid "Based on %s reviews"
-msgstr "ອີງຕາມ %s ຣີວິວ"
+msgid "%1 reviews on %2"
+msgstr "%1 ຣີວິວໃນ %2"
 
-msgid "Response from the owner"
-msgstr "ການຕອບກັບຈາກຜູ້ລອງທີ່"
+msgid "%1 reviews"
+msgstr "%1 ຣີວິວ"
+
+msgid "%1 left %2 review"
+msgstr "%1 ໃຫ້ %2"
+
+msgid "%s place picture"
+msgstr "ຮູບສະຖານທີ່ %s"
 
 msgid "%s place profile"
 msgstr "ໂປຣໄຟລ໌ສະຖານທີ່ %s"
 
+msgid "review us on"
+msgstr "ຣີວິວພວກເຮົາໃນ"
+
 msgid "review us on Google"
-msgstr "ຂໍໃຫ້ຄະແນນພວກເຮົາໃນ Google"
+msgstr "ຣີວິວພວກເຮົາໃນ Google"
+
+msgid "Rating: %s out of 5"
+msgstr "ຄະແນນ: %s ຈາກ 5"
+
+msgid "Based on %s reviews"
+msgstr "ອີງຕາມ %s ຣີວິວ"
+
+msgid "powered by Google"
+msgstr "ຂັບເຄື່ອນໂດຍ Google"
+
+msgid "See All Reviews"
+msgstr "ເບິ່ງຣີວິວທັງໝົດ"
 
 msgid "All reviews"
-msgstr "ທຸກຄໍາຄິດເຫັນ"
+msgstr "ຣີວິວທັງໝົດ"
+
+msgid "Google User"
+msgstr "ຜູ້ໃຊ້ Google"
+
+msgid "%s profile picture"
+msgstr "ຮູບໂປຣໄຟລ໌ %s"
 
 msgid "%s user profile"
 msgstr "ໂປຣໄຟລ໌ຜູ້ໃຊ້ %s"
 
-msgid "opens in a new window"
-msgstr "ເປີດໃນປ່ອງໃໝ່"
+msgid "Photo from customer review"
+msgstr "ຮູບຈາກຣີວິວຂອງລູກຄ້າ"
 
-msgid "Rating: %s out of 5"
-msgstr "ຄະແນນ: %s ຈາກ 5"
+msgid "Response from the owner"
+msgstr "ຄຳຕອບຈາກເຈົ້າຂອງ"
+
+msgid "opens in a new window"
+msgstr "ເປີດໃນໜ້າຕ່າງໃໝ່"

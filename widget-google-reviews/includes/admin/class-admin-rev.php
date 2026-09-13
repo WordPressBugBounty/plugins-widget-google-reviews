@@ -68,7 +68,7 @@ class Admin_Rev {
                           '</p>' .
                           '<p style="color:#999;font-size:12px;">' .
                               'By the way, if you have been thinking about upgrading to the Business version, ' .
-                              'you can do it today <a href="https://richplugins.com/business-reviews-bundle-wordpress-plugin?promo=GRGROW24" target="_blank"><b><u>WITH A HUGE 35% OFF DISCOUNT</u></b></a>.' .
+                              'you can do it today <a href="https://richplugins.com/business-reviews-bundle-wordpress-plugin?code=SUMR26#pricing" target="_blank"><b><u>WITH A HUGE 45% OFF DISCOUNT</u></b></a>.' .
                           '</p>';
 
                 printf('<div id="grw-rev-notice" class="%1$s" style="position:fixed;bottom:50px;right:20px;padding-right:30px;z-index:2;margin-left:20px">%2$s</div>', esc_attr($class), $notice);

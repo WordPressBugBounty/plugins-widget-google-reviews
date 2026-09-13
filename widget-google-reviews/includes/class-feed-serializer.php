@@ -57,7 +57,8 @@ class Feed_Serializer {
         $post_id = wp_insert_post(array(
             'ID'           => sanitize_text_field(wp_unslash($post_id)),
             'post_title'   => sanitize_text_field(wp_unslash($title)),
-            'post_content' => $json,
+            // wp_insert_post() unslashes its input; without this every JSON escape loses its backslash.
+            'post_content' => wp_slash($json),
             'post_type'    => Post_Types::FEED_POST_TYPE,
             'post_status'  => 'publish',
         ));

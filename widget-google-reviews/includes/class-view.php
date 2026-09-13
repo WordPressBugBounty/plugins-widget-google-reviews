@@ -2,9 +2,14 @@
 
 namespace WP_Rplg_Google_Reviews\Includes;
 
+use WP_Rplg_Google_Reviews\Includes\Core\Badge_Live;
+use WP_Rplg_Google_Reviews\Includes\Core\Core;
+
 class View {
 
     const G_AVA_SIZE = 's120';
+
+    public static $rendered = array();
 
     public function render($feed_id, $businesses, $reviews, $options, $is_admin = false) {
         ob_start();
@@ -33,10 +38,11 @@ class View {
         }
 
         $cls = $this->root_cls($options);
+        self::$rendered[] = (string) $feed_id;
 
         static $svg = false;
 
-        ?><div class="wp-gr rpi<?php echo $cls; ?>"<?php if ($style) { ?> style="<?php echo esc_attr($style); ?>"<?php } ?> data-id="<?php echo esc_attr($feed_id); ?>" data-layout="<?php echo esc_attr($options->view_mode); ?>" data-exec="false" data-options='<?php echo esc_attr($this->options($options)); ?>'><?php
+        ?><div class="wp-gr rpi<?php echo $cls; ?>"<?php if ($style) { ?> style="<?php echo esc_attr($style); ?>"<?php } ?> data-id="<?php echo esc_attr($feed_id); ?>" data-layout="<?php echo esc_attr($options->view_mode); ?>" data-exec="false" data-options='<?php echo esc_attr($this->options($options)); ?>'<?php if ($this->badge_popup($reviews, $options)) { ?> data-reviews="<?php echo esc_url(admin_url('admin-ajax.php?action=grw_reviews&id=' . (int) $feed_id)); ?>"<?php } ?>><?php
             if (!$svg) { $svg = true;
             ?><svg xmlns="http://www.w3.org/2000/svg" style="display:none!important">
                 <symbol id="grw-tripadvisor" viewBox="0 0 713.496 713.496">
@@ -64,14 +70,14 @@ class View {
                     $this->render_rating($businesses, $reviews, $options, $is_admin);
                     break;
                 case 'badge':
-                    $this->render_badge($businesses, $reviews, $options);
+                    $this->render_badge($businesses, $reviews, $options, $is_admin);
                     break;
                 default:
                     $this->render_list($businesses, $reviews, $options, $is_admin);
             }
 
             if ($rows) {
-                ?><script>(function(p){if(!p)return;let w=p.offsetWidth,m=function(a,b){return Math.min(a,b)===a};p.querySelector('.grw-row').classList.replace('grw-row-m','grw-row-'+(m(w,510)?'xs':m(w,750)?'x':m(w,1100)?'s':m(w,1450)?'m':m(w,1800)?'l':'xl'))})(document.currentScript?.parentElement)</script><?php
+                ?><script>(function(p){if(!p)return;let w=p.offsetWidth,m=function(a,b){return Math.min(a,b)===a};p.querySelector('.grw-row').classList.replace('grw-row-m','grw-row-'+(m(w,510)?'xs':m(w,750)?'x':m(w,1100)?'s':m(w,1450)?'m':m(w,1800)?'l':'xl'))})(document.currentScript?.closest('.wp-gr'))</script><?php
             }
         ?></div><?php
         return preg_replace('/[\n\r]|(>)\s+(<)/', '$1$2', ob_get_clean());
@@ -214,71 +220,124 @@ class View {
                 );
             }
             if ($popup) {
-                // The popup scrolls, so paging inside it would only hide reviews behind a click.
-                $popup_options = clone $options;
-                $popup_options->pagination = 0;
-                ?><div class="wp-gr rpi<?php echo $this->root_cls($options); ?> grw-popup"><?php
-                    $this->grw_place_reviews($reviews, $popup_options, $is_admin);
-                ?></div><?php
+                $this->render_popup($reviews, $options, $is_admin);
             }
         ?></div><?php
     }
 
-    private function render_badge($businesses, $reviews, $options) {
-        wp_enqueue_style('grw-public-badge-css');
-        ?>
-        <script type="text/javascript">
-        function grw_badge_init(el) {
-            var btn = el.querySelector('.wp-google-badge'),
-                form = el.querySelector('.wp-google-form');
+    // The markup mirrors rpi.Badge.Live.render() in badge.js: PHP prints the first frame, the script only rotates the second line.
+    private function render_badge($businesses, $reviews, $options, $is_admin = false) {
+        $biz = Badge_Live::summary($businesses);
+        if (!$biz) return;
 
-            var wpac = document.createElement('div');
-            wpac.className = 'wp-gr wpac';
-            wpac.appendChild(form);
-            document.body.appendChild(wpac);
+        $live = Badge_Live::build($reviews);
+        $pos = $this->badge_pos($options);
+        $bar = !empty($options->badge_bar);
+        $edge = (!$bar || $pos === 'embed') ? $pos : (strpos($pos, 'top') === 0 ? 'top' : 'bottom');
+        $compact = $options->badge_compact || $bar;
+        $tone = in_array($options->badge_tone, array('light', 'dark', 'glass', 'glass-dark'), true) ? $options->badge_tone : 'light';
 
-            btn.onclick = function() {
-                form.style.display='block';
-            };
-        }
-        </script>
-        <?php foreach ($businesses as $business) { ?>
-        <div class="wp-google-badge<?php if ($options->view_mode == 'badge') { ?> wp-google-badge-fixed<?php } ?>">
-            <div class="wp-google-border"></div>
-            <div class="wp-google-badge-btn">
-                <svg height="44" width="44" role="none"><use href="#grw-google"></use></svg>
-                <div class="wp-google-badge-score">
-                    <div><?php echo __('Google Rating', 'widget-google-reviews'); ?></div>
-                    <span class="rpi-stars" style="--rating:<?php echo $business->rating; ?>"><?php echo $business->rating; ?></span>
+        $cls = array('rpi-badge', 'rpi-badge-' . $tone);
+        if ($compact)                          $cls[] = 'rpi-badge-compact';
+        if ($options->badge_onestar)           $cls[] = 'rpi-badge-onestar';
+        if ($options->badge_order === 'stars') $cls[] = 'rpi-badge-starsfirst';
+        if ($options->badge_width === 'auto')  $cls[] = 'rpi-badge-fit';
+        if ($bar)                              $cls[] = 'rpi-badge-bar';
+
+        $style = array();
+        if ($options->badge_size) $style[] = '--badge-fs:' . (float) $options->badge_size . 'px';
+        if ($options->badge_width && $options->badge_width !== 'auto') $style[] = '--badge-width:' . (int) $options->badge_width . 'px';
+        $style[] = 'display:none';
+
+        $count = number_format_i18n((int) $biz->review_count);
+        $stars = '<span class="rpi-stars" style="--rating:' . esc_attr($biz->rating) . '">' . esc_html($biz->rating) . '</span>';
+        $provider = $biz->provider === 'summary' ? 'google' : $biz->provider;
+        $logo = function($inner = '') use ($provider) {
+            return '<span class="rpi-logo rpi-logo-' . esc_attr($provider) . '" aria-hidden="true">' . $inner . '</span>';
+        };
+        $top_rated = $options->badge_toprated
+            && (float) $biz->rating >= Badge_Live::TOP_RATED_MIN_RATING
+            && (int) $biz->review_count >= Badge_Live::TOP_RATED_MIN_TOTAL;
+        $popup = $this->badge_popup($reviews, $options);
+
+        ?><div class="rpi-badge-cnt rpi-badge-live rpi-badge-<?php echo esc_attr($edge); if ($bar) echo ' rpi-badge-cnt-bar'; if ($options->hide_float_badge) echo ' rpi-badge-hide'; ?>" data-opts='<?php echo esc_attr($this->badge_options($options, $live, $biz, $businesses)); ?>'>
+            <div class="<?php echo implode(' ', $cls); ?>" style="<?php echo esc_attr(implode(';', $style)); ?>"<?php if ($biz->provider !== 'summary') { ?> data-id="<?php echo esc_attr($biz->id); ?>" data-provider="<?php echo esc_attr($biz->provider); ?>"<?php } ?>>
+                <?php if ($options->badge_close) { ?><div class="rpi-x"></div><?php } ?>
+                <div class="rpi-badge-body<?php if ($popup) echo ' rpi-badge-clickable'; ?>">
+                    <?php if (!$compact && !$options->badge_logo_hide) echo $logo(); ?>
+                    <div class="rpi-badge-main">
+                        <div class="rpi-badge-head">
+                            <?php echo ($compact && !$options->badge_logo_hide) ? $logo($stars) : $stars; ?>
+                            <?php if (!$options->badge_based_hide) { ?><span class="rpi-badge-count"><?php echo $options->badge_dot ? '· ' . $count : '(' . $count . ')'; ?></span><?php } ?>
+                            <?php if ($top_rated) { ?><span class="rpi-badge-label<?php if ($options->badge_icon) echo ' rpi-badge-ico-' . esc_attr($options->badge_icon); ?>">· <i><?php echo esc_html__('Top rated', 'widget-google-reviews'); ?></i></span><?php } ?>
+                        </div>
+                        <div class="rpi-badge-feed"><span><?php echo $this->badge_first($biz, $live, $options); ?></span></div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <?php } ?>
-        <div class="wp-google-form" style="display:none">
-            <?php foreach ($businesses as $business) { ?>
-            <div class="wp-google-head">
-                <div class="wp-google-head-inner">
-                    <?php
-                    $this->grw_place(
-                        $business->rating,
-                        $business,
-                        $business->photo,
-                        $reviews,
-                        $options,
-                        false
-                    ); ?>
-                </div>
-                <button class="wp-google-close" type="button" onclick="this.parentNode.parentNode.style.display='none'">×</button>
-            </div>
-            <?php } ?>
-            <div class="wp-google-body"></div>
-            <div class="wp-google-content">
-                <div class="wp-google-content-inner">
-                    <?php $this->grw_place_reviews($reviews, $options); ?>
-                </div>
-            </div>
-            <?php $this->grw_powered(); ?>
         </div><?php
+    }
+
+    public function badge_popup($reviews, $options) {
+        return $options->view_mode === 'badge' && $options->badge_click !== 'disable' && !$options->hide_reviews && count($reviews) > 0;
+    }
+
+    public function render_popup($reviews, $options, $is_admin = false) {
+        // The popup scrolls, so paging inside it would only hide reviews behind a click.
+        $popup_options = clone $options;
+        $popup_options->pagination = 0;
+        ?><div class="wp-gr rpi<?php echo $this->root_cls($options); ?> grw-popup"><?php
+            $this->grw_place_reviews($reviews, $popup_options, $is_admin);
+        ?></div><?php
+    }
+
+    private function badge_pos($options) {
+        $valid = array('left', 'right', 'top-left', 'top-right', 'top', 'bottom', 'embed');
+        return in_array($options->badge_pos, $valid, true) ? $options->badge_pos : 'right';
+    }
+
+    private function badge_options($options, $live, $biz, $businesses) {
+        $opts = array();
+        foreach (Core::badge_option_keys() as $key) {
+            if (isset($options->$key) && $options->$key !== '' && $options->$key !== false) {
+                $opts[$key] = $options->$key;
+            }
+        }
+        $opts['badge_style'] = 'live';
+        $opts['badge_pos'] = $this->badge_pos($options);
+        $opts['live'] = $live;
+        // badge.js reads the business behind the facts from data.bizs, the same shape the preview sends.
+        $bizs = array();
+        foreach ($businesses as $b) {
+            $bizs[] = array('id' => $b->id, 'provider' => $b->provider, 'rating' => $b->rating, 'total' => (int) $b->review_count);
+        }
+        if ($biz->provider === 'summary') {
+            array_unshift($bizs, array('id' => 'summary', 'provider' => 'summary', 'rating' => $biz->rating, 'total' => (int) $biz->review_count));
+        }
+        $opts['data'] = array('bizs' => $bizs);
+        $opts['lang'] = substr(get_locale(), 0, 2);
+        $opts['trans'] = array(
+            'Top rated'                            => __('Top rated', 'widget-google-reviews'),
+            'Latest review %s'                     => __('Latest review %s', 'widget-google-reviews'),
+            '%1 of the last %2 reviews are 5 stars' => __('%1 of the last %2 reviews are 5 stars', 'widget-google-reviews'),
+            '%1 reviews on %2'                     => __('%1 reviews on %2', 'widget-google-reviews'),
+            '%1 reviews'                           => __('%1 reviews', 'widget-google-reviews'),
+            '%1 left %2 review'                    => __('%1 left %2 review', 'widget-google-reviews'),
+        );
+        return json_encode($opts, JSON_UNESCAPED_UNICODE);
+    }
+
+    private function badge_first($biz, $live, $options) {
+        if (!empty($live['phrases'])) {
+            $p = $live['phrases'][0];
+            $author = $options->badge_author_hide ? '' : Badge_Live::short_name($p['a']);
+            return '<q>' . esc_html($p['t']) . '…</q>' . ($author ? ' <b>' . esc_html($author) . '</b>' : '');
+        }
+        $provider = $biz->provider === 'summary' ? '' : ucfirst($biz->provider);
+        $count = '<b>' . number_format_i18n((int) $biz->review_count) . '</b>';
+        return $provider
+            ? str_replace(array('%1', '%2'), array($count, esc_html($provider)), esc_html__('%1 reviews on %2', 'widget-google-reviews'))
+            : str_replace('%1', $count, esc_html__('%1 reviews', 'widget-google-reviews'));
     }
 
     function grw_place($rating, $place, $place_img, $reviews, $options, $show_powered = true, $show_writereview = false) {

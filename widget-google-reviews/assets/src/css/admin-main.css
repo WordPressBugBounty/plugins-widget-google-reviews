@@ -1357,16 +1357,6 @@ img.grw-connect-photo {
     color: #b32d2e;
 }
 
-.grw-place-confirm {
-    margin-top: 6px;
-    color: #b32d2e;
-}
-
-.grw-place-confirm .button {
-    margin-left: 4px;
-    vertical-align: baseline;
-}
-
 .grw-place-busy {
     opacity: .6;
     pointer-events: none;
@@ -1379,5 +1369,1036 @@ img.grw-connect-photo {
 @media screen and (max-width: 782px) {
     .grw-places .grw-col-actions {
         text-align: left;
+    }
+}
+
+/*-------------------------------- Badge page --------------------------------*/
+.grw-badge-page {
+    margin: 0;
+    min-height: calc(100vh - 120px);
+    background: #f6f7f7;
+    font-size: 14px;
+}
+
+.grw-badge-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 0;
+    padding: 0 20px;
+    height: 64px;
+    background: #fff;
+    box-shadow: 0 1px 0 #dcdcde;
+    list-style: none;
+}
+
+.grw-badge-steps li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0 6px;
+    color: #50575e;
+    font-size: 15px;
+    cursor: default;
+}
+
+.grw-badge-steps li + li::before {
+    content: '';
+    width: 9px;
+    height: 9px;
+    margin: 0 22px 0 8px;
+    border-right: 2px solid #c3c4c7;
+    border-bottom: 2px solid #c3c4c7;
+    transform: rotate(-45deg);
+}
+
+.grw-badge-steps li span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #dcdcde;
+    color: #1d2327;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.grw-badge-steps li.grw-badge-step-on {
+    color: #2271b1;
+    cursor: pointer;
+}
+
+.grw-badge-steps li.grw-badge-step-on span {
+    box-shadow: inset 0 0 0 2px #2271b1;
+    background: #fff;
+    color: #2271b1;
+}
+
+.grw-badge-steps li.grw-badge-step-cur {
+    color: #1d2327;
+    font-weight: 600;
+    cursor: default;
+}
+
+.grw-badge-steps li.grw-badge-step-cur span {
+    background: #2271b1;
+    color: #fff;
+}
+
+.grw-badge-body {
+    padding: 0 20px 22px;
+}
+
+.grw-badge-section h2 {
+    margin: 22px 0 14px;
+    font-size: 23px;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.grw-badge-head-inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px;
+    margin: 22px 0 14px;
+}
+
+.grw-badge-head-inline h2,
+.grw-badge-head-inline .description {
+    margin: 0;
+}
+
+.grw-badge-card-block {
+    margin: 0 0 16px;
+    padding: 16px;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.grw-badge-loading {
+    color: #646970;
+}
+
+.grw-badge-note-ico {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+    vertical-align: -3px;
+    color: #2271b1;
+}
+
+/* ---- step 1: search ---- */
+/* The inline field block is 68px tall; the frame starts there and only grows for the suggestion list. */
+.grw-badge-frame {
+    display: block;
+    width: 100%;
+    height: 68px;
+    border: 0;
+}
+
+.grw-badge-input {
+    width: 100%;
+    max-width: 640px;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+.grw-badge-search .grw-badge-input {
+    max-width: none;
+}
+
+.grw-badge-list {
+    max-width: 640px;
+    margin-top: 4px;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.grw-badge-row {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #1d2327;
+}
+
+.grw-badge-row:hover {
+    background: #f6f7f7;
+}
+
+.grw-badge-row small {
+    display: block;
+    color: #646970;
+}
+
+.wp-core-ui .grw-badge-tiles-add {
+    margin: 0 0 10px;
+}
+
+/* ---- step 1: place tiles ---- */
+.grw-badge-tiles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 8px;
+    margin: 0;
+}
+
+.grw-badge-tile {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+    max-width: 22rem;
+    min-width: 0;
+    padding: 6px 32px 6px 6px;
+    border-radius: 8px;
+    background: #f7f7f7;
+}
+
+.grw-badge-tile-pending {
+    background: #fbf7ef;
+}
+
+.grw-badge-tile-photo {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    object-fit: cover;
+    background: #ebebeb;
+}
+
+.grw-badge-tile-facts {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 9rem;
+    flex: 1 1 auto;
+}
+
+/* Adds no width of its own: the tile is as wide as its score line and a long name truncates to it. */
+.grw-badge-tile-line {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    contain: inline-size;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.grw-badge-tile-line b {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* The code is what shows; the select over it is invisible and only lends its native list of full names. */
+.grw-badge-tile-lang {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    padding: 0 5px;
+    border-radius: 4px;
+    background: #e7e8ea;
+    font-weight: 400;
+    line-height: 20px;
+    cursor: pointer;
+}
+
+.grw-badge-tile-lang:hover {
+    background: #dcdcde;
+}
+
+.wp-core-ui .grw-badge-tile-lang select {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.grw-badge-tile-pending .grw-badge-tile-lang {
+    opacity: .5;
+    pointer-events: none;
+}
+
+.grw-badge-tile-dot {
+    color: #a7aaad;
+}
+
+.grw-badge-tile-score {
+    --rpi-star-size: 16px;
+    --star-align-self: center;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #646970;
+}
+
+.grw-badge-tile-x {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 22px;
+    height: 22px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2350575e' stroke-width='2' stroke-linecap='round'><path d='M6 6l12 12M18 6L6 18'/></svg>") center/12px no-repeat;
+    cursor: pointer;
+}
+
+.grw-badge-tile-x:hover {
+    background-color: #e8e8e8;
+}
+
+.grw-badge-tile-empty {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    padding: 0 6px;
+    color: #646970;
+}
+
+/* ---- step 1: picker of the places the plugin already holds, in the metrics of the media modal ---- */
+.grw-badge-modal-open {
+    overflow: hidden;
+}
+
+.grw-badge-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 160000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(0, 0, 0, .7);
+}
+
+.grw-badge-modal-box {
+    display: flex;
+    flex-direction: column;
+    width: 560px;
+    max-width: 100%;
+    max-height: 80vh;
+    background: #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .7);
+}
+
+.grw-badge-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+    padding-left: 16px;
+    border-bottom: 1px solid #dcdcde;
+}
+
+.grw-badge-modal-head h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 50px;
+}
+
+.grw-badge-modal-x {
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #646970;
+    cursor: pointer;
+}
+
+.grw-badge-modal-x:hover {
+    color: #135e96;
+}
+
+.grw-badge-modal-body {
+    padding: 16px;
+}
+
+.grw-badge-modal-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    border-top: 1px solid #dcdcde;
+}
+
+.grw-badge-pick {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.grw-badge-pick[hidden] {
+    display: none;
+}
+
+.grw-badge-pick input {
+    margin: 0;
+}
+
+.grw-badge-pick span {
+    min-width: 0;
+}
+
+.grw-badge-pick b,
+.grw-badge-pick small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.grw-badge-modal-empty {
+    padding: 12px 16px;
+    color: #646970;
+}
+
+.grw-badge-modal-foot {
+    display: flex;
+    justify-content: flex-end;
+    padding: 12px 16px;
+    border-top: 1px solid #dcdcde;
+    background: #f6f7f7;
+}
+
+/* ---- step 1: preset cards ---- */
+.grw-badge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 16px;
+}
+
+.grw-badge-card {
+    position: relative;
+    border: 1px solid #c3c4c7;
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.grw-badge-card-sel {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+.grw-badge-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f0f1;
+    font-weight: 600;
+}
+
+.grw-badge-card-tools {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.grw-badge-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 400;
+    color: #50575e;
+    cursor: pointer;
+}
+
+.grw-badge-switch input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.grw-badge-switch i {
+    position: relative;
+    width: 30px;
+    height: 16px;
+    border-radius: 999px;
+    background: #c3c4c7;
+    transition: background .15s;
+}
+
+.grw-badge-switch i::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    transition: left .15s;
+}
+
+.grw-badge-switch input:checked + i {
+    background: #1d2327;
+}
+
+.grw-badge-switch input:checked + i::after {
+    left: 16px;
+}
+
+/* forms.css frames every input[type=color]; the dot is the swatch alone. */
+.wp-core-ui .grw-badge-color,
+.grw-badge-color {
+    width: 18px;
+    height: 18px;
+    min-height: 0;
+    padding: 0;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    background: transparent;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.grw-badge-color::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.grw-badge-color::-webkit-color-swatch {
+    border: 0;
+    border-radius: 3px;
+}
+
+.grw-badge-color::-moz-color-swatch {
+    border: 0;
+    border-radius: 4px;
+}
+
+.wp-core-ui .grw-badge-color:focus,
+.wp-core-ui .grw-badge-color:focus-visible,
+.grw-badge-color:focus,
+.grw-badge-color:focus-visible {
+    outline: none;
+    box-shadow: none;
+    border-color: #cccccc;
+}
+
+/* Laid over the empty bottom of the stage, so a locked card keeps the height of its neighbours. */
+.grw-badge-card-lock {
+    position: absolute;
+    left: 16px;
+    bottom: 12px;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    font-size: 12px;
+    line-height: 16px;
+    color: #646970;
+}
+
+.grw-badge-card-lock[hidden] {
+    display: none;
+}
+
+.grw-badge-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 130px;
+    padding: 24px;
+    background: #f6f7f7 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><circle cx='1' cy='1' r='1' fill='%23dcdcde'/></svg>");
+}
+
+.grw-badge-stage-bar {
+    padding: 24px 0;
+}
+
+.grw-badge-stage-bar .grw-badge-root {
+    width: 100%;
+}
+
+/* Glass needs something to frost. */
+.grw-badge-stage-glass {
+    background:
+        linear-gradient(96deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .16) 44%, rgba(255, 255, 255, 0) 52%, rgba(255, 255, 255, .1) 63%, rgba(255, 255, 255, 0) 72%),
+        radial-gradient(60% 46% at 20% 70%, rgba(255, 255, 255, .58) 0%, rgba(255, 255, 255, .22) 40%, rgba(255, 255, 255, 0) 72%),
+        radial-gradient(46% 34% at 80% 46%, rgba(255, 255, 255, .42) 0%, rgba(255, 255, 255, 0) 70%),
+        radial-gradient(90% 26% at 50% 96%, rgba(255, 255, 255, .55) 0%, rgba(255, 255, 255, 0) 75%),
+        radial-gradient(34% 12% at 62% 20%, rgba(255, 255, 255, .26) 0%, rgba(255, 255, 255, 0) 70%),
+        radial-gradient(26% 9% at 28% 30%, rgba(255, 255, 255, .2) 0%, rgba(255, 255, 255, 0) 70%),
+        linear-gradient(180deg, #2a8bcc 0%, #4aa1d8 38%, #86c2e5 72%, #b8dcef 100%);
+}
+
+/* The site script floats the badge; on a card it sits in the flow. */
+.grw-badge-static .rpi-badge-cnt {
+    --badge-pos: static;
+}
+
+.grw-badge-static .rpi-badge-cnt.rpi-badge-cnt-bar {
+    width: 100%;
+}
+
+.grw-badge-static .rpi-badge-live .rpi-badge {
+    max-width: 100%;
+}
+
+/*-------------------------------- Badge editor: preview + settings column --------------------------------*/
+.grw-badge-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    /* An explicit flexible second row keeps the two-row settings column from stretching the heading row. */
+    grid-template-rows: max-content 1fr;
+    gap: 0 16px;
+    align-items: start;
+}
+
+.grw-badge-main-col {
+    grid-column: 1;
+    min-width: 0;
+}
+
+.grw-badge-stage-head {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 22px 0 14px;
+}
+
+.grw-badge-stage-head h2 {
+    margin: 0;
+    padding: 0;
+}
+
+.grw-badge-devices {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.grw-badge-devices button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: #4a4a4a;
+    cursor: pointer;
+}
+
+.grw-badge-devices button:hover {
+    background: #f1f1f1;
+}
+
+.grw-badge-devices button.grw-on {
+    border-color: #e3e3e3;
+    background: #fff;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .05), inset 0 -1px 0 #b5b5b5;
+    color: #303030;
+}
+
+/* The preview stage is the page: floating badges are absolute to it. */
+.grw-badge-embed-stage {
+    position: relative;
+    margin: 0;
+    padding: 32px;
+    min-height: 320px;
+    overflow: hidden;
+    border: 1px solid #dcdcde;
+    border-radius: 12px;
+}
+
+.grw-badge-embed-stage.grw-badge-stage-edge {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.grw-badge-embed-stage[data-device="tablet"] {
+    box-sizing: border-box;
+    width: 768px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.grw-badge-embed-stage[data-device="mobile"] {
+    box-sizing: border-box;
+    width: 390px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* common.css forces .wp-gr to display:block, so the inline-flex badge is centred as inline content. */
+.grw-badge-embed-stage .wp-gr.rpi.grw-badge-root {
+    width: 100%;
+    text-align: center !important;
+}
+
+.grw-badge-stage-float .grw-badge-root .rpi-badge-cnt {
+    --badge-pos: absolute;
+    z-index: 5;
+}
+
+/* The widget root is positioned by the site stylesheet; here the stage must be the anchor. */
+.grw-badge-stage-float .wp-gr.rpi.grw-badge-root {
+    position: static !important;
+}
+
+.grw-pl-side {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    margin-top: 22px;
+    font: 450 13px/20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+    color: #303030;
+}
+
+.grw-pl-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, .07), 0 1px 2px rgba(0, 0, 0, .05);
+}
+
+.grw-pl-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 16px;
+    border: 0;
+    background: none;
+    font: 600 14px/20px inherit;
+    font-family: inherit;
+    color: #303030;
+    cursor: pointer;
+    text-align: left;
+}
+
+.grw-pl-head i {
+    width: 8px;
+    height: 8px;
+    margin-right: 4px;
+    border-right: 2px solid #4a4a4a;
+    border-bottom: 2px solid #4a4a4a;
+    transform: rotate(-135deg);
+    transition: transform .15s;
+}
+
+.grw-pl-closed .grw-pl-head i {
+    transform: rotate(45deg);
+}
+
+.grw-pl-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    padding: 0 16px 16px;
+}
+
+.grw-pl-closed .grw-pl-body {
+    display: none;
+}
+
+.grw-pl-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.grw-pl-label {
+    white-space: nowrap;
+}
+
+.grw-pl-hint {
+    margin-top: -8px;
+    font-size: 12px;
+    line-height: 16px;
+    color: #616161;
+}
+
+.grw-pl-select {
+    width: 100%;
+    max-width: 100%;
+    height: 32px;
+    padding: 0 28px 0 12px;
+    border: 1px solid #8a8a8a;
+    border-radius: 8px;
+    background-color: #fdfdfd;
+    font: inherit;
+    color: #303030;
+    line-height: 30px;
+}
+
+.grw-pl-row .grw-pl-select {
+    width: auto;
+    min-width: 120px;
+}
+
+.grw-pl-select:focus {
+    border-color: #303030;
+    box-shadow: none;
+    outline: none;
+}
+
+.grw-pl-seg {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.grw-pl-seg button {
+    height: 28px;
+    padding: 0 10px;
+    border: 1px solid #e3e3e3;
+    border-radius: 8px;
+    background: #fff;
+    font: inherit;
+    color: #303030;
+    cursor: pointer;
+}
+
+.grw-pl-seg button.grw-pl-on {
+    background: #303030;
+    border-color: #303030;
+    color: #fff;
+}
+
+.grw-pl-seg-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.grw-pl-seg-grid button {
+    height: 32px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.grw-pl-pos {
+    display: grid;
+    gap: 6px;
+}
+
+.grw-pl-sub {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #616161;
+}
+
+.grw-pl-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.grw-pl-toggle input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.grw-pl-toggle i {
+    position: relative;
+    flex: none;
+    width: 40px;
+    height: 20px;
+    border-radius: 999px;
+    background: #d4d4d4;
+    transition: background .15s;
+}
+
+.grw-pl-toggle i::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+    transition: left .15s;
+}
+
+.grw-pl-toggle input:checked + i {
+    background: #303030;
+}
+
+.grw-pl-toggle input:checked + i::after {
+    left: 22px;
+}
+
+.grw-pl-toggle input:disabled + i {
+    opacity: .4;
+}
+
+.grw-pl-toggle input:disabled ~ span {
+    color: #8a8a8a;
+}
+
+.grw-pl-opt {
+    display: grid;
+    gap: 8px;
+}
+
+.grw-pl-value {
+    color: #616161;
+}
+
+.grw-pl-slider {
+    width: 100%;
+    height: 16px;
+    margin: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.grw-pl-slider::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(#303030, #303030) 0 / var(--fill, 0%) 100% no-repeat #e3e3e3;
+}
+
+.grw-pl-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    margin-top: -6px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #8a8a8a;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
+}
+
+.grw-pl-slider::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background: #e3e3e3;
+}
+
+.grw-pl-slider::-moz-range-progress {
+    height: 4px;
+    border-radius: 2px;
+    background: #303030;
+}
+
+.grw-pl-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #8a8a8a;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
+}
+
+.grw-pl-slider:focus {
+    outline: none;
+}
+
+.grw-pl-next {
+    width: 100%;
+    text-align: center;
+}
+
+.grw-pl-links {
+    margin: -6px 0 0;
+    text-align: center;
+    font-size: 12px;
+}
+
+/* ---- step 3 ---- */
+.grw-badge-install {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 16px 28px;
+}
+
+.grw-badge-install-or {
+    margin: 0;
+    color: #646970;
+}
+
+.grw-badge-uninstall {
+    color: #b32d2e;
+}
+
+.grw-badge-sc {
+    width: 140px;
+}
+
+/* Badges list: every row is a badge, so the Theme column only repeats the word. */
+.grw-badges-list .column-grw_theme {
+    display: none;
+}
+
+@media screen and (min-width: 1101px) {
+    .grw-badge-stage-head {
+        position: sticky;
+        top: 48px;
+    }
+    /* Sticks under the stuck heading row: its 30px line plus the 14px below it. */
+    .grw-badge-main-col {
+        position: sticky;
+        top: 92px;
+    }
+}
+
+@media screen and (max-width: 1100px) {
+    .grw-badge-cols {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .grw-pl-side {
+        grid-column: 1;
+        grid-row: auto;
+        margin-top: 16px;
+    }
+}
+
+@media screen and (max-width: 782px) {
+    .grw-badge-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .wp-gr.grw-badge-root .rpi-badge-live .rpi-badge-cnt {
+        max-width: 100%;
+    }
+    .wp-gr.grw-badge-root .rpi-badge-live .rpi-badge:not(.rpi-badge-bar) {
+        width: var(--badge-width, 24.6em);
+        max-width: 100%;
     }
 }

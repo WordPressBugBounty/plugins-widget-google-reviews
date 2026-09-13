@@ -269,7 +269,36 @@
     height: 100%!important;
     padding: 16px!important;
     overflow-y: auto!important;
+    overscroll-behavior: contain!important;
     background-color: #fff!important;
+}
+
+/* Touch over the backdrop must not scroll the page underneath; the popup pans on its own. */
+.rpi-lightbox-wrap:has(.grw-popup) .rpi-lightbox {
+    touch-action: none;
+}
+
+.wp-gr.grw-popup.grw-popup-on {
+    touch-action: pan-y!important;
+}
+
+.wp-gr.grw-popup .grw-review,
+.wp-gr.grw-popup .wp-google-review {
+    border-radius: 8px!important;
+    transition: background-color .6s, box-shadow .6s!important;
+}
+
+.wp-gr.grw-popup mark.grw-review-mark {
+    padding: 0!important;
+    border-radius: 2px!important;
+    color: inherit!important;
+    background-color: #fff1a8!important;
+}
+
+/* The spread stands in for padding, so the highlight adds no height to the list. */
+.wp-gr.grw-popup .grw-review-hl {
+    background-color: #f3f3f5!important;
+    box-shadow: 0 0 0 8px #f3f3f5!important;
 }
 
 /* Without this the review list is shrunk to the panel height and clipped, so it never scrolls. */
@@ -289,6 +318,57 @@
 
 .wp-gr.wp-dark.grw-popup {
     background-color: #1e1e1e!important;
+}
+
+/* Stands in for the review list while it loads. */
+.grw-popup-skel > div {
+    display: flex!important;
+    gap: 12px!important;
+    margin: 0 0 24px!important;
+}
+
+.grw-popup-skel > div > div {
+    flex: 1 1 auto!important;
+}
+
+.grw-popup-skel i,
+.grw-popup-skel b {
+    display: block!important;
+    background: #e9e9ec!important;
+    animation: grw-skel 1.2s ease-in-out infinite;
+}
+
+.grw-popup-skel i {
+    flex: none!important;
+    width: 50px!important;
+    height: 50px!important;
+    border-radius: 50%!important;
+}
+
+.grw-popup-skel b {
+    height: 12px!important;
+    margin: 0 0 8px!important;
+    border-radius: 6px!important;
+}
+
+.grw-popup-skel b:nth-child(1) { width: 140px!important; }
+.grw-popup-skel b:nth-child(2) { width: 90px!important; }
+.grw-popup-skel b:nth-child(3) { width: 100%!important; }
+
+.wp-dark .grw-popup-skel i,
+.wp-dark .grw-popup-skel b {
+    background: #3a3a3a!important;
+}
+
+@keyframes grw-skel {
+    50% { opacity: .45; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .grw-popup-skel i,
+    .grw-popup-skel b {
+        animation: none;
+    }
 }
 
 .wp-gr.wp-dark .wp-google-name {

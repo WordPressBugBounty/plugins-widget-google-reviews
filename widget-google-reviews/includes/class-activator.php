@@ -40,6 +40,7 @@ class Activator {
             'grw_rate_us',
             'grw_inlinecss',
             'grw_rucss_safelist',
+            'grw_badge_id',
         );
     }
 

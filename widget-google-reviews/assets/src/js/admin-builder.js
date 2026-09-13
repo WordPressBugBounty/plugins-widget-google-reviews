@@ -1,86 +1,6 @@
 const GRW_AUTOSAVE_KEYUP_TIMEOUT = 1500;
 var GRW_AUTOSAVE_TIMEOUT = null;
 
-const GRW_LANGS = [
-    ['af', 'Afrikaans'],
-    ['sq', 'Albanian'],
-    ['am', 'Amharic'],
-    ['ar', 'Arabic'],
-    ['hy', 'Armenian'],
-    ['az', 'Azerbaijani'],
-    ['eu', 'Basque'],
-    ['be', 'Belarusian'],
-    ['bn', 'Bengali'],
-    ['bs', 'Bosnian'],
-    ['bg', 'Bulgarian'],
-    ['my', 'Burmese'],
-    ['ca', 'Catalan'],
-    ['zh', 'Chinese'],
-    ['zh-HK', 'Chinese (Hong Kong)'],
-    ['zh-CN', 'Chinese (Simplified)'],
-    ['zh-TW', 'Chinese (Traditional)'],
-    ['hr', 'Croatian'],
-    ['cs', 'Czech'],
-    ['da', 'Danish'],
-    ['nl', 'Dutch'],
-    ['en', 'English'],
-    ['et', 'Estonian'],
-    ['fa', 'Farsi'],
-    ['fil', 'Filipino'],
-    ['fi', 'Finnish'],
-    ['fr', 'French'],
-    ['fr-CA', 'French (Canada)'],
-    ['gl', 'Galician'],
-    ['ka', 'Georgian'],
-    ['de', 'German'],
-    ['el', 'Greek'],
-    ['gu', 'Gujarati'],
-    ['iw', 'Hebrew'],
-    ['hi', 'Hindi'],
-    ['hu', 'Hungarian'],
-    ['is', 'Icelandic'],
-    ['id', 'Indonesian'],
-    ['it', 'Italian'],
-    ['ja', 'Japanese'],
-    ['kn', 'Kannada'],
-    ['kk', 'Kazakh'],
-    ['km', 'Khmer'],
-    ['ko', 'Korean'],
-    ['ky', 'Kyrgyz'],
-    ['lo', 'Lao'],
-    ['lv', 'Latvian'],
-    ['lt', 'Lithuanian'],
-    ['mk', 'Macedonian'],
-    ['ms', 'Malay'],
-    ['ml', 'Malayalam'],
-    ['mr', 'Marathi'],
-    ['mn', 'Mongolian'],
-    ['ne', 'Nepali'],
-    ['no', 'Norwegian'],
-    ['pl', 'Polish'],
-    ['pt', 'Portuguese'],
-    ['pa', 'Punjabi'],
-    ['ro', 'Romanian'],
-    ['ru', 'Russian'],
-    ['sr', 'Serbian (Cyrillic)'],
-    ['sr-Latn', 'Serbian (Latin script)'],
-    ['si', 'Sinhalese'],
-    ['sk', 'Slovak'],
-    ['sl', 'Slovenian'],
-    ['es', 'Spanish'],
-    ['sw', 'Swahili'],
-    ['sv', 'Swedish'],
-    ['ta', 'Tamil'],
-    ['te', 'Telugu'],
-    ['th', 'Thai'],
-    ['tr', 'Turkish'],
-    ['uk', 'Ukrainian'],
-    ['ur', 'Urdu'],
-    ['uz', 'Uzbek'],
-    ['vi', 'Vietnamese'],
-    ['zu', 'Zulu']
-];
-
 const GRW_HTML_CONTENT =
 
     '<div class="grw-builder-platforms grw-builder-inside">' +
@@ -450,8 +370,6 @@ const GRW_WIZARD2 =
 
 var GRW_LIGHTBOX;
 
-const GRW_TOAST = rpi.Toast({timeout: 25});
-
 function grw_stylechange2(target) {
     let rp = document.getElementsByClassName('wp-gr')[0];
 
@@ -662,11 +580,7 @@ function grw_builder_init($, data) {
     });
 
     if (data.key) {
-        let lang, opts = '<option value="" selected="selected">Choose language if needed</option>';
-        for (var i = 0; i < GRW_LANGS.length; i++) {
-            opts += '<option value="' + GRW_LANGS[i][0] + '"' + (lang == GRW_LANGS[i][0] ? ' selected="selected"' : '') + '>' + GRW_LANGS[i][1] + '</option>';
-        }
-        window.grw_place_lang.innerHTML = opts;
+        window.grw_place_lang.innerHTML = '<option value="" selected="selected">Choose language if needed</option>' + grw_lang_options();
         window.grw_place_autocomplete.focus();
         window.grw_place_autocomplete.addEventListener('keyup', grw_input_keyup);
     }
@@ -752,10 +666,6 @@ function grw_get_place(pid) {
     });
 }
 
-function grw_get_error(res) {
-    return res?.result?.error_message?.message || res?.result?.error_message || null;
-}
-
 function grw_set_place(pid, place) {
     let img    = window.grw_place.getElementsByTagName('img')[0],
         name   = window.grw_place.getElementsByClassName('wp-google-name')[0],
@@ -775,8 +685,8 @@ function grw_set_place(pid, place) {
     // the select is untouched — a manual pick always wins.
     if (window.grw_place_lang && !window.grw_place_lang.value) {
         const site = GRW_VARS.lang ? GRW_VARS.lang.toLowerCase().split(/[_-]/)[0] : '';
-        const lang = (typeof rpi !== 'undefined' && rpi.Langs && rpi.Langs.langForCountry(place.country)) || site;
-        if (lang && GRW_LANGS.some(l => l[0] === lang)) {
+        const lang = rpi.Langs.langForCountry(place.country) || site;
+        if (lang && rpi.Langs.google.some(l => l.v === lang)) {
             window.grw_place_lang.value = lang;
         }
     }
@@ -1472,14 +1382,14 @@ function grw_capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function grw_lang_options(lang) {
+    return rpi.Langs.google.map(l => '<option value="' + l.v + '"' + (lang == l.v ? ' selected="selected"' : '') + '>' + l.t + '</option>').join('');
+}
+
 function grw_lang(defname, lang) {
-    var html = '';
-    for (var i = 0; i < GRW_LANGS.length; i++) {
-        html += '<option value="' + GRW_LANGS[i][0] + '"' + (lang == GRW_LANGS[i][0] ? ' selected="selected"' : '') + '>' + GRW_LANGS[i][1] + '</option>';
-    }
     return '<select class="grw-connect-lang" name="lang">' +
                '<option value=""' + (lang ? '' : ' selected="selected"') + '>' + defname + '</option>' +
-               html +
+               grw_lang_options(lang) +
            '</select>';
 }
 

@@ -11,44 +11,71 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-msgid "Google Rating"
-msgstr "Google hodnotenie"
+msgid "read more"
+msgstr "celá recenzia"
 
 msgid "More reviews"
 msgstr "Viac recenzií"
 
-msgid "See All Reviews"
-msgstr "Zobraziť všetky recenzie"
+msgid "Top rated"
+msgstr "Top hodnotenie"
 
-msgid "Google User"
-msgstr "Google užívateľ"
+msgid "Latest review %s"
+msgstr "Posledná recenzia %s"
 
-msgid "read more"
-msgstr "celá recenzia"
+msgid "%1 of the last %2 reviews are 5 stars"
+msgstr "%1 z posledných %2 recenzií má 5 hviezdičiek"
 
-msgid "Based on %s reviews"
-msgstr "Na základe %s recenzií"
+msgid "%1 reviews on %2"
+msgstr "%1 recenzií na %2"
 
-msgid "review us on"
-msgstr "ohodnoťte nás na"
+msgid "%1 reviews"
+msgstr "%1 recenzií"
 
-msgid "Response from the owner"
-msgstr "Odpoveď od majiteľa"
+msgid "%1 left %2 review"
+msgstr "%1 hodnotí %2"
+
+msgid "%s place picture"
+msgstr "Fotografia miesta %s"
 
 msgid "%s place profile"
 msgstr "Profil miesta %s"
 
+msgid "review us on"
+msgstr "ohodnoťte nás na"
+
 msgid "review us on Google"
-msgstr "Ohodnoťte nás na Google"
+msgstr "ohodnoťte nás na Google"
+
+msgid "Rating: %s out of 5"
+msgstr "Hodnotenie: %s z 5"
+
+msgid "Based on %s reviews"
+msgstr "Na základe %s recenzií"
+
+msgid "powered by Google"
+msgstr "poskytuje Google"
+
+msgid "See All Reviews"
+msgstr "Zobraziť všetky recenzie"
 
 msgid "All reviews"
 msgstr "Všetky recenzie"
 
+msgid "Google User"
+msgstr "Používateľ Google"
+
+msgid "%s profile picture"
+msgstr "Profilová fotografia používateľa %s"
+
 msgid "%s user profile"
 msgstr "Profil používateľa %s"
 
+msgid "Photo from customer review"
+msgstr "Fotografia z recenzie zákazníka"
+
+msgid "Response from the owner"
+msgstr "Odpoveď od majiteľa"
+
 msgid "opens in a new window"
 msgstr "otvorí sa v novom okne"
-
-msgid "Rating: %s out of 5"
-msgstr "Hodnotenie: %s z 5"

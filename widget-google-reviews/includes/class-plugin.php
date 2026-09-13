@@ -48,7 +48,7 @@ final class Plugin {
     public function admin_init() {
         if (get_option('grw_do_activation', false)) {
             delete_option('grw_do_activation');
-            wp_safe_redirect(admin_url('admin.php?page=grw'));
+            wp_safe_redirect(admin_url('admin.php?page=' . (get_option('grw_feed_ids') ? 'grw' : 'grw-badge')));
         }
     }
 
@@ -98,6 +98,12 @@ final class Plugin {
         $feed_block = new Feed_Block($feed_deserializer, $core, $view, $assets);
         $feed_block->register();
 
+        $badge_global = new Badge_Global($feed_deserializer, $core, $view, $assets);
+        $badge_global->register();
+
+        $reviews_ajax = new Reviews_Ajax($feed_deserializer, $core, $view);
+        $reviews_ajax->register();
+
         $google_api_old = new Google_Api_Old($google_dao, $connect_helper);
         $google_api_new = new Google_Api_New($google_dao, $connect_helper);
         $google_utils = new Google_Utils($google_api_old, $google_api_new, $google_dao);
@@ -130,6 +136,9 @@ final class Plugin {
             $plugin_overview->register();
 
             $plugin_places->register($builder_page);
+
+            $plugin_badge = new Plugin_Badge($google_dao, $core, $plugin_places, $feed_serializer, $feed_deserializer);
+            $plugin_badge->register();
 
             $settings_save = new Settings_Save($activator, $reviews_cron);
             $settings_save->register();

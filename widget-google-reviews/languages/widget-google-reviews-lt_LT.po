@@ -11,44 +11,71 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-msgid "Google Rating"
-msgstr "Google įvertinimas"
-
-msgid "See All Reviews"
-msgstr "Žiūrėti visus atsiliepimus"
-
-msgid "Google User"
-msgstr "Google vartotojas"
-
 msgid "read more"
-msgstr "daugiau"
+msgstr "skaityti daugiau"
 
 msgid "More reviews"
 msgstr "Daugiau atsiliepimų"
 
-msgid "Based on %s reviews"
-msgstr "Remiantis %s atsiliepimais"
+msgid "Top rated"
+msgstr "Puikiai įvertinta"
+
+msgid "Latest review %s"
+msgstr "Naujausias atsiliepimas %s"
+
+msgid "%1 of the last %2 reviews are 5 stars"
+msgstr "%1 iš paskutinių %2 atsiliepimų – 5 žvaigždutės"
+
+msgid "%1 reviews on %2"
+msgstr "%2 atsiliepimų: %1"
+
+msgid "%1 reviews"
+msgstr "Atsiliepimų: %1"
+
+msgid "%1 left %2 review"
+msgstr "%1 paliko %2 atsiliepimą"
+
+msgid "%s place picture"
+msgstr "Vietos „%s“ nuotrauka"
+
+msgid "%s place profile"
+msgstr "Vietos „%s“ profilis"
 
 msgid "review us on"
 msgstr "įvertinkite mus"
 
-msgid "Response from the owner"
-msgstr "Savininko atsakymas"
-
-msgid "%s place profile"
-msgstr "%s vietos profilis"
-
 msgid "review us on Google"
 msgstr "įvertinkite mus „Google“"
+
+msgid "Rating: %s out of 5"
+msgstr "Įvertinimas: %s iš 5"
+
+msgid "Based on %s reviews"
+msgstr "Atsiliepimų: %s"
+
+msgid "powered by Google"
+msgstr "teikia „Google“"
+
+msgid "See All Reviews"
+msgstr "Žiūrėti visus atsiliepimus"
 
 msgid "All reviews"
 msgstr "Visi atsiliepimai"
 
+msgid "Google User"
+msgstr "Google naudotojas"
+
+msgid "%s profile picture"
+msgstr "Naudotojo %s profilio nuotrauka"
+
 msgid "%s user profile"
-msgstr "%s vartotojo profilis"
+msgstr "Naudotojo %s profilis"
+
+msgid "Photo from customer review"
+msgstr "Nuotrauka iš kliento atsiliepimo"
+
+msgid "Response from the owner"
+msgstr "Savininko atsakymas"
 
 msgid "opens in a new window"
 msgstr "atsidaro naujame lange"
-
-msgid "Rating: %s out of 5"
-msgstr "Įvertinimas: %s iš 5"

@@ -11,41 +11,71 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-msgid "Google Rating"
-msgstr "تقييم جوجل"
-
-msgid "See All Reviews"
-msgstr "شاهد جميع التقييمات"
-
-msgid "Google User"
-msgstr "مستخدم جوجل"
-
 msgid "read more"
 msgstr "اقرأ المزيد"
 
 msgid "More reviews"
 msgstr "المزيد من المراجعات"
 
-msgid "Based on %s reviews"
-msgstr "استناداً إلى %s تقييماً"
+msgid "Top rated"
+msgstr "الأعلى تقييمًا"
 
-msgid "review us on"
-msgstr "قم بتقييمنا على"
+msgid "Latest review %s"
+msgstr "آخر مراجعة %s"
+
+msgid "%1 of the last %2 reviews are 5 stars"
+msgstr "%1 من آخر %2 مراجعات بتقييم 5 نجوم"
+
+msgid "%1 reviews on %2"
+msgstr "%1 مراجعة على %2"
+
+msgid "%1 reviews"
+msgstr "%1 مراجعة"
+
+msgid "%1 left %2 review"
+msgstr "مراجعة %2 من %1"
+
+msgid "%s place picture"
+msgstr "صورة %s"
 
 msgid "%s place profile"
-msgstr "ملف %s على Google"
+msgstr "الملف التجاري لـ %s"
+
+msgid "review us on"
+msgstr "قيّمنا على"
 
 msgid "review us on Google"
-msgstr "راجعنا على Google"
+msgstr "قيّمنا على Google"
+
+msgid "Rating: %s out of 5"
+msgstr "التقييم: %s من 5"
+
+msgid "Based on %s reviews"
+msgstr "استنادًا إلى %s مراجعة"
+
+msgid "powered by Google"
+msgstr "مدعوم من Google"
+
+msgid "See All Reviews"
+msgstr "عرض جميع المراجعات"
 
 msgid "All reviews"
 msgstr "جميع المراجعات"
 
+msgid "Google User"
+msgstr "مستخدم Google"
+
+msgid "%s profile picture"
+msgstr "الصورة الشخصية لـ %s"
+
 msgid "%s user profile"
-msgstr "ملف المستخدم %s"
+msgstr "الملف الشخصي لـ %s"
+
+msgid "Photo from customer review"
+msgstr "صورة من مراجعة أحد العملاء"
+
+msgid "Response from the owner"
+msgstr "رد من المالك"
 
 msgid "opens in a new window"
 msgstr "يفتح في نافذة جديدة"
-
-msgid "Rating: %s out of 5"
-msgstr "التقييم: %s من 5"

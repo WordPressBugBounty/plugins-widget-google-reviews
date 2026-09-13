@@ -11,41 +11,71 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-msgid "Google Rating"
-msgstr "דירוג גוגל"
-
-msgid "See All Reviews"
-msgstr "לקריאת כל הביקורות"
-
-msgid "Google User"
-msgstr "משתמש גוגל"
-
 msgid "read more"
 msgstr "קראו עוד"
 
 msgid "More reviews"
-msgstr "הביקורות הבאות"
+msgstr "עוד ביקורות"
 
-msgid "review us on Google"
-msgstr "דרג אותנו בגוגל"
+msgid "Top rated"
+msgstr "דירוג גבוה"
 
-msgid "Based on %s reviews"
-msgstr "מבוסס על %s ביקורות"
+msgid "Latest review %s"
+msgstr "ביקורת אחרונה %s"
 
-msgid "Response from the owner"
-msgstr "תשובה מהבעלים"
+msgid "%1 of the last %2 reviews are 5 stars"
+msgstr "%1 מתוך %2 הביקורות האחרונות קיבלו 5 כוכבים"
+
+msgid "%1 reviews on %2"
+msgstr "%1 ביקורות ב-%2"
+
+msgid "%1 reviews"
+msgstr "%1 ביקורות"
+
+msgid "%1 left %2 review"
+msgstr "ביקורת %2 מאת %1"
+
+msgid "%s place picture"
+msgstr "תמונה של %s"
 
 msgid "%s place profile"
 msgstr "פרופיל המקום של %s"
 
+msgid "review us on"
+msgstr "דרגו אותנו ב-"
+
+msgid "review us on Google"
+msgstr "דרגו אותנו ב-Google"
+
+msgid "Rating: %s out of 5"
+msgstr "דירוג: %s מתוך 5"
+
+msgid "Based on %s reviews"
+msgstr "מבוסס על %s ביקורות"
+
+msgid "powered by Google"
+msgstr "מופעל על ידי Google"
+
+msgid "See All Reviews"
+msgstr "לקריאת כל הביקורות"
+
 msgid "All reviews"
 msgstr "כל הביקורות"
+
+msgid "Google User"
+msgstr "משתמש Google"
+
+msgid "%s profile picture"
+msgstr "תמונת הפרופיל של %s"
 
 msgid "%s user profile"
 msgstr "פרופיל המשתמש של %s"
 
+msgid "Photo from customer review"
+msgstr "תמונה מביקורת לקוח"
+
+msgid "Response from the owner"
+msgstr "תגובה מהבעלים"
+
 msgid "opens in a new window"
 msgstr "נפתח בחלון חדש"
-
-msgid "Rating: %s out of 5"
-msgstr "דירוג: %s מתוך 5"

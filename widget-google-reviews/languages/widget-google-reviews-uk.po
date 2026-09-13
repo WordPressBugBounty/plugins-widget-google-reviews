@@ -11,41 +11,71 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-msgid "Google Rating"
-msgstr "Google Рейтинг"
-
-msgid "More reviews"
-msgstr "Наступні відгуки"
-
-msgid "See All Reviews"
-msgstr "Переглянути всі відгуки"
-
-msgid "Google User"
-msgstr "Google користувач"
-
 msgid "read more"
 msgstr "читати далі"
 
-msgid "Based on %s reviews"
-msgstr "На основі %s відгуків"
+msgid "More reviews"
+msgstr "Більше відгуків"
 
-msgid "Response from the owner"
-msgstr "Відповідь від власника"
+msgid "Top rated"
+msgstr "Високий рейтинг"
+
+msgid "Latest review %s"
+msgstr "Останній відгук %s"
+
+msgid "%1 of the last %2 reviews are 5 stars"
+msgstr "%1 з останніх %2 відгуків — на 5 зірок"
+
+msgid "%1 reviews on %2"
+msgstr "Відгуків у %2: %1"
+
+msgid "%1 reviews"
+msgstr "Відгуків: %1"
+
+msgid "%1 left %2 review"
+msgstr "Відгук на %2 від %1"
+
+msgid "%s place picture"
+msgstr "Фото місця %s"
 
 msgid "%s place profile"
 msgstr "Профіль місця %s"
 
+msgid "review us on"
+msgstr "Залиште відгук у"
+
 msgid "review us on Google"
 msgstr "Залиште відгук у Google"
 
+msgid "Rating: %s out of 5"
+msgstr "Оцінка: %s з 5"
+
+msgid "Based on %s reviews"
+msgstr "Відгуків: %s"
+
+msgid "powered by Google"
+msgstr "на базі Google"
+
+msgid "See All Reviews"
+msgstr "Переглянути всі відгуки"
+
 msgid "All reviews"
-msgstr "Всі відгуки"
+msgstr "Усі відгуки"
+
+msgid "Google User"
+msgstr "Користувач Google"
+
+msgid "%s profile picture"
+msgstr "Фото профілю %s"
 
 msgid "%s user profile"
 msgstr "Профіль користувача %s"
 
-msgid "opens in a new window"
-msgstr "відкривається у новому вікні"
+msgid "Photo from customer review"
+msgstr "Фото з відгуку клієнта"
 
-msgid "Rating: %s out of 5"
-msgstr "Оцінка: %s з 5"
+msgid "Response from the owner"
+msgstr "Відповідь власника"
+
+msgid "opens in a new window"
+msgstr "відкривається в новому вікні"

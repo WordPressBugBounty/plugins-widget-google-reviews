@@ -48,7 +48,6 @@ class Plugin_Places {
         return $conn;
     }
 
-    // A widget saved after its place was deleted drops that connection instead of keeping a dead one.
     public function drop_missing_places($data, $postarr) {
         if ($data['post_type'] !== Post_Types::FEED_POST_TYPE || empty($data['post_content'])) {
             return $data;
@@ -111,7 +110,7 @@ class Plugin_Places {
                     $rating = $place->rating > 0 ? number_format((float) $place->rating, 1, '.', '') : '';
                     $create_url = add_query_arg('grw_place_id', rawurlencode($place->place_id), $builder_url);
                     ?>
-                    <tr data-id="<?php echo esc_attr($place->id); ?>" data-pid="<?php echo esc_attr($place->place_id); ?>" data-url="<?php echo esc_attr((string) $place->map_url); ?>" data-conns="<?php echo esc_attr(wp_json_encode($this->fetch_pairs($place))); ?>">
+                    <tr data-id="<?php echo esc_attr($place->id); ?>" data-pid="<?php echo esc_attr($place->place_id); ?>" data-url="<?php echo esc_attr((string) $place->map_url); ?>" data-conns="<?php echo esc_attr(wp_json_encode($this->fetch_pairs($place))); ?>" data-name="<?php echo esc_attr($place->name); ?>" data-reviews="<?php echo esc_attr(number_format_i18n((int) $place->db_review_count)); ?>">
                         <td class="column-primary grw-col-place" data-colname="Place">
                             <div class="grw-place">
                                 <img src="<?php echo esc_url($photo); ?>" alt="" width="40" height="40" loading="lazy" onerror="if(this.src!='<?php echo esc_url(GRW_GOOGLE_BIZ); ?>')this.src='<?php echo esc_url(GRW_GOOGLE_BIZ); ?>';">
@@ -119,11 +118,6 @@ class Plugin_Places {
                                     <strong class="grw-place-name"><?php echo esc_html($place->name); ?></strong>
                                     <span class="grw-place-address"><?php echo esc_html((string) $place->address); ?></span>
                                 </div>
-                            </div>
-                            <div class="grw-place-confirm" hidden>
-                                Delete <b><?php echo esc_html($place->name); ?></b> with its <?php echo number_format_i18n((int) $place->db_review_count); ?> stored reviews?
-                                <a href="#" class="button button-small grw-place-delete-yes">Delete</a>
-                                <a href="#" class="button button-small grw-place-delete-no">Cancel</a>
                             </div>
                             <button type="button" class="toggle-row"><span class="screen-reader-text">Show more details</span></button>
                         </td>
