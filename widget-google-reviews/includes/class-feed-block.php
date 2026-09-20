@@ -62,11 +62,17 @@ class Feed_Block {
     }
 
     public function render($atts) {
-        if (isset($atts['id'])) {
+        if (get_option('grw_active') !== '0' && !empty($atts['id'])) {
 
             $feed = $this->feed_deserializer->get_feed($atts['id']);
             if (!$feed) {
                 return null;
+            }
+
+            $grw_demand_assets = get_option('grw_demand_assets');
+            if ($grw_demand_assets || $grw_demand_assets == 'true') {
+                $this->assets->enqueue_public_styles();
+                $this->assets->enqueue_public_scripts();
             }
 
             $data = $this->core->get_reviews($feed);

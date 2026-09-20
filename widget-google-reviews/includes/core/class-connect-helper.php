@@ -13,13 +13,13 @@ class Connect_Helper {
 
         $code = wp_remote_retrieve_response_code($res);
         if ($code !== 200) {
-            $this->log_error('remote_get http ' . $code . ' for ' . $url);
+            $this->log_error('remote_get http ' . $code . ' for ' . strtok($url, '?'));
             return $url;
         }
 
         $bits = wp_remote_retrieve_body($res);
         if (empty($bits)) {
-            $this->log_error('remote_get empty body for ' . $url);
+            $this->log_error('remote_get empty body for ' . strtok($url, '?'));
             return $url;
         }
 

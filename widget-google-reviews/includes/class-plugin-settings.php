@@ -43,7 +43,7 @@ class Plugin_Settings {
         $grw_rucss_safelist  = get_option('grw_rucss_safelist');
         $grw_inlinecss       = get_option('grw_inlinecss');
         $grw_freq_revs_upd   = get_option('grw_freq_revs_upd');
-        $gpa_old             = get_option('grw_gpa_old');
+        $grw_google_api_error = get_option('grw_google_api_error');
         $grw_google_api_key  = get_option('grw_google_api_key');
         $grw_activation_time = get_option('grw_activation_time');
         ?>
@@ -151,23 +151,13 @@ class Plugin_Settings {
                         </div>
                         <div class="grw-field">
                             <div class="grw-field-label">
-                                <label>Use old Places API</label>
-                            </div>
-                            <div class="wp-review-field-option">
-                                <label>
-                                    <input type="hidden" name="grw_gpa_old" value="false">
-                                    <input type="checkbox" id="grw_gpa_old" name="grw_gpa_old" value="true" <?php checked('true', $gpa_old); ?>>
-                                    It can display more reviews because it sorts them from newest to oldest.<br>
-                                    However, not all API keys support this (you can check it in Google Cloud Console).
-                                </label>
-                            </div>
-                        </div>
-                        <div class="grw-field">
-                            <div class="grw-field-label">
                                 <label>Google Places API key</label>
                             </div>
                             <div class="wp-review-field-option">
                                 <input type="text" id="grw_google_api_key" name="grw_google_api_key" class="regular-text" value="<?php echo esc_attr($grw_google_api_key); ?>">
+                                <?php if ($grw_google_api_error) { ?>
+                                <div class="grw-warn">Google rejected the last request with this key:<br><?php echo nl2br(esc_html($grw_google_api_error)); ?></div>
+                                <?php } ?>
                                 <?php if (!$grw_google_api_key && time() - $grw_activation_time > 60 * 60 * 48) { ?>
                                 <div class="grw-warn">Your Google API key is not set for this reason, reviews are not automatically updated daily.<br>Please create your own Google API key and save here.</div><?php
                                 } elseif ($grw_google_api_key) {

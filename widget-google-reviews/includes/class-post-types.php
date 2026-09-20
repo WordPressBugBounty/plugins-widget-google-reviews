@@ -11,6 +11,11 @@ class Post_Types {
 
         add_action('trash_' . self::FEED_POST_TYPE, array($this, 'trash'), 10, 2);
         add_action('publish_' . self::FEED_POST_TYPE, array($this, 'publish'), 10, 2);
+        add_filter('wp_untrash_post_status', array($this, 'untrash_status'), 10, 3);
+    }
+
+    public function untrash_status($new_status, $post_id, $previous_status) {
+        return get_post_type($post_id) === self::FEED_POST_TYPE ? $previous_status : $new_status;
     }
 
     public function register_post_types() {

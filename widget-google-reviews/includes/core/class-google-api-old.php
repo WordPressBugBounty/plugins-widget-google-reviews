@@ -15,7 +15,10 @@ class Google_Api_Old {
     public function connect($pid, $lang, $key, $local_img = false) {
         // First call with default sorting method
         $url = $this->url($pid, $lang, $key);
-        $this->call($url, $key, $local_img);
+        $result = $this->call($url, $key, $local_img);
+        if ($result['status'] == 'failed') {
+            return $result;
+        }
 
         // Second call with default 'newest' sorting method
         $result = $this->refresh($pid, $lang, $key, $local_img);
@@ -99,6 +102,7 @@ class Google_Api_Old {
             } else {
                 $result = array('error_message' => 'The place you are trying to connect to does not have a rating yet.');
             }
+            $result['denied'] = isset($json->status) && $json->status == 'REQUEST_DENIED';
             $status = 'failed';
         }
         return compact('status', 'result');
@@ -126,7 +130,8 @@ class Google_Api_Old {
                 ),
                 'https://maps.googleapis.com/maps/api/place/photo'
             );
-            return $this->helper->upload_image($url, $json->place_id);
+            $res = $this->helper->upload_image($url, $json->place_id);
+            return $res === $url ? null : $res;
         }
         return null;
     }

@@ -679,6 +679,10 @@ function grw_safeUrl(url) {
     return '#';
 }
 
+function grw_esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+}
+
 function grw_s2dmy(s) {
     let d = (s / (60 * 60 * 24)).toFixed(0);
     if (d > 30) {

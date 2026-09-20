@@ -29,8 +29,6 @@ class Reviews_Cron {
             $start_at = rand(0, 60 * 60 * 12);
             $freq = get_option('grw_freq_revs_upd', 'daily');
             wp_schedule_event(time(), $freq, 'grw_revupd_schedule');
-        } elseif ($next_cron_run) {
-            update_option('grw_revupd_cron_timeout', $next_cron_run - time());
         }
     }
 
@@ -55,6 +53,7 @@ class Reviews_Cron {
         $start_time       = floor(microtime(true) * 1000);
         $end_time         = 0;
         $feed_updated_ids = array();
+        $denied           = '';
 
         $feed_conn_cache  = array();
 
@@ -85,14 +84,20 @@ class Reviews_Cron {
 
                                 // Create pair 'place_id:lang' to update it
                                 $arg_local_img = isset($conn->local_img) ? $conn->local_img : 'false';
+                                $arg_lang = isset($conn->lang) ? $conn->lang : '';
 
-                                $args = array($conn->id, $conn->lang, $arg_local_img);
-                                $args_key = implode(":", $args);
+                                $args = array($conn->id, $arg_lang, $arg_local_img);
+                                $args_key = $conn->id . ':' . $arg_lang;
 
                                 // If not met, update
                                 if (!in_array($args_key, $feed_conn_cache)) {
-                                    $this->google_utils->refresh($args);
+                                    $res = $this->google_utils->refresh($args);
                                     array_push($feed_conn_cache, $args_key);
+
+                                    if (!empty($res['result']['denied'])) {
+                                        $denied = get_option('grw_google_api_error');
+                                        break 2;
+                                    }
                                 }
                             }
                         }
@@ -121,6 +126,10 @@ class Reviews_Cron {
 
         // Log information
         $now = floor(microtime(true) * 1000);
+        if ($denied) {
+            $last_error = get_option('grw_last_error', '');
+            update_option('grw_last_error', ($last_error ? $last_error : $now . ': ') . 'Reviews cron stopped, Google ' . str_replace("\n", ', ', $denied) . '; ');
+        }
         update_option('grw_revupd_cron_log', 'Executed at ' . $now . ' in ' . $end_time . 'ms for feeds: ' . implode(", ", $feed_updated_ids));
     }
 

@@ -1,9 +1,9 @@
 === Rich Showcase for Google Reviews ===
 Contributors: widgetpack
-Tags: google reviews, google badge, review slider, social proof, reviews
+Tags: google reviews, reviews, review slider, review widget, social proof
 Requires PHP: 7.2
 Tested up to: 7.1
-Stable tag: 7.1
+Stable tag: 7.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,7 +37,7 @@ Want to see how it works? Watch the short demo below to see how quickly you can 
 
 * Display reviews using shortcode, widget, block, or page builders (Elementor, WPBakery, Divi, Beaver Builder, SiteOrigin)
 * No limits on created widgets or shortcodes
-* Optimized for performance: one CSS and one JS file, about 14 KB compressed in total, lazy-loaded images
+* Optimized for performance: one CSS and one JS file, about 24 KB compressed in total, lazy-loaded images
 
 ### Google reviews, updates and privacy
 
@@ -89,7 +89,7 @@ Open Google Reviews / Badges, find your place, choose a preset and click "Displa
 Yes. Connect several places to one badge and it shows their combined rating, weighted by the number of reviews, and the total review count.
 
 = Does the plugin slow down my site? =
-No. Reviews are served from your own database, and the plugin loads one CSS and one JS file, about 14 KB compressed in total, with lazy-loaded images.
+No. Reviews are served from your own database, and the plugin loads one CSS and one JS file, about 24 KB compressed in total, with lazy-loaded images.
 
 == Screenshots ==
 
@@ -122,6 +122,23 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 7.1.1 =
+* Improved: with your own Google API key the plugin picks the right Places API automatically; the "Use old Places API" option is removed.
+* Improved: Google API key errors are shown under the key in Settings / Google.
+* Improved: slider dots support keyboard navigation and pass the PageSpeed "Touch targets" audit.
+* Fixed: database writes on every page view; the badge is now served from the cache.
+* Fixed: a plugin update turned the reviews auto-update back on.
+* Fixed: the block did not load assets with "Load assets on demand" enabled.
+* Fixed: badge and widgets did not start when scripts are delayed by optimization plugins.
+* Fixed: badge popup: review dates, scroll position, close button on phones.
+* Fixed: floating badge width on phones.
+* Fixed: badge top bar covered the WordPress toolbar.
+* Fixed: Quick Edit link opened the post editor instead of the builder.
+* Fixed: a widget restored from the trash stayed hidden.
+* Fixed: place names with quotes were cut off in the builder.
+* Fixed: Save button stayed disabled after a connection error.
+* Fixed: duplicate place requests during the scheduled update.
 
 = 7.1 =
 * New: Badge page. A floating badge with your Google rating, review count and a live line that rotates sentences from your reviews and facts like the date of the latest review.

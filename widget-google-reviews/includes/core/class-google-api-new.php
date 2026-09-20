@@ -69,6 +69,10 @@ class Google_Api_New {
             } else {
                 $result = array('error_message' => 'The place you are trying to connect to does not have a rating yet.');
             }
+            $error_status = isset($json->error->status) ? $json->error->status : '';
+            $error_reason = isset($json->error->details[0]->reason) ? $json->error->details[0]->reason : '';
+            // A wrong key and a wrong place ID both answer INVALID_ARGUMENT, only the key must stop the cron
+            $result['denied'] = $error_reason == 'API_KEY_INVALID' || in_array($error_status, array('PERMISSION_DENIED', 'UNAUTHENTICATED', 'RESOURCE_EXHAUSTED'), true);
             $status = 'failed';
         }
 
@@ -93,7 +97,8 @@ class Google_Api_New {
                 ),
                 'https://places.googleapis.com/v1/' . $json->photos[0]->name . '/media'
             );
-            return $this->helper->upload_image($url, $json->id);
+            $res = $this->helper->upload_image($url, $json->id);
+            return $res === $url ? null : $res;
         }
         return null;
     }

@@ -498,7 +498,7 @@ class View {
                 </div>
                 <span class="rpi-stars" style="--rating:<?php echo $review->rating; ?>"></span>
                 <div class="rpi-flx rpi-col4">
-                    <div class="wp-google-feedback grw-scroll" <?php if (!empty($options->slider_text_height)) {?> style="height:<?php echo $options->slider_text_height; ?>!important"<?php } ?>>
+                    <div class="wp-google-feedback grw-scroll" <?php if (!empty($options->slider_text_height)) {?> style="height:<?php echo esc_attr($options->slider_text_height); ?>!important"<?php } ?>>
                         <?php if (!empty($review->text)) { ?>
                         <span class="wp-google-text"><?php echo wp_kses_post($review->text); ?></span>
                         <?php } ?>

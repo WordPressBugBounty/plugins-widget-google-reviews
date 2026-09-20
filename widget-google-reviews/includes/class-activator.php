@@ -20,6 +20,7 @@ class Activator {
             'grw_freq_revs_upd',
             'grw_google_api_key',
             'grw_gpa_old',
+            'grw_google_api_error',
             'grw_language',
             'grw_activation_time',
             'grw_auth_code',
@@ -98,7 +99,7 @@ class Activator {
         } elseif ($last_active_version !== $current_version) {
             $this->exist_install($last_active_version);
             update_option('grw_version', $current_version);
-            update_option('grw_revupd_cron', '1');
+            add_option('grw_revupd_cron', '1');
         }
     }
 

@@ -5,11 +5,11 @@ namespace WP_Rplg_Google_Reviews\Includes\Core;
 class Google_Connect {
 
     private $api_old;
-    private $api_new;
+    private $utils;
 
-    public function __construct(Google_Api_Old $api_old, Google_Api_New $api_new) {
+    public function __construct(Google_Api_Old $api_old, Google_Utils $utils) {
         $this->api_old = $api_old;
-        $this->api_new = $api_new;
+        $this->utils = $utils;
 
         add_action('wp_ajax_grw_hide_review', array($this, 'hide_review'));
         add_action('wp_ajax_grw_connect_google', array($this, 'connect_google'));
@@ -80,13 +80,7 @@ class Google_Connect {
                 if ($key && strlen($key) > 0) {
 
                     $pid = isset($_POST['id']) ? sanitize_text_field(wp_unslash($_POST['id'])) : '';
-                    $gpa_old = get_option('grw_gpa_old');
-
-                    if ($gpa_old === 'true') {
-                        $response = $this->api_old->connect($pid, $lang, $key, $local_img);
-                    } else {
-                        $response = $this->api_new->connect($pid, $lang, $key, $local_img);
-                    }
+                    $response = $this->utils->call('connect', $pid, $lang, $key, $local_img);
 
                 } else {
 
@@ -125,7 +119,9 @@ class Google_Connect {
     }
 
     private function clear_feed_cache($feed_id) {
-        $ids = $feed_id !== null ? array($feed_id) : explode(',', (string) get_option('grw_feed_ids'));
+        // The place can stand in other feeds too, the site-wide badge among them
+        $ids = explode(',', (string) get_option('grw_feed_ids'));
+        array_push($ids, $feed_id);
         foreach (array_filter($ids) as $id) {
             delete_transient('grw_feed_' . GRW_VERSION . '_' . $id . '_reviews', false);
         }
@@ -179,13 +175,7 @@ class Google_Connect {
                 if ($key && strlen($key) > 0) {
 
                     $pid = isset($_POST['pid']) ? sanitize_text_field(wp_unslash($_POST['pid'])) : '';
-                    $gpa_old = get_option('grw_gpa_old');
-
-                    if ($gpa_old === 'true') {
-                        $response = $this->api_old->place($pid, $lang, $key);
-                    } else {
-                        $response = $this->api_new->place($pid, $lang, $key);
-                    }
+                    $response = $this->utils->call('place', $pid, $lang, $key);
 
                 } else {
 
@@ -218,23 +208,6 @@ class Google_Connect {
             header('Content-type: text/json');
             echo json_encode($response);
             wp_die();
-        }
-    }
-
-    public function refresh($args) {
-        $pid = $args[0];
-        $lang = $args[1];
-        $local_img = isset($args[2]) ? $args[2] : 'false';
-
-        $key = get_option('grw_google_api_key');
-        if ($key && strlen($key) > 0) {
-
-            $gpa_old = get_option('grw_gpa_old');
-            if ($gpa_old === 'true') {
-                $response = $this->api_old->refresh($pid, $lang, $key, $local_img);
-            } else {
-                $response = $this->api_new->connect($pid, $lang, $key, $local_img);
-            }
         }
     }
 

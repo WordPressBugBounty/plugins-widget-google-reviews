@@ -56,8 +56,8 @@ Plugin Version: <?php echo esc_html(GRW_VERSION); ?>
 Settings:
 <?php foreach ($this->activator->options() as $opt) {
     $val = get_option($opt);
-    if ($opt == 'grw_google_api_key' && $val && isset($rand_key)) {
-        echo esc_html($opt . ': encrypted(' . $this->encrypt($val, $rand_key) . ")\n");
+    if ($opt == 'grw_google_api_key' && $val) {
+        echo esc_html($opt . ': ' . (isset($rand_key) ? 'encrypted(' . $this->encrypt($val, $rand_key) . ')' : 'saved') . "\n");
     } else {
         if ($opt == 'grw_auth_code') {
             $val = md5($val);

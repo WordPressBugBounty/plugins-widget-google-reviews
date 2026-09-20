@@ -51,7 +51,6 @@ class Settings_Save {
                 'grw_rucss_safelist',
                 'grw_inlinecss',
                 'grw_freq_revs_upd',
-                'grw_gpa_old',
                 'grw_google_api_key'
             );
             foreach ($fields as $field) {
@@ -64,18 +63,21 @@ class Settings_Save {
                     if ($field == 'grw_google_api_key' && strlen($value) > 0) {
                         update_option('grw_revupd_cron', '1');
 
+                        delete_option('grw_google_api_error');
+
                         // Test Google API key
-                        $gpa_old = get_option('grw_gpa_old');
-                        if ($gpa_old === 'true') {
-                            $res = wp_remote_get(GRW_GOOGLE_PLACE_API . 'details/json?placeid=ChIJ3TH9CwFZwokRIvNO1SP0WLg&key=' . $value);
-                        } else {
+                        $res = wp_remote_get(GRW_GOOGLE_PLACE_API . 'details/json?placeid=ChIJ3TH9CwFZwokRIvNO1SP0WLg&key=' . $value);
+                        $body_json = json_decode(wp_remote_retrieve_body($res));
+                        $legacy_error = '';
+                        if (isset($body_json->status) && $body_json->status == 'REQUEST_DENIED') {
+                            $legacy_error = isset($body_json->error_message) ? $body_json->error_message : $body_json->status;
                             $res = wp_remote_get(GRW_GOOGLE_PLACE_API_NEW . 'ChIJ3TH9CwFZwokRIvNO1SP0WLg?fields=rating&key=' . $value);
+                            $body_json = json_decode(wp_remote_retrieve_body($res));
                         }
-                        $body = wp_remote_retrieve_body($res);
-                        $body_json = json_decode($body);
                         if ($body_json) {
                             $error = isset($body_json->error) ? $body_json->error->message : (isset($body_json->error_message) ? $body_json->error_message : '');
                             if (!empty($error)) {
+                                update_option('grw_google_api_error', $legacy_error ? 'Places API: ' . $legacy_error . "\nPlaces API (New): " . $error : $error);
                                 update_option('grw_notice_msg', $error);
                                 update_option('grw_notice_type', 'error');
                                 $notice_code = 'custom_msg';

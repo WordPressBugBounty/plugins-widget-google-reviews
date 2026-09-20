@@ -872,6 +872,8 @@ function grw_connect_ajax($, el, params, authcode, attempt, cb) {
         } else {
             const err = grw_get_error(res);
             GRW_TOAST.show({msg: err, type: 'error'});
+            window.grw_save.innerText = 'Save & Update';
+            window.grw_save.disabled = false;
             /*if (params.event === 'refresh') {
                 GRW_TOAST.show({msg: err, type: 'error'});
             } else {
@@ -1086,13 +1088,13 @@ function grw_connection_render(conn, checked) {
             (conn.address ? '<input type="hidden" name="address" value="' + conn.address + '" readonly />' : '') +
             (conn.access_token ? '<input type="hidden" name="access_token" value="' + conn.access_token + '" readonly />' : '') +
             '<div class="grw-builder-option">' +
-                '<img src="' + conn.photo + '" alt="' + conn.name + '" class="grw-connect-photo">' +
+                '<img src="' + conn.photo + '" alt="' + grw_esc(conn.name) + '" class="grw-connect-photo">' +
                 '<a href="#" class="grw-connect-photo-change">Change</a>' +
                 '<a href="#" class="grw-connect-photo-default">Default</a>' +
                 '<input type="hidden" name="photo" class="grw-connect-photo-hidden" value="' + conn.photo + '" tabindex="2"/>' +
             '</div>' +
             '<div class="grw-builder-option">' +
-                '<input type="text" name="name" value="' + conn.name + '" />' +
+                '<input type="text" name="name" value="' + grw_esc(conn.name) + '" />' +
             '</div>' +
             (conn.website != undefined ?
             '<div class="grw-builder-option">' +
@@ -1120,7 +1122,7 @@ function grw_connection_render(conn, checked) {
                 '</label>' +
                 /*'<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
                 '<div class="grw-quest-help">' +
-                    (conn.platform == 'google' ? 'The plugin uses the Google Places API to get your reviews. <b>The API only returns the 5 most helpful reviews (it\'s a limitation of Google, not the plugin)</b>. This option calls the Places API once in 24 hours (to keep the plugin\'s free and avoid a Google Billing) to check for a new reviews and if there are, adds to the plugin. Thus slowly building up a database of reviews.<br><br>Also if you see the new reviews on Google map, but after some time it\'s not added to the plugin, it means that Google does not include these reviews to the API and the plugin can\'t get this.<br><br>If you need to show <b>all reviews</b>, please use <a href="https://richplugins.com/business-reviews-bundle-wordpress-plugin?promo=GRGROW23" target="_blank">Business plugin</a> which uses a Google My Business API without API key and billing.' : '') +
+                    (conn.platform == 'google' ? 'The plugin uses the Google Places API to get your reviews. <b>The API only returns the 5 most helpful reviews (it\'s a limitation of Google, not the plugin)</b>. This option calls the Places API once in 24 hours (to keep the plugin\'s free and avoid a Google Billing) to check for a new reviews and if there are, adds to the plugin. Thus slowly building up a database of reviews.<br><br>Also if you see the new reviews on Google map, but after some time it\'s not added to the plugin, it means that Google does not include these reviews to the API and the plugin can\'t get this.<br><br>If you need to show <b>all reviews</b>, please use <a href="https://richplugins.com/business-reviews-bundle-wordpress-plugin?code=SUMR26#pricing" target="_blank">Business plugin</a> which uses a Google My Business API without API key and billing.' : '') +
                     (conn.platform == 'yelp' ? 'The plugin uses the Yelp API to get your reviews. <b>The API only returns the 3 most helpful reviews without sorting possibility.</b> When Yelp changes the 3 most helpful the plugin will automatically add the new one to your database. Thus slowly building up a database of reviews.' : '') +
                 '</div>' +*/
             '</div>'

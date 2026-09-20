@@ -30,16 +30,11 @@ class Admin_Feed_Columns {
     }
 
     public function change_edit_post_link($link, $id, $context) {
-        if (function_exists('get_current_screen')) {
-            $screen = get_current_screen();
-            if (empty($screen) || $screen->post_type !== Post_Types::FEED_POST_TYPE) {
-                return $link;
-            }
-            $badge = $this->is_badge($id);
-            return admin_url('admin.php?page=' . ($badge ? 'grw-badge' : 'grw-builder') . '&' . Post_Types::FEED_POST_TYPE . '_id=' . $id . ($badge ? '&step=1' : ''));
-        } else {
-            return;
+        if (get_post_type($id) !== Post_Types::FEED_POST_TYPE) {
+            return $link;
         }
+        $badge = $this->is_badge($id);
+        return admin_url('admin.php?page=' . ($badge ? 'grw-badge' : 'grw-builder') . '&' . Post_Types::FEED_POST_TYPE . '_id=' . $id . ($badge ? '&step=1' : ''));
     }
 
     private function is_badge($id) {

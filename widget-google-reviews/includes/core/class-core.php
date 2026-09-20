@@ -81,7 +81,7 @@ class Core {
             return $this->get_data($connection, $is_admin);
         }
 
-        $cache_time            = isset($connection->options) && isset($connection->options->cache) ? $connection->options->cache : null;
+        $cache_time            = isset($connection->options) && isset($connection->options->cache) ? $connection->options->cache : ($feed instanceof \WP_Post ? self::get_default_options()['cache'] : null);
         $data_cache_key        = 'grw_feed_' . GRW_VERSION . '_' . $feed->ID . '_reviews';
         $connection_cache_key  = 'grw_feed_' . GRW_VERSION . '_' . $feed->ID . '_options';
 
@@ -117,8 +117,10 @@ class Core {
                     $expiration = 3600 * 24;
             }
             $data = $this->get_data($connection);
-            set_transient($data_cache_key, $data, $expiration);
-            set_transient($connection_cache_key, $serialized_connection, $expiration);
+            if ($cache_time) {
+                set_transient($data_cache_key, $data, $expiration);
+                set_transient($connection_cache_key, $serialized_connection, $expiration);
+            }
         }
         return $data;
     }
@@ -208,6 +210,10 @@ class Core {
 
             // Setup photo
             $place_photo = empty($biz->photo) ? (empty($place->photo) ? GRW_GOOGLE_BIZ : $place->photo) : $biz->photo;
+            // Photo URLs stored by 7.1 and older may carry the Google API key
+            if (strpos($place_photo, 'key=') !== false) {
+                $place_photo = GRW_GOOGLE_BIZ;
+            }
 
             // Calculate reviews count
             if (isset($place->review_count) && $place->review_count > 0) {

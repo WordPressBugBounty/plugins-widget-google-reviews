@@ -47,7 +47,7 @@ function grw_badge_page() {
     };
 
     const toast = (msg, type, action) => GRW_TOAST.show({msg, type: type || 'success', action});
-    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+    const esc = grw_esc;
     const h = (tag, atts, html) => {
         const e = document.createElement(tag);
         for (const k in atts || {}) {

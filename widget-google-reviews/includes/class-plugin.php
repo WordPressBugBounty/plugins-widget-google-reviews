@@ -46,9 +46,10 @@ final class Plugin {
     }
 
     public function admin_init() {
-        if (get_option('grw_do_activation', false)) {
+        if (!wp_doing_ajax() && get_option('grw_do_activation', false)) {
             delete_option('grw_do_activation');
             wp_safe_redirect(admin_url('admin.php?page=' . (get_option('grw_feed_ids') ? 'grw' : 'grw-badge')));
+            exit;
         }
     }
 
@@ -114,7 +115,7 @@ final class Plugin {
         $this->deactivator = new Deactivator($reviews_cron);
 
         if (is_admin()) {
-            $google_connect = new Google_Connect($google_api_old, $google_api_new);
+            $google_connect = new Google_Connect($google_api_old, $google_utils);
 
             $feed_serializer = new Feed_Serializer();
             $feed_ajax = new Feed_Ajax($feed_serializer, $feed_deserializer, $core, $view);

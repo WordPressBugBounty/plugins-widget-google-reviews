@@ -47,19 +47,25 @@ function grw_popup_open(rootEl, popupEl) {
     if (!wrap.grwWheel) {
         wrap.grwWheel = true;
         wrap.addEventListener('wheel', function(e) { if (!e.target.closest('.grw-popup')) e.preventDefault(); }, {passive: false});
+        ['wheel', 'pointerdown', 'keydown'].forEach(ev => wrap.addEventListener(ev, function() { wrap.grwFollow = false; }, {passive: true}));
     }
     grw_popup_focus(rootEl, popupEl);
     return false;
 }
 
-// Scrolls to the review the badge phrase (or its author fact) came from; without one the list stays where it was left.
-function grw_popup_focus(rootEl, popupEl) {
-    const clean = s => s.replace(/\s+/g, ' ').trim();
+const grw_clean = s => s.replace(/\s+/g, ' ').trim();
+
+function grw_badge_phrase(rootEl) {
     const feed = rootEl.querySelector('.rpi-badge-feed'), q = feed && feed.querySelector('q');
     // Only the rated fact (author + one star) names a review; the other facts have no home in the list.
     const b = feed && feed.querySelector('.rpi-stars') ? feed.querySelector('b') : null;
-    const text = q ? clean(q.textContent).replace(/…$/, '') : '';
-    const name = b ? clean(b.textContent).split(' ')[0] : '';
+    return {text: q ? grw_clean(q.textContent).replace(/…$/, '') : '', name: b ? grw_clean(b.textContent).split(' ')[0] : ''};
+}
+
+// Scrolls to the review the badge phrase (or its author fact) came from; without one the list stays where it was left.
+function grw_popup_focus(rootEl, popupEl, phrase) {
+    const clean = grw_clean, wrap = popupEl.closest('.rpi-lightbox-wrap');
+    const {text, name} = phrase || grw_badge_phrase(rootEl);
     const reviews = popupEl.querySelectorAll('.grw-review, .wp-google-review');
     const hit = Array.prototype.find.call(reviews, r => text ? clean(r.textContent).indexOf(text) > -1 : name && clean((r.querySelector('.wp-google-name') || r).textContent).indexOf(name) === 0);
     popupEl.querySelectorAll('mark.grw-review-mark').forEach(function(m) { m.outerHTML = m.innerHTML; });
@@ -67,10 +73,11 @@ function grw_popup_focus(rootEl, popupEl) {
         if (text) grw_popup_mark(hit.querySelector('.wp-google-text') || hit, text);
         const go = function() { popupEl.scrollTo({top: popupEl.scrollTop + hit.getBoundingClientRect().top - popupEl.getBoundingClientRect().top - 16, behavior: 'smooth'}); };
         // Glides from where it was closed after a beat, so the move to the review reads as a move.
+        wrap.grwFollow = true;
         setTimeout(function() {
             go();
-            // Avatars above the review arrive after the first scroll and push it down; follow them.
-            popupEl.querySelectorAll('img').forEach(function(img) { if (!img.complete) img.addEventListener('load', go, {once: true}); });
+            // Avatars above the review arrive after the first scroll and push it down; follow them until the visitor scrolls.
+            popupEl.querySelectorAll('img').forEach(function(img) { if (!img.complete) img.addEventListener('load', function() { if (wrap.grwFollow) go(); }, {once: true}); });
             hit.classList.add('grw-review-hl');
             setTimeout(function() { hit.classList.remove('grw-review-hl'); }, 2500);
         }, 500);
@@ -94,14 +101,16 @@ function grw_popup_mark(el, text) {
 }
 
 // The badge popup is fetched on the first click: the lightbox opens at once on a skeleton, the reviews take its place.
-function grw_badge_popup(rootEl, src) {
-    let popupEl = null;
+function grw_badge_popup(rootEl, src, common) {
+    let popupEl = null, phrase;
     // Another lightbox opened meanwhile takes the node out of the wrap; it must be left alone then.
     const onScreen = el => {
         const wrap = el.closest('.rpi-lightbox-wrap');
         return wrap && wrap.style.display !== 'none';
     };
     return function() {
+        // The badge rotates its phrases, so the one clicked is gone by the time the reviews arrive.
+        phrase = grw_badge_phrase(rootEl);
         if (!popupEl) {
             const el = popupEl = document.createElement('div');
             el.className = rootEl.className + ' grw-popup';
@@ -114,7 +123,8 @@ function grw_badge_popup(rootEl, src) {
                     const list = t.content.querySelector('.grw-popup');
                     if (!list) return Promise.reject();
                     el.innerHTML = list.innerHTML;
-                    if (onScreen(el)) grw_popup_focus(rootEl, el);
+                    for (const tm of el.getElementsByClassName('wp-google-time')) common.setTime(tm);
+                    if (onScreen(el)) grw_popup_focus(rootEl, el, phrase);
                 })
                 .catch(() => {
                     if (onScreen(el)) rpi.Lightbox(el).hide();
@@ -147,7 +157,7 @@ function grw_init(el, layout) {
 
     if (layout == 'badge' && rpi.Badge) {
         const src = rootEl.dataset.reviews;
-        rpi.Badge(rootEl, {onclick: src && rpi.Lightbox && rootEl.querySelector('.rpi-badge-clickable') ? grw_badge_popup(rootEl, src) : null});
+        rpi.Badge(rootEl, {onclick: src && rpi.Lightbox && rootEl.querySelector('.rpi-badge-clickable') ? grw_badge_popup(rootEl, src, common) : null});
         return;
     }
 
@@ -210,4 +220,5 @@ function grw_boot() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', grw_boot);
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', grw_boot);
+else grw_boot();
