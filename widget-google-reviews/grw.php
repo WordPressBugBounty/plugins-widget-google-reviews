@@ -3,7 +3,7 @@
 Plugin Name: Rich Showcase for Google Reviews
 Plugin URI: https://wordpress.org/plugins/widget-google-reviews/
 Description: Instantly display Google reviews on your website to increase user confidence and sales.
-Version: 7.1.1
+Version: 7.1.2
 Requires at least: 6.0
 Author: RichPlugins <support@richplugins.com>
 Author URI: https://richplugins.com
@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
 
 require(ABSPATH . 'wp-includes/version.php');
 
-define('GRW_VERSION'              , '7.1.1');
+define('GRW_VERSION'              , '7.1.2');
 define('GRW_PLUGIN_FILE'          , __FILE__);
 define('GRW_PLUGIN_PATH'          , plugin_dir_path(GRW_PLUGIN_FILE));
 define('GRW_PLUGIN_URL'           , plugins_url(basename(GRW_PLUGIN_PATH), basename(__FILE__)));

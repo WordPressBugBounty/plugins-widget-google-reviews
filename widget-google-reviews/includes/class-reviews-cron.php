@@ -96,6 +96,7 @@ class Reviews_Cron {
 
                                     if (!empty($res['result']['denied'])) {
                                         $denied = get_option('grw_google_api_error');
+                                        array_unshift($ids, $id);
                                         break 2;
                                     }
                                 }
@@ -107,7 +108,6 @@ class Reviews_Cron {
 
                         // Put reviews feed ID to the end of feed_ids option
                         array_push($ids, $id);
-                        update_option('grw_feed_ids', implode(",", $ids));
 
                         // Clear feed cache
                         delete_transient('grw_feed_' . GRW_VERSION . '_' . $id . '_reviews', false);
@@ -121,6 +121,8 @@ class Reviews_Cron {
                     }
                 }
             }
+
+            update_option('grw_feed_ids', implode(",", $ids));
 
         }
 

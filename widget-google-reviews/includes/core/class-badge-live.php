@@ -58,7 +58,7 @@ class Badge_Live {
 
     public static function sentences($text) {
         $text = wp_strip_all_tags(html_entity_decode((string) $text, ENT_QUOTES, 'UTF-8'));
-        // Line breaks are sentence ends too (nl2br keeps them in the stored text), so only the rest collapses.
+        // Line breaks are sentence ends too, so only the rest of the whitespace collapses.
         $text = preg_replace('/[^\S\n]+/u', ' ', $text);
         $parts = preg_split('/(?<=[.!?…])\s+|\n+/u', $text);
         $out = array();

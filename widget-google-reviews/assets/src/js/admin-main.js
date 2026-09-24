@@ -30,9 +30,6 @@ jQuery(document).ready(function($) {
                         rate      : rate,
                         action    : 'grw_rateus_ajax',
                         grw_nonce : $('#grw_nonce').val()
-                    },
-                    success  : function(res) {
-                        console.log(res);
                     }
                 });
                 var askUrl = /*(Math.random() * 1).toFixed(0) > 0 ?

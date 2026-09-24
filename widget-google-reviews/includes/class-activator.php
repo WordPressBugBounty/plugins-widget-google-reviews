@@ -119,21 +119,23 @@ class Activator {
 
         $biz = $wpdb->prefix . Database::BUSINESS_TABLE;
         $rev = $wpdb->prefix . Database::REVIEW_TABLE;
+        $text = $wpdb->prefix . Database::TEXT_TABLE;
 
         $biz_colms = $wpdb->get_col("SHOW COLUMNS FROM {$biz}", 0);
         $rev_colms = $wpdb->get_col("SHOW COLUMNS FROM {$rev}", 0);
 
-        if (version_compare($last_active_version, '1.8.2', '<')) {
-            if (!in_array('review_count', $biz_colms, true)) {
-                $wpdb->query("ALTER TABLE {$biz} ADD review_count INTEGER");
-            }
-        }
-
-        if (version_compare($last_active_version, '1.8.7', '<')) {
-            if (!in_array('hide', $rev_colms, true)) {
-                $wpdb->query("ALTER TABLE {$rev} ADD hide VARCHAR(1) DEFAULT '' NOT NULL");
-            }
-        }
+        $this->add_columns($biz, $biz_colms, array(
+            'review_count' => 'INTEGER',
+            'map_url'      => 'VARCHAR(512)'
+        ));
+        $this->add_columns($rev, $rev_colms, array(
+            'hide'       => "VARCHAR(1) DEFAULT '' NOT NULL",
+            'images'     => 'TEXT',
+            'reply'      => 'TEXT',
+            'reply_time' => 'INTEGER',
+            'url'        => 'VARCHAR(255)',
+            'provider'   => 'VARCHAR(32)'
+        ));
 
         if (version_compare($last_active_version, '2.0.1', '<')) {
             $grw_auth_code = get_option('grw_auth_code');
@@ -184,33 +186,6 @@ class Activator {
             $wpdb->query("ALTER TABLE {$rev} MODIFY COLUMN `author_url` VARCHAR(127)");
         }
 
-        if (version_compare($last_active_version, '5.8', '<')) {
-            if (!in_array('images', $rev_colms, true)) {
-                $wpdb->query("ALTER TABLE {$rev} ADD images TEXT");
-            }
-            if (!in_array('reply', $rev_colms, true)) {
-                $wpdb->query("ALTER TABLE {$rev} ADD reply TEXT");
-            }
-            if (!in_array('reply_time', $rev_colms, true)) {
-                $wpdb->query("ALTER TABLE {$rev} ADD reply_time INTEGER");
-            }
-        }
-
-        if (version_compare($last_active_version, '6.2', '<')) {
-            if (!in_array('map_url', $biz_colms, true)) {
-                $wpdb->query("ALTER TABLE {$biz} ADD map_url VARCHAR(512)");
-            }
-        }
-
-        if (version_compare($last_active_version, '6.3', '<')) {
-            if (!in_array('url', $rev_colms, true)) {
-                $wpdb->query("ALTER TABLE {$rev} ADD url VARCHAR(255)");
-            }
-            if (!in_array('provider', $rev_colms, true)) {
-                $wpdb->query("ALTER TABLE {$rev} ADD provider VARCHAR(32)");
-            }
-        }
-
         if (version_compare($last_active_version, '6.9.4.1', '<')) {
             update_option('grw_debug_mode', '0');
         }
@@ -255,8 +230,6 @@ class Activator {
         }
 
         if (version_compare($last_active_version, '6.9.8', '<')) {
-            $text = $wpdb->prefix . Database::TEXT_TABLE;
-
             $rev_col = $wpdb->get_row("SHOW FULL COLUMNS FROM {$rev} WHERE Field = 'review_id'");
             $txt_col = $wpdb->get_row("SHOW FULL COLUMNS FROM {$text} WHERE Field = 'review_id'");
 
@@ -272,8 +245,23 @@ class Activator {
             }
         }
 
+        if (!$wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $text))) {
+            $this->database->create_text_table();
+            $this->database->migrate_review_texts();
+        }
+
         if (!empty($wpdb->last_error)) {
             update_option('grw_last_error', time() . ': ' . $wpdb->last_error);
+        }
+    }
+
+    private function add_columns($table, $existing, $columns) {
+        global $wpdb;
+
+        foreach ($columns as $name => $type) {
+            if (!in_array($name, $existing, true)) {
+                $wpdb->query("ALTER TABLE {$table} ADD {$name} {$type}");
+            }
         }
     }
 

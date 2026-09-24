@@ -1,9 +1,9 @@
 === Rich Showcase for Google Reviews ===
 Contributors: widgetpack
-Tags: google reviews, reviews, review slider, review widget, social proof
+Tags: google reviews, reviews, review slider, review widget, reviews plugin
 Requires PHP: 7.2
 Tested up to: 7.1
-Stable tag: 7.1.1
+Stable tag: 7.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,11 +41,12 @@ Want to see how it works? Watch the short demo below to see how quickly you can 
 
 ### Google reviews, updates and privacy
 
-* Show up to 10 Google reviews on initial setup, no API key required
+* Show up to 10 Google reviews on initial setup - **NO API KEY REQUIRED**
 * Connect multiple Google business places
 * Places page: every connected place with its rating and last update; update reviews, create a widget or delete the place from there
 * Badges page: pick a preset, set position, tone and size, then publish the badge on the whole site in one click
 * Automatically updates reviews and ratings when using your own API key
+* Fully ADA compliant: built for Accessibility
 * Fully GDPR-compliant: no external requests, all data loads from your own website
 * Choose which reviews to display or hide, option to hide reviews without text
 * "review us on Google" button to collect new reviews
@@ -122,6 +123,18 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 7.1.2 =
+* Improved: official Google logo in 'powered by Google'.
+* Improved: text contrast of 'powered by' and the review button.
+* Improved: keyboard focus is visible on all links and buttons.
+* Improved: the badge, the reviews popup and 'read more' work from the keyboard.
+* Improved: screen readers announce each review's rating when ARIA labels are enabled.
+* Improved: larger click area for close buttons.
+* Improved: fewer database writes during the scheduled reviews update.
+* Fixed: theme paragraphs (wpautop) breaking the widget layout.
+* Fixed: reviews missing on the site after an incomplete database update.
+* Fixed: line breaks in review texts.
 
 = 7.1.1 =
 * Improved: with your own Google API key the plugin picks the right Places API automatically; the "Use old Places API" option is removed.

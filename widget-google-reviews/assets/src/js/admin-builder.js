@@ -184,8 +184,8 @@ const GRW_HTML_CONTENT =
                 'Based on color' +
             '</div>' +
             '<div class="grw-builder-option">' +
-                '<input type="color" name="--powered-color" value="#777777" data-val="#777777" data-defval="#777777"/>' +
-                '<input type="text" value="#777777"/>' +
+                '<input type="color" name="--powered-color" value="#5e5e5e" data-val="#5e5e5e" data-defval="#5e5e5e"/>' +
+                '<input type="text" value="#5e5e5e"/>' +
                 'Powered color' +
             '</div>' +
             '<div class="grw-builder-option">' +
@@ -830,8 +830,6 @@ function grw_connect_ajax($, el, params, authcode, attempt, cb) {
     };
 
     $.post(ajaxurl, args, function(res) {
-
-        console.log('grw_connect_debug:', res);
 
         if (res.status == 'success') {
 

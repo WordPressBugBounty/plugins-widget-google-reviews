@@ -263,7 +263,7 @@ class Core {
                         'biz_id'        => $biz->id,
                         'biz_url'       => empty($place->url) ? null : $place->url,
                         'rating'        => $rev->rating,
-                        'text'          => empty($text) ? null : nl2br(wp_encode_emoji($text)),
+                        'text'          => empty($text) ? null : wp_encode_emoji($text),
                         'lang'          => isset($biz->lang) ? $biz->lang : null,
                         'author_avatar' => $rev->profile_photo_url,
                         'author_url'    => $rev->author_url,

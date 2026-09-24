@@ -380,7 +380,7 @@ class View {
     }
 
     function grw_place_rating($rating, $review_count, $opts) {
-        $aria_label = $this->grw_aria_label($opts, sprintf(__('Rating: %s out of 5', 'widget-google-reviews'), $rating), 'img');
+        $aria_label = $this->grw_rating_label($opts, $rating);
         ?><span class="rpi-stars"<?php echo $aria_label; ?> style="--rating:<?php echo $rating; ?>"><?php echo $rating; ?></span><?php
         if (!$opts->hide_based_on && isset($review_count)) {
         ?><div class="wp-google-based"><?php echo sprintf(__('Based on %s reviews', 'widget-google-reviews'), number_format_i18n((int) $review_count)); ?></div><?php
@@ -388,7 +388,7 @@ class View {
     }
 
     function grw_powered() {
-        ?><div class="wp-google-powered" role="img" aria-label="<?php echo esc_attr__('powered by Google', 'widget-google-reviews'); ?>">powered by <span aria-hidden="true"><span style="color:#3c6df0!important">G</span><span style="color:#d93025!important">o</span><span style="color:#fb8e28!important">o</span><span style="color:#3c6df0!important">g</span><span style="color:#188038!important">l</span><span style="color:#d93025!important">e</span></span></div><?php
+        ?><div class="wp-google-powered" role="img" aria-label="<?php echo esc_attr__('powered by Google', 'widget-google-reviews'); ?>">powered by <span class="rpi-goog" aria-hidden="true"></span></div><?php
     }
 
     function grw_place_reviews($reviews, $options, $is_admin = false) {
@@ -449,8 +449,8 @@ class View {
                     }
                     $this->review_time($review, $options);
                     ?><div class="wp-google-feedback">
-                        <span class="rpi-stars" style="--rating:<?php echo $review->rating; ?>"></span><?php
-                        if (!empty($review->text)) { ?><span class="wp-google-text"><?php echo wp_kses_post($review->text); ?></span><?php }
+                        <span class="rpi-stars"<?php echo $this->grw_rating_label($options, $review->rating); ?> style="--rating:<?php echo $review->rating; ?>"></span><?php
+                        if (!empty($review->text)) { ?><span class="wp-google-text"><?php echo $this->text($review->text); ?></span><?php }
                     ?></div><?php
                     if ($is_admin) {
                         echo '<a href="#" class="wp-review-hide" data-id=' . $review->id . '>' . ($review->hide == '' ? 'Hide' : 'Show') . ' review</a>';
@@ -496,11 +496,11 @@ class View {
                         $this->review_time($review, $options);
                     ?></div>
                 </div>
-                <span class="rpi-stars" style="--rating:<?php echo $review->rating; ?>"></span>
+                <span class="rpi-stars"<?php echo $this->grw_rating_label($options, $review->rating); ?> style="--rating:<?php echo $review->rating; ?>"></span>
                 <div class="rpi-flx rpi-col4">
                     <div class="wp-google-feedback grw-scroll" <?php if (!empty($options->slider_text_height)) {?> style="height:<?php echo esc_attr($options->slider_text_height); ?>!important"<?php } ?>>
                         <?php if (!empty($review->text)) { ?>
-                        <span class="wp-google-text"><?php echo wp_kses_post($review->text); ?></span>
+                        <span class="wp-google-text"><?php echo $this->text($review->text); ?></span>
                         <?php } ?>
                     </div><?php
                     if (isset($options->media) && $options->media && !empty($review->images)) {
@@ -528,6 +528,11 @@ class View {
                 $this->grw_provider($review);
             ?></div>
         </div><?php
+    }
+
+    // render() strips raw newlines from the whole output, so the text carries them as entities.
+    private function text($text) {
+        return str_replace(array("\r\n", "\n"), '&#10;', wp_kses_post($text));
     }
 
     private function review_time($review, $opts, $reply = false) {
@@ -563,6 +568,10 @@ class View {
     function grw_anchor($url, $class, $text, $options, $aria_label = '', $onclick = '', $after_raw = '') {
         $al = $this->grw_aria_label($options, esc_attr($aria_label) . ' - ' . __('opens in a new window', 'widget-google-reviews'));
         echo '<a href="' . esc_url($url) . '"' . ($class ? ' class="' . $class . '"' : '') . ($options->open_link ? ' target="_blank"' : '') . ' rel="' . ($options->nofollow_link ? 'nofollow ' : '') . 'noopener"' . $al . (empty($onclick) ? '' : ' onclick="' . $onclick . '"') . '>' . esc_html($text) . $after_raw . '</a>';
+    }
+
+    function grw_rating_label($options, $rating) {
+        return $this->grw_aria_label($options, sprintf(__('Rating: %s out of 5', 'widget-google-reviews'), $rating), 'img');
     }
 
     function grw_aria_label($options, $aria_label, $role = '') {
