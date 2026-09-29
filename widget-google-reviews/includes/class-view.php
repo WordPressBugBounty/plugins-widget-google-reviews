@@ -40,19 +40,7 @@ class View {
         $cls = $this->root_cls($options);
         self::$rendered[] = (string) $feed_id;
 
-        static $svg = false;
-
         ?><div class="wp-gr rpi<?php echo $cls; ?>"<?php if ($style) { ?> style="<?php echo esc_attr($style); ?>"<?php } ?> data-id="<?php echo esc_attr($feed_id); ?>" data-layout="<?php echo esc_attr($options->view_mode); ?>" data-exec="false" data-options='<?php echo esc_attr($this->options($options)); ?>'<?php if ($this->badge_popup($reviews, $options)) { ?> data-reviews="<?php echo esc_url(admin_url('admin-ajax.php?action=grw_reviews&id=' . (int) $feed_id)); ?>"<?php } ?>><?php
-            if (!$svg) { $svg = true;
-            ?><svg xmlns="http://www.w3.org/2000/svg" style="display:none!important">
-                <symbol id="grw-tripadvisor" viewBox="0 0 713.496 713.496">
-                    <g><circle fill="#34E0A1" cx="356.749" cy="356.748" r="356.748"/><path d="M577.095,287.152l43.049-46.836h-95.465c-47.792-32.646-105.51-51.659-167.931-51.659   c-62.342,0-119.899,19.054-167.612,51.659H93.432l43.049,46.836c-26.387,24.075-42.929,58.754-42.929,97.259   c0,72.665,58.914,131.578,131.579,131.578c34.519,0,65.968-13.313,89.446-35.077l42.172,45.919l42.172-45.879   c23.478,21.764,54.887,35.037,89.406,35.037c72.665,0,131.658-58.913,131.658-131.578   C620.024,345.866,603.483,311.188,577.095,287.152z M225.17,473.458c-49.188,0-89.047-39.859-89.047-89.047   s39.86-89.048,89.047-89.048c49.187,0,89.047,39.86,89.047,89.048S274.357,473.458,225.17,473.458z M356.788,381.82   c0-58.595-42.61-108.898-98.853-130.383c30.413-12.716,63.776-19.771,98.813-19.771s68.439,7.055,98.853,19.771   C399.399,272.962,356.788,323.226,356.788,381.82z M488.367,473.458c-49.188,0-89.048-39.859-89.048-89.047   s39.86-89.048,89.048-89.048s89.047,39.86,89.047,89.048S537.554,473.458,488.367,473.458z M488.367,337.694   c-25.79,0-46.677,20.887-46.677,46.677c0,25.789,20.887,46.676,46.677,46.676c25.789,0,46.676-20.887,46.676-46.676   C535.042,358.621,514.156,337.694,488.367,337.694z M271.846,384.411c0,25.789-20.887,46.676-46.676,46.676   s-46.676-20.887-46.676-46.676c0-25.79,20.887-46.677,46.676-46.677C250.959,337.694,271.846,358.621,271.846,384.411z"/></g>
-                </symbol>
-                <symbol id="grw-google" viewBox="0 0 512 512">
-                    <g fill="none" fill-rule="evenodd"><path d="M482.56 261.36c0-16.73-1.5-32.83-4.29-48.27H256v91.29h127.01c-5.47 29.5-22.1 54.49-47.09 71.23v59.21h76.27c44.63-41.09 70.37-101.59 70.37-173.46z" fill="#4285f4"/><path d="M256 492c63.72 0 117.14-21.13 156.19-57.18l-76.27-59.21c-21.13 14.16-48.17 22.53-79.92 22.53-61.47 0-113.49-41.51-132.05-97.3H45.1v61.15c38.83 77.13 118.64 130.01 210.9 130.01z" fill="#34a853"/><path d="M123.95 300.84c-4.72-14.16-7.4-29.29-7.4-44.84s2.68-30.68 7.4-44.84V150.01H45.1C29.12 181.87 20 217.92 20 256c0 38.08 9.12 74.13 25.1 105.99l78.85-61.15z" fill="#fbbc05"/><path d="M256 113.86c34.65 0 65.76 11.91 90.22 35.29l67.69-67.69C373.03 43.39 319.61 20 256 20c-92.25 0-172.07 52.89-210.9 130.01l78.85 61.15c18.56-55.78 70.59-97.3 132.05-97.3z" fill="#ea4335"/><path d="M20 20h472v472H20V20z"/></g>
-                </symbol>
-            </svg><?php
-            }
             $rows = false;
             switch ($options->view_mode) {
                 case 'slider':
@@ -103,6 +91,11 @@ class View {
     }
 
     private function render_slider($businesses, $reviews, $options, $is_admin = false) {
+        $pos = count($businesses) < 1 ? '' : (in_array($options->slider_head_pos, array('1', '3')) ? $options->slider_head_pos : '2');
+        $header = function() use ($businesses, $reviews, $options, $pos) {
+            $this->grw_place($businesses[0]->rating, $businesses[0], $businesses[0]->photo, $reviews, $options, true, $pos != '2');
+        };
+        if ($pos == '1') $header();
         ?><div class="grw-row grw-row-m" data-options='<?php
             echo esc_attr(json_encode(
                 array(
@@ -112,9 +105,7 @@ class View {
                     'breakpoints' => $options->slider_breakpoints
                 )
             )); ?>'><?php
-            if (count($businesses) > 0) {
-                $this->grw_place($businesses[0]->rating, $businesses[0], $businesses[0]->photo, $reviews, $options, true, true);
-            }
+            if ($pos == '2') $header();
             $count = count($reviews);
             if ($count > 0) {
             ?><div class="rpi-slides-root grw-content">
@@ -141,6 +132,7 @@ class View {
             </div><?php
             }
         ?></div><?php
+        if ($pos == '3') $header();
     }
 
     private function render_grid($businesses, $reviews, $options, $is_admin = false) {
@@ -252,9 +244,6 @@ class View {
         $count = number_format_i18n((int) $biz->review_count);
         $stars = '<span class="rpi-stars" style="--rating:' . esc_attr($biz->rating) . '">' . esc_html($biz->rating) . '</span>';
         $provider = $biz->provider === 'summary' ? 'google' : $biz->provider;
-        $logo = function($inner = '') use ($provider) {
-            return '<span class="rpi-logo rpi-logo-' . esc_attr($provider) . '" aria-hidden="true">' . $inner . '</span>';
-        };
         $top_rated = $options->badge_toprated
             && (float) $biz->rating >= Badge_Live::TOP_RATED_MIN_RATING
             && (int) $biz->review_count >= Badge_Live::TOP_RATED_MIN_TOTAL;
@@ -264,10 +253,10 @@ class View {
             <div class="<?php echo implode(' ', $cls); ?>" style="<?php echo esc_attr(implode(';', $style)); ?>"<?php if ($biz->provider !== 'summary') { ?> data-id="<?php echo esc_attr($biz->id); ?>" data-provider="<?php echo esc_attr($biz->provider); ?>"<?php } ?>>
                 <?php if ($options->badge_close) { ?><div class="rpi-x"></div><?php } ?>
                 <div class="rpi-badge-body<?php if ($popup) echo ' rpi-badge-clickable'; ?>">
-                    <?php if (!$compact && !$options->badge_logo_hide) echo $logo(); ?>
+                    <?php if (!$compact && !$options->badge_logo_hide) echo $this->logo($provider); ?>
                     <div class="rpi-badge-main">
                         <div class="rpi-badge-head">
-                            <?php echo ($compact && !$options->badge_logo_hide) ? $logo($stars) : $stars; ?>
+                            <?php echo ($compact && !$options->badge_logo_hide) ? $this->logo($provider, $stars) : $stars; ?>
                             <?php if (!$options->badge_based_hide) { ?><span class="rpi-badge-count"><?php echo $options->badge_dot ? '· ' . $count : '(' . $count . ')'; ?></span><?php } ?>
                             <?php if ($top_rated) { ?><span class="rpi-badge-label<?php if ($options->badge_icon) echo ' rpi-badge-ico-' . esc_attr($options->badge_icon); ?>">· <i><?php echo esc_html__('Top rated', 'widget-google-reviews'); ?></i></span><?php } ?>
                         </div>
@@ -340,55 +329,126 @@ class View {
             : str_replace('%1', $count, esc_html__('%1 reviews', 'widget-google-reviews'));
     }
 
-    function grw_place($rating, $place, $place_img, $reviews, $options, $show_powered = true, $show_writereview = false) {
+    function grw_place($rating, $place, $place_img, $reviews, $options, $show_powered = true, $wide = false) {
         $style = $options->header_center ? 'style="--dir:column;--align:center;--star-align-self:center"' : '';
-        ?><div class="grw-header">
-            <div class="grw-header-inner rpi-flx rpi-row12"<?php echo $style; ?>><?php
+        $wr = function() use ($place, $options) {
+            if ($options->hide_writereview) return;
+            ?><div class="wp-google-wr"><?php
+                echo $this->grw_anchor(
+                    'https://search.google.com/local/writereview?placeid=' . $place->id,
+                    '',
+                    __('review us on', 'widget-google-reviews'),
+                    $options,
+                    __('review us on Google', 'widget-google-reviews'),
+                    'return rplg_leave_review_window.call(this)',
+                    $this->logo('google')
+                );
+            ?></div><?php
+        };
+        ?><div class="grw-header<?php if ($wide) echo ' rpi-flx rpi-row12-center'; ?>"<?php if ($wide && $options->slider_hide_prevnext) echo ' style="--slider-offset:0px"'; ?>>
+            <div class="grw-header-inner rpi-flx rpi-row12<?php if ($wide && $options->header_center) echo ' grw-center'; ?>"<?php echo $style; ?>><?php
                 if (!$options->header_hide_photo) {
                     $alt_val = sprintf(__('%s place picture', 'widget-google-reviews'), $place->name);
                     $alt = empty($options->aria_label) ? $alt_val : ($options->header_hide_name ? $alt_val : '');
                     $this->grw_image($place_img, $alt, $options->lazy_load_img);
                 }
                 ?><div class="rpi-flx rpi-col8"<?php echo $style; ?>><?php
-                    if (!$options->header_hide_name) {
-                        ?><div class="wp-google-name"><?php
-                        if ($options->disable_biz_link || empty($place->url)) {
-                            ?><span><?php echo esc_html($place->name); ?></span><?php
-                        } else {
-                            echo $this->grw_anchor($place->url, '', $place->name, $options, sprintf(__('%s place profile', 'widget-google-reviews'), $place->name));
+                    $item = function($key) use ($rating, $place, $options, $show_powered) {
+                        switch ($key) {
+                            case 'platform':
+                                if ($show_powered && $options->header_platform) $this->grw_powered(true);
+                                break;
+                            case 'scale':
+                                if ($options->header_show_scale) {
+                                    ?><div class="wp-google-scale"><?php echo esc_html($this->scale($rating, $place->review_count)); ?></div><?php
+                                }
+                                break;
+                            case 'name':
+                                if ($options->header_hide_name) break;
+                                ?><div class="wp-google-name"><?php
+                                if ($options->disable_biz_link || empty($place->url)) {
+                                    ?><span><?php echo esc_html($place->name); ?></span><?php
+                                } else {
+                                    echo $this->grw_anchor($place->url, '', $place->name, $options, sprintf(__('%s place profile', 'widget-google-reviews'), $place->name));
+                                }
+                                ?></div><?php
+                                break;
+                            case 'stars':
+                                ?><span class="rpi-stars"<?php echo $this->grw_rating_label($options, $rating); ?> style="--rating:<?php echo $rating; ?>"><?php if (!$options->header_hide_grade) echo $rating; ?></span><?php
+                                break;
+                            case 'based':
+                                if (!$options->hide_based_on && isset($place->review_count)) {
+                                    // The badge's '%1 reviews' is already translated into every plugin language.
+                                    $text = $options->header_short_count ? str_replace('%1', '%s', __('%1 reviews', 'widget-google-reviews')) : __('Based on %s reviews', 'widget-google-reviews');
+                                    ?><div class="wp-google-based"><?php echo $this->based($text, number_format_i18n((int) $place->review_count), $options->header_bold_count); ?></div><?php
+                                }
                         }
-                        ?></div><?php
+                    };
+                    foreach ($this->header_order($options->header_order) as $group) {
+                        $parts = $this->header_group($group, $item);
+                        echo count($parts) > 1
+                            ? '<div class="rpi-flx rpi-row12-center" style="--wrap:wrap;--star-align-self:center' . ($options->header_center ? ';justify-content:center' : '') . '">' . implode('', $parts) . '</div>'
+                            : implode('', $parts);
                     }
-                    $this->grw_place_rating($rating, $place->review_count, $options);
-                    if ($show_powered) $this->grw_powered();
-                    if (!$options->hide_writereview) {
-                        ?><div class="wp-google-wr"><?php
-                            echo $this->grw_anchor(
-                                'https://search.google.com/local/writereview?placeid=' . $place->id,
-                                '',
-                                __('review us on', 'widget-google-reviews'),
-                                $options,
-                                __('review us on Google', 'widget-google-reviews'),
-                                'return rplg_leave_review_window.call(this)',
-                                '<svg height="16" width="16" role="none"><use href="#grw-google"></use></svg>'
-                            );
-                        ?></div><?php
-                    }
-                ?></div>
-            </div>
+                    if ($show_powered && !$options->header_platform) $this->grw_powered();
+                    if (!$wide) $wr();
+                ?></div><?php
+                if ($wide) $wr();
+            ?></div>
         </div><?php
     }
 
-    function grw_place_rating($rating, $review_count, $opts) {
-        $aria_label = $this->grw_rating_label($opts, $rating);
-        ?><span class="rpi-stars"<?php echo $aria_label; ?> style="--rating:<?php echo $rating; ?>"><?php echo $rating; ?></span><?php
-        if (!$opts->hide_based_on && isset($review_count)) {
-        ?><div class="wp-google-based"><?php echo sprintf(__('Based on %s reviews', 'widget-google-reviews'), number_format_i18n((int) $review_count)); ?></div><?php
+    private function header_order($order) {
+        $def = array('scale', 'name', 'stars', 'based', 'platform');
+        $seen = array();
+        $groups = array();
+        foreach (array_merge(explode(',', (string) $order), $def) as $group) {
+            $keys = array_values(array_unique(array_diff(array_intersect(array_map('trim', explode('+', $group)), $def), $seen)));
+            if (!$keys) continue;
+            $groups[] = $keys;
+            $seen = array_merge($seen, $keys);
         }
+        return $groups;
     }
 
-    function grw_powered() {
-        ?><div class="wp-google-powered" role="img" aria-label="<?php echo esc_attr__('powered by Google', 'widget-google-reviews'); ?>">powered by <span class="rpi-goog" aria-hidden="true"></span></div><?php
+    private function header_group($group, $item) {
+        $parts = array();
+        foreach ($group as $key) {
+            ob_start();
+            $item($key);
+            $html = ob_get_clean();
+            if ($html !== '') $parts[] = $html;
+        }
+        return $parts;
+    }
+
+    private function based($text, $count, $bold) {
+        $text = esc_html($text);
+        if ($bold) {
+            // Translations put the count either before its noun ("%s reviews") or after a colon ("Отзывов: %s").
+            $text = preg_replace('/%s\s+[^\s%]+|[^\s:]+:\s*%s|%s/u', '<b>$0</b>', $text, 1);
+        }
+        return str_replace('%s', esc_html($count), $text);
+    }
+
+    private function scale($rating, $review_count) {
+        if ($rating >= Badge_Live::TOP_RATED_MIN_RATING && $review_count >= Badge_Live::TOP_RATED_MIN_TOTAL) {
+            return __('Top rated', 'widget-google-reviews');
+        } elseif ($rating > 4.2) {
+            return __('Excellent', 'widget-google-reviews');
+        } elseif ($rating > 3.7) {
+            return __('Great', 'widget-google-reviews');
+        } elseif ($rating > 2.7) {
+            return __('Good', 'widget-google-reviews');
+        } elseif ($rating > 1.7) {
+            return __('Fair', 'widget-google-reviews');
+        }
+        return __('Poor', 'widget-google-reviews');
+    }
+
+    function grw_powered($logo_only = false) {
+        $label = $logo_only ? 'Google' : __('powered by Google', 'widget-google-reviews');
+        ?><div class="wp-google-powered" role="img" aria-label="<?php echo esc_attr($label); ?>"><?php if (!$logo_only) echo 'powered by '; ?><span class="rpi-goog" aria-hidden="true"></span></div><?php
     }
 
     function grw_place_reviews($reviews, $options, $is_admin = false) {
@@ -519,20 +579,20 @@ class View {
                         <span class="grw-b"><?php echo __('Response from the owner', 'widget-google-reviews'); ?></span><?php
                         $this->review_time($review, $options, true);
                     ?></div><?php
-                    echo wp_kses_post($review->reply);
+                    echo $this->text($review->reply);
                 ?></div><?php
                 }
                 if ($is_admin) {
                     echo '<a href="#" class="wp-review-hide" data-id=' . $review->id . '>' . ($review->hide == '' ? 'hide' : 'show') . ' review</a>';
                 }
-                $this->grw_provider($review);
+                echo $this->logo($review->provider);
             ?></div>
         </div><?php
     }
 
     // render() strips raw newlines from the whole output, so the text carries them as entities.
     private function text($text) {
-        return str_replace(array("\r\n", "\n"), '&#10;', wp_kses_post($text));
+        return str_replace(array("\r\n", "\n"), '&#10;', esc_html($text));
     }
 
     private function review_time($review, $opts, $reply = false) {
@@ -561,8 +621,8 @@ class View {
         return in_array((int)$id, $ids, true);
     }
 
-    function grw_provider($review) {
-        ?><svg height="16" width="16" role="none"><use href="#grw-<?php echo $review->provider; ?>"/></svg><?php
+    private function logo($provider, $inner = '') {
+        return '<span class="rpi-logo rpi-logo-' . esc_attr($provider) . '" aria-hidden="true">' . $inner . '</span>';
     }
 
     function grw_anchor($url, $class, $text, $options, $aria_label = '', $onclick = '', $after_raw = '') {

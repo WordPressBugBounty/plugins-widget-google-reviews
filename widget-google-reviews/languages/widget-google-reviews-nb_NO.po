@@ -79,3 +79,18 @@ msgstr "Svar fra eieren"
 
 msgid "opens in a new window"
 msgstr "åpnes i et nytt vindu"
+
+msgid "Excellent"
+msgstr "Utmerket"
+
+msgid "Great"
+msgstr "Veldig bra"
+
+msgid "Good"
+msgstr "Bra"
+
+msgid "Fair"
+msgstr "Greit"
+
+msgid "Poor"
+msgstr "Dårlig"

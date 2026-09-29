@@ -79,3 +79,18 @@ msgstr "Omistajan vastaus"
 
 msgid "opens in a new window"
 msgstr "avautuu uudessa ikkunassa"
+
+msgid "Excellent"
+msgstr "Erinomainen"
+
+msgid "Great"
+msgstr "Erittäin hyvä"
+
+msgid "Good"
+msgstr "Hyvä"
+
+msgid "Fair"
+msgstr "Kohtalainen"
+
+msgid "Poor"
+msgstr "Huono"

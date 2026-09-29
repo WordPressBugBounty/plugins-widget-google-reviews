@@ -18,7 +18,7 @@ msgid "More reviews"
 msgstr "Další recenze"
 
 msgid "Top rated"
-msgstr "Výborné"
+msgstr "Nejlépe hodnocené"
 
 msgid "Latest review %s"
 msgstr "Poslední recenze %s"
@@ -79,3 +79,18 @@ msgstr "Odpověď vlastníka"
 
 msgid "opens in a new window"
 msgstr "otevře se v novém okně"
+
+msgid "Excellent"
+msgstr "Vynikající"
+
+msgid "Great"
+msgstr "Velmi dobré"
+
+msgid "Good"
+msgstr "Dobré"
+
+msgid "Fair"
+msgstr "Průměrné"
+
+msgid "Poor"
+msgstr "Slabé"

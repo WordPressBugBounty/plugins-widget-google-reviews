@@ -79,3 +79,18 @@ msgstr "Svar fra ejeren"
 
 msgid "opens in a new window"
 msgstr "åbner i et nyt vindue"
+
+msgid "Excellent"
+msgstr "Fremragende"
+
+msgid "Great"
+msgstr "Rigtig god"
+
+msgid "Good"
+msgstr "God"
+
+msgid "Fair"
+msgstr "Rimelig"
+
+msgid "Poor"
+msgstr "Dårlig"

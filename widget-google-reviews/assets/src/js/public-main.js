@@ -215,6 +215,8 @@ function grw_boot() {
     const els = document.querySelectorAll('.wp-gr[data-exec="false"]');
     for (let i = 0; i < els.length; i++) {
         (function(elem) {
+            // A root inside another widget came from review content, not from the plugin.
+            if (elem.parentElement && elem.parentElement.closest('.wp-gr')) return;
             grw_init(elem, elem.getAttribute('data-layout'));
         })(els[i]);
     }

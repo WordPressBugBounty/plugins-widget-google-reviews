@@ -79,3 +79,18 @@ msgstr "Ответ владельца"
 
 msgid "opens in a new window"
 msgstr "открывается в новом окне"
+
+msgid "Excellent"
+msgstr "Отлично"
+
+msgid "Great"
+msgstr "Очень хорошо"
+
+msgid "Good"
+msgstr "Хорошо"
+
+msgid "Fair"
+msgstr "Удовлетворительно"
+
+msgid "Poor"
+msgstr "Плохо"

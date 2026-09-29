@@ -79,3 +79,18 @@ msgstr "Odpowiedź właściciela"
 
 msgid "opens in a new window"
 msgstr "otwiera się w nowym oknie"
+
+msgid "Excellent"
+msgstr "Doskonała"
+
+msgid "Great"
+msgstr "Bardzo dobra"
+
+msgid "Good"
+msgstr "Dobra"
+
+msgid "Fair"
+msgstr "Przeciętna"
+
+msgid "Poor"
+msgstr "Słaba"

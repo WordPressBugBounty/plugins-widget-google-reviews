@@ -23,60 +23,16 @@ const GRW_HTML_CONTENT =
             '</div>' +
         '</div>' +
 
-        /* Common Options */
-        '<div class="grw-builder-top grw-toggle">Common Options</div>' +
+        /* Header Options */
+        '<div class="grw-builder-top grw-toggle">Header Options</div>' +
         '<div class="grw-builder-inside" style="display:none">' +
-            '<div class="grw-builder-option">' +
-                'Pagination' +
-                '<input type="text" name="pagination" value="">' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                'Maximum characters before \'read more\' link' +
-                '<input type="text" name="text_size" value="">' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="header_center" value="">' +
-                    'Show rating by center' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="header_hide_photo" value="">' +
-                    'Hide business photo' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="header_hide_name" value="">' +
-                    'Hide business name' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="hide_based_on" value="">' +
-                    'Hide \'Based on ... reviews\'' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="hide_writereview" value="">' +
-                    'Hide \'review us on G\' button' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="short_last_name" value="">' +
-                    'Short last name (GDPR)' +
-                '</label>' +
-                '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
-                '<div class="grw-quest-help" style="display:none;">Show only first name and first letter of last name</div>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="min_letter" value="">' +
-                    'Hide reviews without text' +
-                '</label>' +
+            '<div class="grw-builder-option" data-if="slider header">' +
+                'Header position' +
+                '<select name="slider_head_pos">' +
+                    '<option value="2">Left</option>' +
+                    '<option value="1">Top</option>' +
+                    '<option value="3">Bottom</option>' +
+                '</select>' +
             '</div>' +
             '<div class="grw-builder-option">' +
                 '<label>' +
@@ -84,13 +40,123 @@ const GRW_HTML_CONTENT =
                     'Hide rating header, leave only reviews' +
                 '</label>' +
             '</div>' +
-            '<div class="grw-builder-option">' +
+            '<div class="grw-builder-option" data-if="header">' +
+                '<label>' +
+                    '<input type="checkbox" name="header_center" value="">' +
+                    'Center the header' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                '<label>' +
+                    '<input type="checkbox" name="header_hide_photo" value="">' +
+                    'Hide business photo' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                '<label>' +
+                    '<input type="checkbox" name="disable_biz_link">' +
+                    'Disable link on business name' +
+                '</label>' +
+                '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
+                '<div class="grw-quest-help" style="display:none;">Show the business name as plain text instead of a link to the Google Local Business Page.</div>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                '<label>' +
+                    '<input type="checkbox" name="header_hide_grade" value="">' +
+                    'Hide rating number' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                '<label>' +
+                    '<input type="checkbox" name="header_bold_count" value="">' +
+                    'Bold review count' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                '<label>' +
+                    '<input type="checkbox" name="header_short_count" value="">' +
+                    'Use short review count' +
+                '</label>' +
+                '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
+                '<div class="grw-quest-help" style="display:none;">Shows \'256 reviews\' instead of \'Based on 256 reviews\'.</div>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                '<label>' +
+                    '<input type="checkbox" name="hide_writereview" value="">' +
+                    'Hide \'review us on G\' button' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header headcard">' +
+                '<label>' +
+                    '<input type="checkbox" name="--slider-head-card-bg" value="var(--slider-head-card-bg-color)" data-on="var(--slider-head-card-bg-color)" data-off="transparent">' +
+                    'Show header background' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header headcard headbg">' +
+                '<input type="color" name="--slider-head-card-bg-color" value="#f4f4f4" data-val="#f4f4f4" data-defval="#f4f4f4"/>' +
+                '<input type="text" value="#f4f4f4"/>' +
+                'Header background color' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header headcard">' +
+                '<label>' +
+                    '<input type="checkbox" name="--slider-head-card-radius" value="8px" data-on="8px" data-off="0" checked>' +
+                    'Rounded header corners' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header headcard">' +
+                '<label>' +
+                    '<input type="checkbox" name="--slider-head-card-shadow" value="var(--rev-shadow)" data-on="var(--rev-shadow)" data-off="none">' +
+                    'Show header shadow' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option grw-header-order" data-if="header">' +
+                'Header lines' +
+                '<input type="hidden" name="header_order" value="">' +
+                '<div hidden>' +
+                    '<input type="checkbox" name="header_show_scale" value="">' +
+                    '<input type="checkbox" name="header_hide_name" value="">' +
+                    '<input type="checkbox" name="hide_based_on" value="">' +
+                    '<input type="checkbox" name="header_platform" value="">' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+
+        /* Common Options */
+        '<div class="grw-builder-top grw-toggle">Common Options</div>' +
+        '<div class="grw-builder-inside" style="display:none">' +
+            '<div class="grw-builder-option" data-if="paged">' +
+                'Reviews shown before \'More reviews\'' +
+                '<input type="text" name="pagination" value="">' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="reviews">' +
+                'Maximum characters before \'read more\' link' +
+                '<input type="text" name="text_size" value="">' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="cards">' +
+                'Text height' +
+                '<input type="text" name="slider_text_height" value="" placeholder="Default: 100px">' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="reviews">' +
+                '<label>' +
+                    '<input type="checkbox" name="short_last_name" value="">' +
+                    'Shorten last name (GDPR)' +
+                '</label>' +
+                '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
+                '<div class="grw-quest-help" style="display:none;">Show only first name and first letter of last name</div>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="reviews">' +
+                '<label>' +
+                    '<input type="checkbox" name="min_letter" value="">' +
+                    'Hide reviews without text' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="rating">' +
                 '<label>' +
                     '<input type="checkbox" name="rating_popup" value="" checked>' +
                     'Open reviews in a popup on click' +
                 '</label>' +
                 '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
-                '<div class="grw-quest-help" style="display:none;">Only for the <b>Rating</b> layout: the rating block becomes clickable and opens the reviews in a popup, so the compact badge stays compact.</div>' +
+                '<div class="grw-quest-help" style="display:none;">The rating block becomes clickable and opens the reviews in a popup, so the compact badge stays compact.</div>' +
             '</div>' +
             /*'<div class="grw-builder-option">' +
                 '<label>' +
@@ -101,23 +167,19 @@ const GRW_HTML_CONTENT =
         '</div>' +
 
         /* Slider Options */
-        '<div class="grw-builder-top grw-toggle">Slider Options</div>' +
-        '<div class="grw-builder-inside" style="display:none">' +
-            '<div class="grw-builder-option">' +
-                'Speed in second' +
-                '<input type="text" name="slider_speed" value="" placeholder="Default: 3">' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                'Text height' +
-                '<input type="text" name="slider_text_height" value="" placeholder="Default: 100px">' +
-            '</div>' +
+        '<div class="grw-builder-top grw-toggle" data-if="slider">Slider Options</div>' +
+        '<div class="grw-builder-inside" style="display:none" data-if="slider">' +
             '<div class="grw-builder-option">' +
                 '<label>' +
                     '<input type="checkbox" name="slider_autoplay" value="" checked>' +
                     'Auto-play' +
                 '</label>' +
             '</div>' +
-            '<div class="grw-builder-option">' +
+            '<div class="grw-builder-option" data-if="autoplay">' +
+                'Delay between slides (sec)' +
+                '<input type="text" name="slider_speed" value="" placeholder="Default: 3">' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="autoplay">' +
                 '<label>' +
                     '<input type="checkbox" name="slider_mousestop" value="" checked>' +
                     'Stop auto play on mouse over' +
@@ -138,27 +200,27 @@ const GRW_HTML_CONTENT =
         '</div>' +
 
         /* Breakpoints */
-        '<div class="grw-builder-top grw-toggle">Column Options</div>' +
-        '<div class="grw-builder-inside" style="display:none">' +
+        '<div class="grw-builder-top grw-toggle" data-if="cards">Column Options</div>' +
+        '<div class="grw-builder-inside" style="display:none" data-if="cards">' +
             '<div class="grw-builder-option">' +
                 '<input type="hidden" name="slider_breakpoints">' +
                 '<label>' +
-                    'How many columns to show (for Slider & Grid)' +
+                    'How many columns to show' +
                 '</label>' +
                 '<div class="grw-slider-br">' +
                     '<label>' +
                         '<select>' +
-                            '<option value="off">Disable</option>' +
+                            '<option value="off">Auto</option>' +
                             '<option value="3000">Large Desktop & TV</option>' +
                             '<option value="1200">Desktop</option>' +
                             '<option value="1024">Laptop</option>' +
-                            '<option value="768">Table</option>' +
+                            '<option value="768">Tablet</option>' +
                             '<option value="480">Mobile</option>' +
                             '<option value="">Custom</option>' +
                         '</select>' +
                     '</label>' +
                     '<label>' +
-                        '<input type="range" name="" value="3" min="1" max="12" step="1" oninput="this.nextSibling.innerHTML=this.value"/><span></span>' +
+                        '<input type="range" name="" value="3" min="1" max="12" step="1" oninput="this.nextSibling.innerHTML=this.value"/><span>3</span>' +
                     '</label>' +
                     '<span class="grw-quest" title="Click to add new breakpoints">+</span>' +
                 '</div>' +
@@ -168,51 +230,6 @@ const GRW_HTML_CONTENT =
         /* Style Options */
         '<div class="grw-builder-top grw-toggle">Style Options</div>' +
         '<div class="grw-builder-inside" style="display:none">' +
-            '<div class="grw-builder-option">' +
-                '<input type="color" name="--star-color" value="#fb8e28" data-val="#fb8e28" data-defval="#fb8e28"/>' +
-                '<input type="text" value="#fb8e28"/>' +
-                'Stars color' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<input type="color" name="--head-name-color" value="#333333" data-val="#333333" data-defval="#333333"/>' +
-                '<input type="text" value="#333333"/>' +
-                'Business name color' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<input type="color" name="--head-based-color" value="#555555" data-val="#555555" data-defval="#555555"/>' +
-                '<input type="text" value="#555555"/>' +
-                'Based on color' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<input type="color" name="--powered-color" value="#5e5e5e" data-val="#5e5e5e" data-defval="#5e5e5e"/>' +
-                '<input type="text" value="#5e5e5e"/>' +
-                'Powered color' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<input type="color" name="--btn-color" value="#1f67e7" data-val="#1f67e7" data-defval="#1f67e7"/>' +
-                '<input type="text" value="#1f67e7"/>' +
-                'Button color' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<input type="color" name="--rev-color" value="#f4f4f4" data-val="#f4f4f4" data-defval="#f4f4f4"/>' +
-                '<input type="text" value="#f4f4f4"/>' +
-                'Reviews color' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<input type="color" name="--name-color" value="#154fc1" data-val="#154fc1" data-defval="#154fc1"/>' +
-                '<input type="text" value="#154fc1"/>' +
-                'Review author name color' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<input type="color" name="--text-color" value="#222222" data-val="#222222" data-defval="#222222"/>' +
-                '<input type="text" value="#222222"/>' +
-                'Reviews text color' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<a href="javascript:void(0)" onclick="stylereset(this.parentNode.parentNode);grw_serialize_connections()">' +
-                    'Reset to default style' +
-                '</a>' +
-            '</div>' +
             '<div class="grw-builder-option">' +
                 '<label>' +
                     '<input type="checkbox" name="dark_theme">' +
@@ -225,89 +242,126 @@ const GRW_HTML_CONTENT =
                     'Hide reviews background' +
                 '</label>' +
             '</div>' +*/
-            '<div class="grw-builder-option">' +
+            '<div class="grw-builder-option" data-if="cards">' +
                 '<label>' +
-                    '<input type="checkbox" name="--rev-color" value="#f4f4f4" data-on="transparent" data-off="#f4f4f4" data-defval="#f4f4f4">' +
+                    '<input type="checkbox" name="--rev-bg" value="transparent" data-on="transparent" data-off="var(--rev-color)">' +
                     'Hide reviews background' +
                 '</label>' +
             '</div>' +
-            '<div class="grw-builder-option">' +
+            '<div class="grw-builder-option" data-if="cards revbg">' +
+                '<input type="color" name="--rev-color" value="#f4f4f4" data-val="#f4f4f4" data-defval="#f4f4f4"/>' +
+                '<input type="text" value="#f4f4f4"/>' +
+                'Reviews color' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="cards">' +
                 '<label>' +
                     '<input type="checkbox" name="show_round" value="" checked>' +
-                    'Round reviews borders' +
+                    'Rounded review corners' +
                 '</label>' +
             '</div>' +
-            '<div class="grw-builder-option">' +
+            '<div class="grw-builder-option" data-if="cards">' +
                 '<label>' +
                     '<input type="checkbox" name="show_shadow" value="">' +
                     'Show reviews shadow' +
                 '</label>' +
             '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                '<label>' +
+                    '<input type="checkbox" name="--head-scale-case" value="uppercase" data-on="uppercase" data-off="none" checked>' +
+                    'Uppercase rating label' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<input type="color" name="--star-color" value="#fb8e28" data-val="#fb8e28" data-defval="#fb8e28"/>' +
+                '<input type="text" value="#fb8e28"/>' +
+                'Stars color' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                '<input type="color" name="--head-name-color" value="#333333" data-val="#333333" data-defval="#333333"/>' +
+                '<input type="text" value="#333333"/>' +
+                'Business name color' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                '<input type="color" name="--head-scale-color" value="#333333" data-val="#333333" data-defval="#333333"/>' +
+                '<input type="text" value="#333333"/>' +
+                'Rating label color' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                '<input type="color" name="--head-based-color" value="#555555" data-val="#555555" data-defval="#555555"/>' +
+                '<input type="text" value="#555555"/>' +
+                'Based on color' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                '<input type="color" name="--powered-color" value="#5e5e5e" data-val="#5e5e5e" data-defval="#5e5e5e"/>' +
+                '<input type="text" value="#5e5e5e"/>' +
+                'Powered color' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                '<input type="color" name="--btn-color" value="#1f67e7" data-val="#1f67e7" data-defval="#1f67e7"/>' +
+                '<input type="text" value="#1f67e7"/>' +
+                '\'Review us\' button color' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                '<input type="color" name="--btn-txt-color" value="#ffffff" data-val="#ffffff" data-defval="#ffffff" data-vars="--btn-txt-shadow:none"/>' +
+                '<input type="text" value="#ffffff"/>' +
+                '\'Review us\' button text color' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="reviews">' +
+                '<input type="color" name="--name-color" value="#154fc1" data-val="#154fc1" data-defval="#154fc1"/>' +
+                '<input type="text" value="#154fc1"/>' +
+                'Review author name color' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="reviews">' +
+                '<input type="color" name="--text-color" value="#222222" data-val="#222222" data-defval="#222222"/>' +
+                '<input type="text" value="#222222"/>' +
+                'Reviews text color' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                'Rating label size' +
+                '<div class="grw-range">' +
+                    '<input type="range" name="--head-scale-fs" value="24" min="12" max="48" step="1" data-val="24px" data-defval="24" data-postfix="px"/>' +
+                    '<span class="grw-range-val"></span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                'Rating label weight' +
+                '<div class="grw-range">' +
+                    '<input type="range" name="--head-scale-weight" value="700" min="100" max="900" step="100" data-val="700" data-defval="700"/>' +
+                    '<span class="grw-range-val"></span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                'Rating stars size' +
+                '<div class="grw-range">' +
+                    '<input type="range" name="--head-star-size" value="20" min="12" max="48" step="1" data-val="20px" data-defval="20" data-postfix="px"/>' +
+                    '<span class="grw-range-val"></span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="header">' +
+                'Google logo size' +
+                '<div class="grw-range">' +
+                    '<input type="range" name="--head-logo-size" value="14" min="10" max="48" step="1" data-val="14px" data-defval="14" data-postfix="px"/>' +
+                    '<span class="grw-range-val"></span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<a href="#" class="grw-style-reset">Reset to default style</a>' +
+            '</div>' +
             '<input id="style_vars" name="style_vars" type="hidden"/>' +
         '</div>' +
 
-        /* Advance Options */
-        '<div class="grw-builder-top grw-toggle">Advance Options</div>' +
+        /* Advanced Options */
+        '<div class="grw-builder-top grw-toggle">Advanced Options</div>' +
         '<div class="grw-builder-inside" style="display:none">' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="lazy_load_img" checked>' +
-                    'Lazy load images' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="nofollow_link" checked>' +
-                    'Use no follow links' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="open_link" checked>' +
-                    'Open links in new Window' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="aria_label">' +
-                    'Enable ARIA label for screen readers' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="media" value="" checked>' +
-                    'Show review images' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="reply" value="" checked>' +
-                    'Show owner responses' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="google_def_rev_link">' +
-                    'Use default Google reviews link' +
-                '</label>' +
-                '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
-                '<div class="grw-quest-help" style="display:none;">If the direct link to all reviews <b>https://search.google.com/local/reviews?placeid=&lt;PLACE_ID&gt;</b> does not work with your Google place (leads to 404), please use this option to use the default reviews link to Google map.</div>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                '<label>' +
-                    '<input type="checkbox" name="disable_biz_link">' +
-                    'Disable link on business name' +
-                '</label>' +
-                '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
-                '<div class="grw-quest-help" style="display:none;">Show the business name as plain text instead of a link to the Google Local Business Page.</div>' +
-            '</div>' +
-            '<div class="grw-builder-option">' +
-                'Reviewer avatar size' +
+            '<div class="grw-builder-option" data-if="reviews">' +
+                'Reviewer photo resolution' +
                 '<select name="reviewer_avatar_size">' +
-                    '<option value="56" selected="selected">Small: 56px</option>' +
-                    '<option value="128">Medium: 128px</option>' +
-                    '<option value="256">Large: 256px</option>' +
+                    '<option value="56" selected="selected">56 px (standard)</option>' +
+                    '<option value="128">128 px (Retina)</option>' +
+                    '<option value="256">256 px (max)</option>' +
                 '</select>' +
+                '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
+                '<div class="grw-quest-help" style="display:none;">Photos are shown at 44px; a higher resolution is sharper on Retina screens but loads more data.</div>' +
             '</div>' +
             '<div class="grw-builder-option">' +
                 'Cache data' +
@@ -322,9 +376,53 @@ const GRW_HTML_CONTENT =
                     '<option value="">Disable (NOT recommended)</option>' +
                 '</select>' +
             '</div>' +
-            '<div class="grw-builder-option">' +
+            '<div class="grw-builder-option" data-if="reviews">' +
                 'Reviews limit' +
                 '<input type="text" name="reviews_limit" value="">' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<label>' +
+                    '<input type="checkbox" name="lazy_load_img" checked>' +
+                    'Lazy load images' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<label>' +
+                    '<input type="checkbox" name="nofollow_link" checked>' +
+                    'Use nofollow links' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<label>' +
+                    '<input type="checkbox" name="open_link" checked>' +
+                    'Open links in a new tab' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option">' +
+                '<label>' +
+                    '<input type="checkbox" name="aria_label">' +
+                    'Enable ARIA label for screen readers' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="reviews">' +
+                '<label>' +
+                    '<input type="checkbox" name="media" value="" checked>' +
+                    'Show review images' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="reviews">' +
+                '<label>' +
+                    '<input type="checkbox" name="reply" value="" checked>' +
+                    'Show owner responses' +
+                '</label>' +
+            '</div>' +
+            '<div class="grw-builder-option" data-if="seeall">' +
+                '<label>' +
+                    '<input type="checkbox" name="google_def_rev_link">' +
+                    'Use default Google reviews link' +
+                '</label>' +
+                '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
+                '<div class="grw-quest-help" style="display:none;">If the direct link to all reviews <b>https://search.google.com/local/reviews?placeid=&lt;PLACE_ID&gt;</b> does not work with your Google place (leads to 404), please use this option to use the default reviews link to Google map.</div>' +
             '</div>' +
             '<input type="hidden" id="hidden_ids" name="hidden" value="">' +
         '</div>' +
@@ -353,11 +451,7 @@ const GRW_WIZARD2 =
                     '<b class="wp-google-name"></b>' +
                     '<div style="display:flex;align-items:center;gap:2px">' +
                         '<span class="wp-google-rating"></span>' +
-                        '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
-                        '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
-                        '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
-                        '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
-                        '<svg width="17" height="17" viewBox="0 0 1792 1792"><path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" fill="#fb8e28"></path></svg>' +
+                        '<span class="rpi-stars" style="--rpi-star-size:17px"></span>' +
                     '</div>' +
                     '<small class="wp-google-powered">Based on <span class="wp-google-based"></span> reviews</small>' +
                 '</div>' +
@@ -372,6 +466,22 @@ var GRW_LIGHTBOX;
 
 function grw_stylechange2(target) {
     let rp = document.getElementsByClassName('wp-gr')[0];
+    if (!rp) return;
+
+    let vars = target.getAttribute('data-vars');
+    if (vars) {
+        let on = target.type == 'color' || target.checked;
+        vars.split(';').forEach(function(pair) {
+            pair = pair.split(':');
+            if (pair.length > 1) {
+                if (on) {
+                    rp.style.setProperty(pair[0].trim(), pair[1].trim());
+                } else {
+                    rp.style.removeProperty(pair[0].trim());
+                }
+            }
+        });
+    }
 
     if (target.type == 'range' || target.type == 'color') {
         let val = target.value + (target.getAttribute('data-postfix') || '');
@@ -383,21 +493,6 @@ function grw_stylechange2(target) {
             target.nextSibling.value = val;
         }
     } else if (target.type == 'checkbox' || target.type == 'radio') {
-        let vars = target.getAttribute('data-vars');
-        if (vars) {
-            let arr = vars.split(';');
-            for (let i = 0; i < arr.length; i++) {
-                let pair = arr[i].split(':');
-                if (pair.length > 1) {
-                    if (target.checked) {
-                        let val = pair[1].trim();
-                        rp.style.setProperty(pair[0].trim(), pair[1].trim());
-                    } else {
-                        rp.style.removeProperty(pair[0].trim());
-                    }
-                }
-            }
-        }
         if (target.checked) {
             rp.style.setProperty(target.name, target.getAttribute('data-on'));
         } else if (target.getAttribute('data-off')) {
@@ -408,45 +503,64 @@ function grw_stylechange2(target) {
     }
 
     let style = rp.getAttribute('style'),
-        cssvars = style.match(/(--[a-z]+(-[a-z]+)*:\s*[#0-9a-z]+\s*;)+/g);
+        cssvars = style.match(/(--[a-z]+(-[a-z]+)*:\s*(var\(--[a-z]+(-[a-z]+)*\)|[#0-9a-z]+)\s*;)+/g);
 
     if (cssvars && cssvars.length) {
         window.style_vars.value = cssvars.join('');
     }
 }
 
-function stylereset(parentEl, style_var) {
-    window.style_vars.value = '';
-    /*let rp = document.getElementsByClassName('wp-gr')[0];
+function stylereset() {
+    const rp = document.querySelector('.wp-gr');
     if (rp) {
-        let inputs = (parentEl ? parentEl : document).querySelectorAll('input[name^="--"]');
-
-        for (let i = 0; i < inputs.length; i++) {
-            let defval = inputs[i].getAttribute('data-defval'),
-                pf = inputs[i].getAttribute('data-postfix') || '',
-                val = inputs[i].value + pf;
-
-            inputs[i].value = defval;
-            inputs[i].setAttribute('data-val', defval + pf);
-
-            // if color input put color to the next text input
-            if (inputs[i].type == 'color') {
-                inputs[i].nextSibling.value = defval + pf;
-            } else if (inputs[i].type == 'checkbox' || inputs[i].type == 'radio') {
-                let vars = inputs[i].getAttribute('data-vars');
-                if (vars) {
-                    let arr = vars.split(';');
-                    for (let i = 0; i < arr.length; i++) {
-                        let pair = arr[i].split(':');
-                        rp.style.removeProperty(pair[0].trim());
-                    }
-                }
-                inputs[i].checked = inputs[i].getAttribute('data-checked') == '1';
-            }
-            rp.style.removeProperty(inputs[i].name);
+        [...rp.style].filter(prop => prop.indexOf('--') === 0).forEach(prop => rp.style.removeProperty(prop));
+    }
+    document.querySelectorAll('.grw-connect-options input[name^="--"]').forEach(function(input) {
+        input.value = input.defaultValue;
+        input.checked = input.defaultChecked;
+        input.setAttribute('data-val', input.defaultValue + (input.getAttribute('data-postfix') || ''));
+        if (input.type == 'color') {
+            input.nextSibling.value = input.defaultValue;
         }
-        window.style_vars.value = rp.getAttribute('style');
-    }*/
+    });
+    window.style_vars.value = '';
+    grw_builder_refresh();
+}
+
+function grw_builder_refresh() {
+    const panel = document.querySelector('.grw-connect-options'),
+        q = name => panel.querySelector('[name="' + name + '"]'),
+        on = name => q(name).checked,
+        mode = q('view_mode').value,
+        rating = mode == 'rating';
+
+    // Until the user sets it, the card background follows the theme: public CSS turns it off in the dark one.
+    if (!/--rev-bg:/.test(window.style_vars.value)) {
+        q('--rev-bg').checked = on('dark_theme');
+    }
+
+    const flags = {
+        slider   : mode == 'slider',
+        rating   : rating,
+        cards    : mode == 'slider' || mode == 'grid',
+        paged    : mode == 'grid' || mode == 'list',
+        header   : !on('header_hide_social'),
+        headcard : mode == 'grid' || mode == 'slider' && q('slider_head_pos').value != '2',
+        headbg   : on('--slider-head-card-bg'),
+        revbg    : !on('--rev-bg'),
+        autoplay : on('slider_autoplay'),
+        reviews  : !rating || on('rating_popup'),
+        seeall   : mode == 'list' || rating && on('rating_popup')
+    };
+    panel.querySelectorAll('[data-if]').forEach(function(el) {
+        el.hidden = !el.getAttribute('data-if').split(' ').every(function(flag) {
+            return flag[0] == '!' ? !flags[flag.slice(1)] : flags[flag];
+        });
+    });
+    panel.querySelectorAll('.grw-range-val').forEach(function(val) {
+        const range = val.previousElementSibling;
+        val.textContent = range.value + (range.getAttribute('data-postfix') || '');
+    });
 }
 
 function grw_builder_init($, data) {
@@ -511,11 +625,22 @@ function grw_builder_init($, data) {
     // Init slider breakpoints
     grw_sbs_init();
 
+    const order = el.querySelector('input[name="header_order"]'),
+        box = name => el.querySelector('input[name="' + name + '"]');
+    order.parentNode.append(rpi.Order(order, [
+        {key: 'scale',    label: 'Rating label (Top rated, Excellent...)', input: box('header_show_scale')},
+        {key: 'name',     label: 'Business name',                          input: box('header_hide_name'), invert: true},
+        {key: 'stars',    label: 'Stars'},
+        {key: 'based',    label: '\'Based on ... reviews\'',                input: box('hide_based_on'), invert: true},
+        {key: 'platform', label: 'Use short Google logo',                  input: box('header_platform')}
+    ]));
+    order.addEventListener('change', grw_serialize_connections);
+
     $('.grw-connect-options input[type="text"]:not([name^="--"]),.grw-connect-options textarea').keyup(function() {
         clearTimeout(GRW_AUTOSAVE_TIMEOUT);
         GRW_AUTOSAVE_TIMEOUT = setTimeout(grw_serialize_connections, GRW_AUTOSAVE_KEYUP_TIMEOUT);
     });
-    $('.grw-connect-options input[type="checkbox"]:not([name^="--"]),.grw-connect-options select').change(function() {
+    $('.grw-connect-options input[type="checkbox"][name]:not([name^="--"]),.grw-connect-options select').change(function() {
         grw_serialize_connections();
     });
     $('.grw-connect-options input[name^="--"]').on('input', function() {
@@ -534,6 +659,18 @@ function grw_builder_init($, data) {
         $(this).toggleClass('toggled');
         $(this).next().slideToggle();
     });
+
+    const panel = el.querySelector('.grw-connect-options');
+    panel.addEventListener('change', grw_builder_refresh);
+    panel.addEventListener('input', grw_builder_refresh);
+    panel.querySelector('.grw-style-reset').onclick = function() {
+        if (confirm('Reset all colors and sizes to their defaults?')) {
+            stylereset();
+            grw_serialize_connections();
+        }
+        return false;
+    };
+    grw_builder_refresh();
 
     $('.grw-builder-connect.grw-connect-google').click(function () {
         GRW_LIGHTBOX.show(true);
@@ -627,9 +764,9 @@ function grw_on_keyup(e, val) {
                     a.href      = '#';
                     a.className = 'dropdown-item';
                     a.role      = 'option';
-                    a.innerHTML = '<div class="location-name">' + pred.structured_formatting.main_text + '</div>';
+                    a.innerHTML = '<div class="location-name">' + grw_esc(pred.structured_formatting.main_text) + '</div>';
                     if (pred.structured_formatting.secondary_text) {
-                        a.innerHTML += '<small class="location-address">' + pred.structured_formatting.secondary_text + '</small>';
+                        a.innerHTML += '<small class="location-address">' + grw_esc(pred.structured_formatting.secondary_text) + '</small>';
                     }
                     a.onclick = function(e) {
                         e.preventDefault();
@@ -670,12 +807,14 @@ function grw_set_place(pid, place) {
     let img    = window.grw_place.getElementsByTagName('img')[0],
         name   = window.grw_place.getElementsByClassName('wp-google-name')[0],
         rating = window.grw_place.getElementsByClassName('wp-google-rating')[0],
+        stars  = window.grw_place.getElementsByClassName('rpi-stars')[0],
         based  = window.grw_place.getElementsByClassName('wp-google-based')[0];
 
     img.src          = place.photo || place.icon;
-    name.innerHTML   = place.name;
-    rating.innerHTML = place.rating;
-    based.innerHTML  = place.user_ratings_total;
+    name.textContent   = place.name;
+    rating.textContent = place.rating;
+    stars.style.setProperty('--rating', place.rating || 0);
+    based.textContent  = place.user_ratings_total;
 
     window.grw_place_list.style.display = 'none';
     window.grw_place.style.display = 'block';
@@ -940,7 +1079,7 @@ function grw_connection_add($, el, conn, checked, append) {
             if (mapUrlEl.length) {
                 mapUrlEl.remove();
             }
-            propsEl.prepend('<input type="hidden" name="map_url" value="' + conn.props.map_url + '" class="grw-connect-prop" readonly="">');
+            propsEl.prepend('<input type="hidden" name="map_url" value="' + grw_esc(conn.props.map_url) + '" class="grw-connect-prop" readonly="">');
         }
     } else if (!connected_el.length) {
         connected_el = $('<div class="grw-connection"></div>')[0];
@@ -1070,33 +1209,33 @@ function grw_connection_render(conn, checked) {
     return '' +
         '<div class="grw-toggle grw-builder-connect grw-connect-business">' +
             '<input type="checkbox" class="grw-connect-select" onclick="event.stopPropagation();" ' + (checked?'checked':'') + ' /> ' +
-            name + (conn.address ? ' (' + conn.address + ')' : '') +
+            grw_esc(name) + (conn.address ? ' (' + grw_esc(conn.address) + ')' : '') +
         '</div>' +
         '<div style="display:none">' +
             (function(props) {
                 var result = '';
                 for (prop in props) {
                     if (prop != 'platform' && Object.prototype.hasOwnProperty.call(props, prop)) {
-                        result += '<input type="hidden" name="' + prop + '" value="' + props[prop] + '" class="grw-connect-prop" readonly />';
+                        result += '<input type="hidden" name="' + grw_esc(prop) + '" value="' + grw_esc(props[prop]) + '" class="grw-connect-prop" readonly />';
                     }
                 }
                 return result;
             })(conn.props) +
-            '<input type="hidden" name="id" value="' + conn.id + '" readonly />' +
-            (conn.address ? '<input type="hidden" name="address" value="' + conn.address + '" readonly />' : '') +
-            (conn.access_token ? '<input type="hidden" name="access_token" value="' + conn.access_token + '" readonly />' : '') +
+            '<input type="hidden" name="id" value="' + grw_esc(conn.id) + '" readonly />' +
+            (conn.address ? '<input type="hidden" name="address" value="' + grw_esc(conn.address) + '" readonly />' : '') +
+            (conn.access_token ? '<input type="hidden" name="access_token" value="' + grw_esc(conn.access_token) + '" readonly />' : '') +
             '<div class="grw-builder-option">' +
-                '<img src="' + conn.photo + '" alt="' + grw_esc(conn.name) + '" class="grw-connect-photo">' +
+                '<img src="' + grw_esc(conn.photo) + '" alt="' + grw_esc(conn.name) + '" class="grw-connect-photo">' +
                 '<a href="#" class="grw-connect-photo-change">Change</a>' +
                 '<a href="#" class="grw-connect-photo-default">Default</a>' +
-                '<input type="hidden" name="photo" class="grw-connect-photo-hidden" value="' + conn.photo + '" tabindex="2"/>' +
+                '<input type="hidden" name="photo" class="grw-connect-photo-hidden" value="' + grw_esc(conn.photo) + '" tabindex="2"/>' +
             '</div>' +
             '<div class="grw-builder-option">' +
                 '<input type="text" name="name" value="' + grw_esc(conn.name) + '" />' +
             '</div>' +
             (conn.website != undefined ?
             '<div class="grw-builder-option">' +
-                '<input type="text" name="website" value="' + conn.website + '" />' +
+                '<input type="text" name="website" value="' + grw_esc(conn.website) + '" />' +
             '</div>'
             : '' ) +
             (conn.lang != undefined ?
@@ -1292,6 +1431,16 @@ function grw_deserialize_connections($, el, data) {
 
 function rplg_sv_parse(el, val) {
     if (val) {
+        // Widgets saved before the card background checkbox hid the background by making the card color itself transparent.
+        const legacy = /--rev-color:\s*transparent/;
+        if (legacy.test(val)) {
+            val = window.style_vars.value = val.replace(legacy, '--rev-bg: transparent');
+            const rp = document.querySelector('.wp-gr');
+            if (rp) {
+                rp.style.removeProperty('--rev-color');
+                rp.style.setProperty('--rev-bg', 'transparent');
+            }
+        }
         let sv = val.split(';');
         for (let i = 0; i < sv.length; i++) {
             if (sv[i]) {

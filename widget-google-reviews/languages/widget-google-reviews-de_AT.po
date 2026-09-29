@@ -79,3 +79,18 @@ msgstr "Antwort vom Inhaber"
 
 msgid "opens in a new window"
 msgstr "öffnet sich in einem neuen Fenster"
+
+msgid "Excellent"
+msgstr "Ausgezeichnet"
+
+msgid "Great"
+msgstr "Sehr gut"
+
+msgid "Good"
+msgstr "Gut"
+
+msgid "Fair"
+msgstr "Befriedigend"
+
+msgid "Poor"
+msgstr "Schlecht"

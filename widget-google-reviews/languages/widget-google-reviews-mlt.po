@@ -79,3 +79,18 @@ msgstr "Tweġiba mis-sid"
 
 msgid "opens in a new window"
 msgstr "tinfetaħ f'tieqa ġdida"
+
+msgid "Excellent"
+msgstr "Eċċellenti"
+
+msgid "Great"
+msgstr "Tajjeb ħafna"
+
+msgid "Good"
+msgstr "Tajjeb"
+
+msgid "Fair"
+msgstr "Aċċettabbli"
+
+msgid "Poor"
+msgstr "Ħażin"

@@ -79,3 +79,18 @@ msgstr "Īpašnieka atbilde"
 
 msgid "opens in a new window"
 msgstr "atveras jaunā logā"
+
+msgid "Excellent"
+msgstr "Izcili"
+
+msgid "Great"
+msgstr "Ļoti labi"
+
+msgid "Good"
+msgstr "Labi"
+
+msgid "Fair"
+msgstr "Apmierinoši"
+
+msgid "Poor"
+msgstr "Vāji"

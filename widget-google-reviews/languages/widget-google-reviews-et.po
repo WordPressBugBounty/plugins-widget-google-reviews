@@ -79,3 +79,18 @@ msgstr "Omaniku vastus"
 
 msgid "opens in a new window"
 msgstr "avaneb uues aknas"
+
+msgid "Excellent"
+msgstr "Suurepärane"
+
+msgid "Great"
+msgstr "Väga hea"
+
+msgid "Good"
+msgstr "Hea"
+
+msgid "Fair"
+msgstr "Rahuldav"
+
+msgid "Poor"
+msgstr "Kehv"

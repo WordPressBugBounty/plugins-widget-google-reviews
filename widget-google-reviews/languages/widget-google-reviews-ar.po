@@ -79,3 +79,18 @@ msgstr "رد من المالك"
 
 msgid "opens in a new window"
 msgstr "يفتح في نافذة جديدة"
+
+msgid "Excellent"
+msgstr "ممتاز"
+
+msgid "Great"
+msgstr "رائع"
+
+msgid "Good"
+msgstr "جيد"
+
+msgid "Fair"
+msgstr "مقبول"
+
+msgid "Poor"
+msgstr "ضعيف"

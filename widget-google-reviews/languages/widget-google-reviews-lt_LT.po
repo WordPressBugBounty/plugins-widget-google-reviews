@@ -18,7 +18,7 @@ msgid "More reviews"
 msgstr "Daugiau atsiliepimų"
 
 msgid "Top rated"
-msgstr "Puikiai įvertinta"
+msgstr "Aukščiausiai įvertinta"
 
 msgid "Latest review %s"
 msgstr "Naujausias atsiliepimas %s"
@@ -79,3 +79,18 @@ msgstr "Savininko atsakymas"
 
 msgid "opens in a new window"
 msgstr "atsidaro naujame lange"
+
+msgid "Excellent"
+msgstr "Puikiai"
+
+msgid "Great"
+msgstr "Labai gerai"
+
+msgid "Good"
+msgstr "Gerai"
+
+msgid "Fair"
+msgstr "Patenkinamai"
+
+msgid "Poor"
+msgstr "Silpnai"

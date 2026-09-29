@@ -79,3 +79,18 @@ msgstr "Răspunsul proprietarului"
 
 msgid "opens in a new window"
 msgstr "se deschide într-o fereastră nouă"
+
+msgid "Excellent"
+msgstr "Excelent"
+
+msgid "Great"
+msgstr "Foarte bun"
+
+msgid "Good"
+msgstr "Bun"
+
+msgid "Fair"
+msgstr "Acceptabil"
+
+msgid "Poor"
+msgstr "Slab"

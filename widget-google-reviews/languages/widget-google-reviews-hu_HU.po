@@ -18,7 +18,7 @@ msgid "More reviews"
 msgstr "További vélemények"
 
 msgid "Top rated"
-msgstr "Kiváló"
+msgstr "Legjobbra értékelt"
 
 msgid "Latest review %s"
 msgstr "Legutóbbi vélemény: %s"
@@ -79,3 +79,18 @@ msgstr "A tulajdonos válasza"
 
 msgid "opens in a new window"
 msgstr "új ablakban nyílik meg"
+
+msgid "Excellent"
+msgstr "Kiváló"
+
+msgid "Great"
+msgstr "Nagyon jó"
+
+msgid "Good"
+msgstr "Jó"
+
+msgid "Fair"
+msgstr "Elfogadható"
+
+msgid "Poor"
+msgstr "Gyenge"

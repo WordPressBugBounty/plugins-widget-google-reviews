@@ -79,3 +79,18 @@ msgstr "Reactie van de eigenaar"
 
 msgid "opens in a new window"
 msgstr "opent in een nieuw venster"
+
+msgid "Excellent"
+msgstr "Uitstekend"
+
+msgid "Great"
+msgstr "Zeer goed"
+
+msgid "Good"
+msgstr "Goed"
+
+msgid "Fair"
+msgstr "Redelijk"
+
+msgid "Poor"
+msgstr "Slecht"

@@ -10,7 +10,6 @@ class Badge_Live {
     const MAX_LEN      = 90;
     const MAX_PHRASES  = 24;
     const MAX_RECENT   = 10;
-    const NAME_MAX     = 7;
 
     const TOP_RATED_MIN_RATING = 4.5;
     const TOP_RATED_MIN_TOTAL  = 10;
@@ -75,11 +74,7 @@ class Badge_Live {
 
     // Mirrors rpi.Badge.Live.shortName(), so the PHP first frame matches what the script rotates.
     public static function short_name($name) {
-        $p = preg_split('/\s+/u', trim((string) $name), -1, PREG_SPLIT_NO_EMPTY);
-        if (empty($p)) return '';
-        $full = count($p) > 1 ? $p[0] . ' ' . mb_substr($p[1], 0, 1) . '.' : $p[0];
-        if (mb_strlen($full) <= self::NAME_MAX) return $full;
-        return mb_strlen($p[0]) <= self::NAME_MAX ? $p[0] : mb_substr($p[0], 0, self::NAME_MAX);
+        return preg_match('/\S+/u', (string) $name, $m) ? $m[0] : '';
     }
 
     // Several places roll up the same way the cloud does it: total = sum, rating = count-weighted average.

@@ -349,6 +349,10 @@
     background: #ffffff;
 }
 
+.grw-builder-preview:has(.wp-gr.wp-dark) {
+    background: #1e1e1e;
+}
+
 .grw-builder-options {
     box-sizing: border-box;
     position: fixed;
@@ -881,6 +885,22 @@
     margin-bottom: 10px;
 }
 
+/* Options hidden for the current layout must not leave their margins at the section edges. */
+.grw-connect-options > .grw-builder-inside {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+}
+
+.grw-connect-options > .grw-builder-inside > .grw-builder-option {
+    margin: 0;
+}
+
+.grw-connect-options [hidden] {
+    display: none!important;
+}
+
 .grw-builder-inside input[type="text"],
 .grw-builder-inside select,
 .grw-builder-inside button,
@@ -1110,11 +1130,32 @@ img.grw-connect-photo {
     vertical-align: middle;
 }
 
+.grw-range {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.grw-range input[type="range"] {
+    flex: 1;
+    min-width: 0;
+}
+
+.grw-range-val {
+    min-width: 40px;
+    font-size: 12px;
+    text-align: right;
+}
+
 .grw-slider-br {
     display: flex;
     gap: 4px;
     align-items: center;
     justify-content: space-between;
+    margin-top: 8px;
+}
+
+.grw-header-order .rpi-order {
     margin-top: 8px;
 }
 
@@ -1174,6 +1215,7 @@ img.grw-connect-photo {
 #grw_place_list {
     display: block;
     position: absolute;
+    z-index: 2;
     background: #ffffff;
 }
 

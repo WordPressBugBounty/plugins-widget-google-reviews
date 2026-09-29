@@ -79,3 +79,18 @@ msgstr "Απάντηση του ιδιοκτήτη"
 
 msgid "opens in a new window"
 msgstr "ανοίγει σε νέο παράθυρο"
+
+msgid "Excellent"
+msgstr "Εξαιρετικό"
+
+msgid "Great"
+msgstr "Πολύ καλό"
+
+msgid "Good"
+msgstr "Καλό"
+
+msgid "Fair"
+msgstr "Μέτριο"
+
+msgid "Poor"
+msgstr "Κακό"

@@ -18,7 +18,7 @@ msgid "More reviews"
 msgstr "Več mnenj"
 
 msgid "Top rated"
-msgstr "Odlično"
+msgstr "Najbolje ocenjeno"
 
 msgid "Latest review %s"
 msgstr "Zadnje mnenje %s"
@@ -79,3 +79,18 @@ msgstr "Odgovor lastnika"
 
 msgid "opens in a new window"
 msgstr "odpre se v novem oknu"
+
+msgid "Excellent"
+msgstr "Odlično"
+
+msgid "Great"
+msgstr "Zelo dobro"
+
+msgid "Good"
+msgstr "Dobro"
+
+msgid "Fair"
+msgstr "Zadovoljivo"
+
+msgid "Poor"
+msgstr "Slabo"

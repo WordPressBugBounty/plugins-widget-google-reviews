@@ -29,11 +29,18 @@ class Core {
             'slider_speed'              => 3,
             'slider_mousestop'          => true,
             'slider_breakpoints'        => '',
+            'slider_head_pos'           => '2',
 
             'header_hide_social'        => false,
             'header_center'             => false,
             'header_hide_photo'         => false,
             'header_hide_name'          => false,
+            'header_show_scale'         => false,
+            'header_platform'           => false,
+            'header_order'              => '',
+            'header_bold_count'         => false,
+            'header_short_count'        => false,
+            'header_hide_grade'         => false,
 
             'badge_style'               => 'live',
             'badge_pos'                 => 'right',

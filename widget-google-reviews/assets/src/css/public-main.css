@@ -99,29 +99,18 @@
     background: transparent;
 }
 
-.wp-gr svg {
-    display: inline-block;
-    width: auto;
-    height: auto;
-    vertical-align: middle;
-    overflow: visible;
-}
-
-.wp-gr svg use {
-    opacity: 1;
-    visibility: visible;
-}
-
 /*-------------------------------- Main CSS --------------------------------*/
 .wp-gr {
     --card-gap: 4px;
     --rev-gap: 4px;
-    --img-size: 46px;
+    --img-size: 44px;
     --media-gap: 8px;
     --media-size: 40px;
     --media-lines: 2;
     --color: #fb8e28;
     --rev-color: #f4f4f4;
+    --rev-bg: var(--rev-color);
+    --rev-shadow: 0 0 2px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .24);
     --rpi-star-color: var(--star-color, var(--color));
     --slider-dot-size: 8px;
     --slider-dot-gap: 8px;
@@ -152,7 +141,7 @@
     color: var(--powered-color, #5e5e5e)!important;
     font-size: 16px;
     font-weight: 400;
-    --goog-height: 1.15em;
+    --goog-height: var(--head-logo-size, 1.15em);
 }
 
 .wp-gr .grw-img {
@@ -209,6 +198,84 @@
     padding: 0!important;
     font-size: 128%!important;
     white-space: normal!important;
+}
+
+.wp-gr .wp-google-scale {
+    margin: 0!important;
+    padding: 0!important;
+    color: var(--head-scale-color, #333333)!important;
+    font-size: var(--head-scale-fs, 24px)!important;
+    font-weight: var(--head-scale-weight, 700)!important;
+    text-transform: var(--head-scale-case, uppercase)!important;
+    text-align: var(--align, start)!important;
+}
+
+.wp-gr .grw-header .rpi-stars {
+    --star-size: var(--head-star-size, var(--rpi-star-size, 18px));
+}
+
+/* brb loads widget.css on the same pages, and it sets these variables on .rpi, which the widget root also has. */
+.wp-gr.rpi {
+    --slider-head-card-bg-color: #f4f4f4;
+    --slider-head-card-radius: 8px;
+    /* Declared, not left to the var() fallbacks, so a page theme's variables of the same name cannot reach the button. */
+    --btn-txt-color: #fff;
+    --btn-txt-shadow: 1px 1px 0 #888;
+}
+
+.wp-gr.rpi.wp-dark {
+    --slider-head-card-bg-color: rgba(255, 255, 255, .08);
+    --rev-color: rgba(255, 255, 255, .08);
+    --rev-bg: transparent;
+    /* Declared, not left to the var() fallbacks, so the page theme's own --text-color cannot reach a dark widget. */
+    --text-color: #ececec;
+    --head-name-color: #eeeeee;
+}
+
+/* Edges line up with the cards: 7px = .rpi-slide padding (slider.css) + card margin, 14px + card margin = the gap between cards. */
+.wp-gr .grw-header.rpi-flx {
+    padding: 0 calc(var(--slider-offset) + 7px) 14px!important;
+    box-sizing: border-box!important;
+}
+
+.wp-gr .grw-row + .grw-header.rpi-flx {
+    padding-bottom: 0!important;
+}
+
+/* Below the slider the dots zone is the gap; with the dots hidden the header needs its own. */
+.wp-gr .grw-row:not(:has(.rpi-dots-wrap)) + .grw-header.rpi-flx {
+    padding-top: 14px!important;
+}
+
+.wp-gr[data-layout="grid"] .grw-header.rpi-flx {
+    --slider-offset: 0px;
+}
+
+.wp-gr .grw-header.rpi-flx > .grw-header-inner {
+    --wrap: wrap;
+    flex: 1 1 auto;
+    width: auto!important;
+    margin: 0!important;
+    padding: 16px!important;
+    border-radius: var(--slider-head-card-radius)!important;
+    background: var(--slider-head-card-bg, transparent)!important;
+    box-shadow: var(--slider-head-card-shadow, none)!important;
+}
+
+/* Centered, the column grows in height and a zero basis would collapse it; 12px is the rpi-row12 gap beside the photo. */
+.wp-gr .grw-header.rpi-flx > .grw-header-inner:not(.grw-center) > .rpi-flx {
+    flex: 1 1 0;
+    align-self: center;
+    min-width: min(180px, calc(100% - var(--img-size) - 12px));
+    width: auto!important;
+}
+
+.wp-gr .grw-header.rpi-flx > .grw-header-inner > .wp-google-wr {
+    align-self: center;
+}
+
+.wp-gr .grw-header .rpi-row12-center > .wp-google-name {
+    width: auto!important;
 }
 
 .wp-gr .grw-header-inner > .rpi-flx {
@@ -417,7 +484,11 @@
 
 .wp-gr.rpi.wp-dark .wp-google-name a,
 .wp-gr.rpi.wp-dark .wp-google-name span {
-    color: var(--head-based-color, #eeeeee)!important
+    color: var(--head-name-color, #eeeeee)!important
+}
+
+.wp-gr.wp-dark .wp-google-scale {
+    color: var(--head-scale-color, #eeeeee)!important
 }
 
 .wp-gr.wp-dark .wp-google-time {
@@ -425,7 +496,7 @@
 }
 
 .wp-gr.wp-dark .wp-google-text {
-    color: #ececec!important
+    color: var(--text-color, #ececec)!important
 }
 
 .wp-gr.wp-dark .wp-google-powered {
@@ -436,8 +507,8 @@
     color: var(--head-based-color, #999999)!important
 }
 
-.wp-gr:not(.wp-dark) .grw-review-inner.grw-backgnd {
-    background: var(--rev-color)!important;
+.wp-gr .grw-review-inner.grw-backgnd {
+    background: var(--rev-bg)!important;
 }
 
 .wp-gr.rpi .wp-google-name {
@@ -577,15 +648,14 @@
 }
 
 .wp-gr .grw-review-inner.grw-shadow {
-    box-shadow: 0 0 2px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .24)!important
+    box-shadow: var(--rev-shadow)!important
 }
 
-.wp-gr .grw-review-inner > svg {
+.wp-gr .grw-review-inner > .rpi-logo {
     position: absolute!important;
     top: 10px!important;
     right: 10px!important;
-    width: 16px!important;
-    height: 16px!important;
+    --logo-size: 16px;
 }
 
 .wp-gr .grw-review {
@@ -636,13 +706,13 @@
 }
 
 .wp-gr .wp-google-wr a {
-    color: #fff!important;
+    color: var(--btn-txt-color, #fff)!important;
     padding: 4px 12px 8px!important;
     border-radius: 27px!important;
     background: var(--btn-color, #1f67e7)!important;
     white-space: nowrap!important;
     vertical-align: middle!important;
-    text-shadow: 1px 1px 0 #888!important;
+    text-shadow: var(--btn-txt-shadow, 1px 1px 0 #888)!important;
     box-shadow: inset 0 0 0 100vmax transparent, 0 0 2px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .24)!important;
     user-select: none!important;
     transition: all .2s ease-in-out!important;
@@ -667,14 +737,16 @@
     box-shadow: inset 0 0 0 100vmax rgba(0, 0, 0, .12)!important;
 }
 
-.wp-gr .wp-google-wr a svg {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    padding: 1px;
+.wp-gr .wp-google-wr .rpi-logo {
+    display: inline-flex;
     margin: 0 0 0 4px;
-    background: #fff;
-    border-radius: 50%;
+    vertical-align: middle;
+    --logo-size: 16px;
+}
+
+.wp-gr .wp-google-wr .rpi-logo::before {
+    border: 1px solid #fff;
+    background-color: #fff;
 }
 
 /*-------------------------------- grid --------------------------------*/

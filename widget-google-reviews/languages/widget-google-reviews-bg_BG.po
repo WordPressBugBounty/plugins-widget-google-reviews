@@ -79,3 +79,18 @@ msgstr "Отговор от собственика"
 
 msgid "opens in a new window"
 msgstr "отваря се в нов прозорец"
+
+msgid "Excellent"
+msgstr "Отлично"
+
+msgid "Great"
+msgstr "Много добре"
+
+msgid "Good"
+msgstr "Добре"
+
+msgid "Fair"
+msgstr "Задоволително"
+
+msgid "Poor"
+msgstr "Слабо"

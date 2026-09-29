@@ -79,3 +79,18 @@ msgstr "ຄຳຕອບຈາກເຈົ້າຂອງ"
 
 msgid "opens in a new window"
 msgstr "ເປີດໃນໜ້າຕ່າງໃໝ່"
+
+msgid "Excellent"
+msgstr "ດີເລີດ"
+
+msgid "Great"
+msgstr "ດີຫຼາຍ"
+
+msgid "Good"
+msgstr "ດີ"
+
+msgid "Fair"
+msgstr "ພໍໃຊ້"
+
+msgid "Poor"
+msgstr "ບໍ່ດີ"

@@ -79,3 +79,18 @@ msgstr "תגובה מהבעלים"
 
 msgid "opens in a new window"
 msgstr "נפתח בחלון חדש"
+
+msgid "Excellent"
+msgstr "מצוין"
+
+msgid "Great"
+msgstr "טוב מאוד"
+
+msgid "Good"
+msgstr "טוב"
+
+msgid "Fair"
+msgstr "סביר"
+
+msgid "Poor"
+msgstr "גרוע"

@@ -48,7 +48,7 @@ final class Plugin {
     public function admin_init() {
         if (!wp_doing_ajax() && get_option('grw_do_activation', false)) {
             delete_option('grw_do_activation');
-            wp_safe_redirect(admin_url('admin.php?page=' . (get_option('grw_feed_ids') ? 'grw' : 'grw-badge')));
+            wp_safe_redirect(admin_url('admin.php?page=grw'));
             exit;
         }
     }

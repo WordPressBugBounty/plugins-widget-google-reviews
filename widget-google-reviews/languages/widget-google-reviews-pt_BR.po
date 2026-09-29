@@ -18,7 +18,7 @@ msgid "More reviews"
 msgstr "Mais avaliações"
 
 msgid "Top rated"
-msgstr "Bem avaliado"
+msgstr "Mais bem avaliado"
 
 msgid "Latest review %s"
 msgstr "Última avaliação %s"
@@ -79,3 +79,18 @@ msgstr "Resposta do proprietário"
 
 msgid "opens in a new window"
 msgstr "abre em uma nova janela"
+
+msgid "Excellent"
+msgstr "Excelente"
+
+msgid "Great"
+msgstr "Ótimo"
+
+msgid "Good"
+msgstr "Bom"
+
+msgid "Fair"
+msgstr "Regular"
+
+msgid "Poor"
+msgstr "Ruim"

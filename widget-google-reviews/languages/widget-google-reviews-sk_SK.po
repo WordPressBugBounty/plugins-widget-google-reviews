@@ -79,3 +79,18 @@ msgstr "Odpoveď od majiteľa"
 
 msgid "opens in a new window"
 msgstr "otvorí sa v novom okne"
+
+msgid "Excellent"
+msgstr "Vynikajúce"
+
+msgid "Great"
+msgstr "Veľmi dobré"
+
+msgid "Good"
+msgstr "Dobré"
+
+msgid "Fair"
+msgstr "Priemerné"
+
+msgid "Poor"
+msgstr "Slabé"

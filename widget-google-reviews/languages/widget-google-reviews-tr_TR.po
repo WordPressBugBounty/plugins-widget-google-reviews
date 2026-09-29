@@ -79,3 +79,18 @@ msgstr "İşletme sahibinin yanıtı"
 
 msgid "opens in a new window"
 msgstr "yeni pencerede açılır"
+
+msgid "Excellent"
+msgstr "Mükemmel"
+
+msgid "Great"
+msgstr "Çok iyi"
+
+msgid "Good"
+msgstr "İyi"
+
+msgid "Fair"
+msgstr "Orta"
+
+msgid "Poor"
+msgstr "Zayıf"

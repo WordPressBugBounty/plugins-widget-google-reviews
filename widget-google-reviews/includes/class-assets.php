@@ -37,6 +37,7 @@ class Assets {
         'rpi-lightbox-js'         => 'https://cdn.reviewsplugin.com/assets/js/lightbox.js',
         'rpi-toast-js'            => 'https://cdn.reviewsplugin.com/assets/js/toast.js',
         'rpi-langs-js'            => 'https://cdn.reviewsplugin.com/assets/js/langs.js',
+        'rpi-order-js'            => 'https://cdn.reviewsplugin.com/assets/js/order.js',
         'rpi-media-js'            => 'https://cdn.reviewsplugin.com/assets/js/media.js',
         'rpi-slider-js'           => 'https://cdn.reviewsplugin.com/assets/js/slider.js',
         'rpi-badge-js'            => 'https://cdn.reviewsplugin.com/assets/js/badge.js'
@@ -154,6 +155,7 @@ class Assets {
             array_push($scripts, 'rpi-lightbox-js');
             array_push($scripts, 'rpi-toast-js');
             array_push($scripts, 'rpi-langs-js');
+            array_push($scripts, 'rpi-order-js');
             array_push($scripts, 'rpi-media-js');
             array_push($scripts, 'rpi-slider-js');
             array_push($scripts, 'rpi-badge-js');
@@ -184,6 +186,7 @@ class Assets {
             wp_enqueue_script('rpi-toast-js');
             wp_enqueue_script('rpi-lightbox-js');
             wp_enqueue_script('rpi-langs-js');
+            wp_enqueue_script('rpi-order-js');
             wp_localize_script('grw-admin-builder-js', 'GRW_VARS', $vars);
             wp_enqueue_script('grw-admin-builder-js');
             wp_enqueue_script('grw-admin-badge-js');
