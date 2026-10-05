@@ -1,5 +1,12 @@
 == Changelog ==
 
+= 7.1.5 =
+* New: card styles for the slider and grid: 19 presets with an editable layout and colors.
+* New: card styles show the review text in whole lines with "read more" that opens it in place; the number of lines is adjustable.
+* New: CSS variables field in Advanced Options to restyle the cards and the header by hand.
+* New: option to anonymize profile photos: the first letter of the reviewer's name on a colored circle instead of the photo.
+* Fixed: hiding a review did not work for reviews stored in more than one language.
+
 = 7.1.4 =
 * New: rating label above the business name (Top rated, Excellent, Great...).
 * New: header settings: line order, short review count, hide rating number, sizes and colors.

@@ -115,7 +115,7 @@ class Plugin_Badge {
     }
 
     private static function keys() {
-        return array_merge(Core::badge_option_keys(), array('style_vars'));
+        return array_merge(Core::badge_option_keys(), array('style_vars', 'anonym_avatar'));
     }
 
     public function render() {
@@ -217,13 +217,18 @@ class Plugin_Badge {
                 'wr'       => $summary->wr,
             ));
         }
-        ob_start();
-        (new View())->render_popup($data['reviews'], $data['options']);
+        $popup = function($anonym) use ($data) {
+            $data['options']->anonym_avatar = $anonym;
+            ob_start();
+            (new View())->render_popup($data['reviews'], $data['options']);
+            return ob_get_clean();
+        };
         return array(
-            'bizs'   => $bizs,
-            'live'   => Badge_Live::build($data['reviews']),
-            'popup'  => ob_get_clean(),
-            'sample' => false,
+            'bizs'         => $bizs,
+            'live'         => Badge_Live::build($data['reviews']),
+            'popup'        => $popup(false),
+            'popup_anonym' => $popup(true),
+            'sample'       => false,
         );
     }
 
@@ -289,6 +294,8 @@ class Plugin_Badge {
             unset($base[$key]);
         }
         $options = array_merge(array('view_mode' => 'badge'), $base, $options);
+        // A badge switched to a slider or grid in the builder must not land on the legacy Standard card.
+        if (empty($options['card_style'])) $options['card_style'] = 'c1';
         return json_decode(wp_json_encode(array('connections' => $connections, 'options' => $options)));
     }
 

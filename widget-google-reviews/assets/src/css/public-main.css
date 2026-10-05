@@ -172,6 +172,19 @@
     pointer-events: none;
 }
 
+.wp-gr .grw-img-char {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    color: #ffffff !important;
+    font-size: calc(var(--img-size) / 2.2) !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 .wp-gr .grw-header .grw-img {
     border-radius: 50%;
 }
@@ -287,7 +300,8 @@
     text-decoration: none!important
 }
 
-.wp-gr .wp-google-time {
+.wp-gr .wp-google-time,
+.wp-gr .grw-platform {
     color: #555!important;
     font-size: 13px!important;
     white-space: nowrap!important
@@ -491,7 +505,8 @@
     color: var(--head-scale-color, #eeeeee)!important
 }
 
-.wp-gr.wp-dark .wp-google-time {
+.wp-gr.wp-dark .wp-google-time,
+.wp-gr.wp-dark .grw-platform {
     color: #bbb!important
 }
 
@@ -800,4 +815,240 @@
     cursor: pointer !important;
     border-radius: 3px !important;
     box-shadow: 0 0 2px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .24) !important;
+}
+
+/*-------------------------------- Engine card --------------------------------*/
+.wp-gr.rpi {
+    --card-padding: 16px;
+    /* slider.css paints the arrows with --card-bg, which grw widgets never had before card styles. */
+    --slider-btn-bg: #f5f5f5;
+}
+
+/* A long name must not widen the grid or the slider past its column. */
+.wp-gr .grw-reviews:has(> .rpi-card) {
+    min-width: 0;
+}
+
+.wp-gr .grw-review.rpi-card {
+    /* The card's own star colour, star size and photo size: the rating header keeps the widget's. */
+    --img-size: var(--card-img-size, 44px);
+    --rpi-star-size: var(--card-star-size, 20px);
+    --rpi-star-color: var(--card-star-color, var(--star-color, var(--color)));
+    flex-direction: column;
+    align-items: stretch!important;
+    justify-content: flex-start!important;
+    min-width: 0;
+}
+
+.wp-gr .rpi-card > .grw-review-inner {
+    --logo-size: 16px;
+    flex: 1 1 auto;
+    width: auto!important;
+    height: auto!important;
+    padding: var(--card-padding)!important;
+    border: var(--card-br, none)!important;
+    border-color: var(--card-br-color, transparent)!important;
+    border-radius: var(--card-radius, 8px)!important;
+    box-shadow: var(--card-shadow, none)!important;
+}
+
+/* 16px is the corner logo, drawn by the frame; the logos inside it stay 14px. */
+.wp-gr .rpi-card > .grw-review-inner > * {
+    --logo-size: 14px;
+}
+
+.wp-gr .rpi-card > .grw-review-inner.grw-backgnd {
+    background: var(--card-bg)!important;
+}
+
+/* grw's rule for its own corner logo would take a logo line, or the stars' logo wrapper, out of the flow. */
+.wp-gr .rpi-card > .grw-review-inner.rpi-col12 > .rpi-logo {
+    position: static!important;
+    top: auto!important;
+    right: auto!important;
+}
+
+/* Lines outside a bubble keep the frame's 4px shadow margin to stay in line. */
+.wp-gr .rpi-card > :not(.grw-review-inner) {
+    --logo-size: 14px;
+    margin-inline: 4px!important;
+}
+
+/* The name gives way first: it may break at any letter but shows one line, so it never sets the width of its line
+   and a cut name fills its line up to the ellipsis. */
+.wp-gr.rpi .rpi-card .wp-google-name {
+    display: -webkit-box!important;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    width: auto!important;
+    max-width: 100%;
+    white-space: normal!important;
+    word-break: break-all;
+}
+
+/* On a right-to-left page a Latin name or label is cut at its own end: in the page's direction the ellipsis would cover its first letters. */
+[dir="rtl"] .wp-gr.rpi .rpi-card .wp-google-name,
+[dir="rtl"] .wp-gr.rpi .rpi-card .grw-b {
+    unicode-bidi: plaintext;
+}
+
+.wp-gr .rpi-card > .grw-review-inner .wp-google-text,
+.wp-gr .rpi-card > .grw-review-inner .wp-google-reply {
+    color: var(--card-color, #222222)!important;
+}
+
+.wp-gr .rpi-card > .grw-review-inner .wp-google-time,
+.wp-gr .rpi-card > .grw-review-inner .grw-platform {
+    color: var(--time-color, #555555)!important;
+}
+
+.wp-gr .grw-platform {
+    font-weight: 600!important;
+}
+
+.wp-gr .rpi-card .wp-google-name {
+    font-size: var(--card-name-size, 100%)!important;
+}
+
+/* The size and line height are set once, on the text's box below (an em or % value would apply twice); on the baseline, lines are
+   exactly the line height apart. */
+.wp-gr .rpi-card .wp-google-text {
+    font-size: inherit!important;
+    line-height: inherit!important;
+    vertical-align: baseline!important;
+}
+
+/* The browser cuts the text after the theme's number of lines, always at a whole line; "read more" (public-main.js) opens it in place.
+   The block draws the "…" and its line boxes hold the text's inline span: both take the text's colour, size and line height, not the site's. */
+.wp-gr .rpi-card .wp-google-feedback {
+    display: -webkit-box!important;
+    -webkit-box-orient: vertical!important;
+    -webkit-line-clamp: var(--card-text-lines, 5)!important;
+    height: auto!important;
+    overflow: hidden!important;
+    color: var(--card-color, #222222)!important;
+    font-size: var(--card-text-size, 15px)!important;
+    line-height: var(--card-line-height, 24px)!important;
+    min-height: calc(var(--card-text-lines, 5) * 1lh)!important;
+}
+
+/* --col is the grid's cards per row (from its width class or its breakpoints): a card alone in its row follows its text. */
+.wp-gr[data-layout="grid"] .rpi-card .wp-google-feedback {
+    min-height: calc(var(--card-text-lines, 5) * 1lh * min(1, var(--col, 3) - 1))!important;
+}
+
+/* Centred, Chrome sets the last line before adding its "…", which then runs past the box and is cut: room on both sides, outside the
+   width the text wraps in. */
+.wp-gr .rpi-card .rpi-center .wp-google-feedback {
+    padding-inline: .6em!important;
+    margin-inline: -.6em!important;
+}
+
+.wp-gr.rpi-lightbox-review .rpi-card .wp-google-feedback {
+    -webkit-line-clamp: none!important;
+    max-height: none!important;
+    min-height: 0!important;
+}
+
+/* The photo popup's copy of the card shows the whole text in its own scrolling pane; a copied "read more" would do nothing. */
+.wp-gr.rpi-lightbox-review .grw-more {
+    display: none!important;
+}
+
+/* "read more" stands in for the text's last line: right under the text, without the gap of the column they share. */
+.wp-gr .rpi-card .grw-more {
+    margin-top: calc(-1 * var(--gap, 4px));
+    color: var(--card-color, #222222)!important;
+    font-size: var(--card-text-size, 15px)!important;
+    line-height: var(--card-line-height, 24px)!important;
+    text-decoration: underline!important;
+    text-underline-offset: 2px;
+}
+
+/* Only some themes set these: a page's own variables of the same names must not reach the others. */
+.wp-gr {
+    --card-name-size: initial;
+    --card-text-size: initial;
+    --card-line-height: initial;
+    --card-time-size: initial;
+}
+
+.wp-gr .rpi-card .wp-google-time:not(.wp-google-reply *),
+.wp-gr .rpi-card .grw-platform {
+    font-size: var(--card-time-size, 13px)!important;
+}
+
+/* A long date wraps, and only between words: some themes let every word break anywhere. */
+.wp-gr .rpi-card .wp-google-time:not(.wp-google-reply *) {
+    white-space: normal!important;
+    word-break: normal!important;
+}
+
+/* In a group within a line (beside the photo, or pushed to its end) the date keeps 5em, about two words: in a narrower space the
+   group moves under the line instead of squeezing the name to a letter. */
+.wp-gr .rpi-card .rpi-row12-center > .rpi-col6 > .wp-google-time {
+    min-width: 5em;
+}
+
+.wp-gr .rpi-card .grw-img {
+    filter: var(--img-filter, none);
+}
+
+.wp-gr .rpi-card .rpi-col4 > .wp-google-reply {
+    margin-top: 8px!important;
+}
+
+/* As on the Standard card, the reply sits at the bottom of a card taller than its text. */
+.wp-gr .rpi-card .rpi-col4:has(> .wp-google-reply) {
+    flex-grow: 1;
+}
+
+.wp-gr .rpi-card .rpi-col4 > :has(+ .wp-google-reply) {
+    margin-bottom: auto!important;
+}
+
+/* The reply box is two lines high: its heading keeps one line, shortened before the date, so the reply shows and a narrow column stays narrow. */
+.wp-gr .rpi-card .wp-google-reply {
+    overflow-wrap: anywhere;
+}
+
+.wp-gr .rpi-card .wp-google-reply > div {
+    display: grid;
+    grid-template-columns: minmax(0, max-content) minmax(0, max-content);
+}
+
+.wp-gr .rpi-card .grw-b,
+.wp-gr .rpi-card .wp-google-reply .wp-google-time {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wp-gr .rpi-card .grw-img-wrap.rpi-logo_after::after {
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 2px #ffffff;
+}
+
+/* grw's names carry margin: 0!important, which a push must still override. */
+.wp-gr.rpi .rpi-card .rpi-row12-center > .wp-google-name.rpi-push {
+    margin-inline-start: auto!important;
+}
+
+.wp-gr.rpi .rpi-card :is(.rpi-col12, .rpi-col8, .rpi-col6) > .wp-google-name.rpi-push {
+    margin-top: auto!important;
+}
+
+/* Positioned rather than a flex item, so a long name still ends in an ellipsis. */
+.wp-gr .rpi-card .wp-google-name.rpi-logo_after {
+    position: relative;
+    padding-inline-end: calc(var(--logo-size) + 6px)!important;
+}
+
+.wp-gr .rpi-card .wp-google-name.rpi-logo_after::after {
+    position: absolute;
+    inset-inline-end: 0;
+    top: 50%;
+    transform: translateY(-50%);
 }

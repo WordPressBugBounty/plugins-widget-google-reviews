@@ -19,6 +19,7 @@ class Core {
             'show_round'                => false,
             'show_shadow'               => false,
             'short_last_name'           => false,
+            'anonym_avatar'             => false,
             'media'                     => true,
             'reply'                     => true,
 
@@ -67,6 +68,9 @@ class Core {
             'max_width'                 => '',
             'max_height'                => '',
             'style_vars'                => '',
+            'css_vars'                  => '',
+            'card_style'                => '',
+            'card_layout'               => '',
 
             'open_link'                 => true,
             'nofollow_link'             => true,
@@ -293,16 +297,14 @@ class Core {
     private function fetch_reviews($place_ids, $options, $lang, $all_langs, $limit, $is_admin) {
         global $wpdb;
 
-        $where_plain = $is_admin ? '' : " AND r2.hide = ''";
-        $where_r     = $is_admin ? '' : " AND r.hide = ''";
+        $where_r = $is_admin ? '' : " AND r.hide = ''";
 
         $hidden_ids = array();
         if (isset($options->hidden) && !$is_admin) {
             $hidden_ids = $this->parse_hidden_ids($options->hidden);
             if (!empty($hidden_ids)) {
-                $hidden_phs   = implode(',', array_fill(0, count($hidden_ids), '%d'));
-                $where_plain .= ' AND r2.id NOT IN (' . $hidden_phs . ')';
-                $where_r     .= ' AND r.id NOT IN (' . $hidden_phs . ')';
+                $hidden_phs = implode(',', array_fill(0, count($hidden_ids), '%d'));
+                $where_r   .= ' AND r.id NOT IN (' . $hidden_phs . ')';
             }
         }
 
@@ -324,7 +326,7 @@ class Core {
                   AND (%d = 1 OR t.text IS NOT NULL OR r.language IN ({$lang_phs}) OR r.language IS NULL OR r.language = '')
                   AND NOT EXISTS (
                       SELECT 1 FROM {$wpdb->prefix}" . Database::REVIEW_TABLE . " r2
-                      WHERE r2.google_place_id = r.google_place_id AND r2.author_url = r.author_url{$where_plain}
+                      WHERE r2.google_place_id = r.google_place_id AND r2.author_url = r.author_url
                         AND (r2.time > r.time OR (r2.time = r.time AND r2.id > r.id))
                   )
                 ORDER BY r.time DESC, r.id DESC";
@@ -338,8 +340,7 @@ class Core {
             $place_ids,
             $hidden_ids,
             [$all_langs],
-            $lang_aliases,
-            $hidden_ids
+            $lang_aliases
         );
 
         return $wpdb->get_results($wpdb->prepare($sql, $params));

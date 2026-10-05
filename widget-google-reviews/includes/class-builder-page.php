@@ -86,6 +86,8 @@ class Builder_Page {
             $businesses = $data['businesses'];
             $reviews = $data['reviews'];
             $options = $data['options'];
+            // A widget saved before card styles opens as Classic, which its first save keeps; admin-builder.js carries its old look over.
+            if (empty($options->card_style)) $options->card_style = 'c1';
             if (isset($businesses) && count($businesses) || isset($reviews) && count($reviews)) {
                 $feed_inited = true;
             }
@@ -188,6 +190,7 @@ class Builder_Page {
                     grw_builder_init($, {
                         el       : '#grw-builder-option',
                         authcode : <?php echo wp_json_encode((string) $authcode); ?>,
+                        cards    : <?php echo wp_json_encode(array('presets' => Card_Presets::PRESETS, 'skin' => Card_Presets::SKIN, 'ink' => Card_Presets::INK, 'shadows' => Card_Presets::SHADOWS, 'vars' => Card_Presets::VARS)); ?>,
                         <?php if (!empty($api_key)) echo 'key: true,'; ?>
                         <?php if (!empty($feed_content)) echo 'conns: ' . wp_json_encode($decoded_content); ?>
                     });

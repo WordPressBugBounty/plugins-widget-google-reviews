@@ -135,11 +135,74 @@ function grw_badge_popup(rootEl, src, common) {
     };
 }
 
+// A card theme cuts the text at a whole line in CSS. A text longer than the theme's lines shows one line less and "read more" takes the
+// last line, so every card keeps the same height; once opened, the whole text scrolls in that same height.
+function grw_more(fb, options) {
+    const open = () => {
+        fb.classList.add('grw-open');
+        // Inline: "remove unused CSS" optimizers drop the rules of a class the page only gets on a click.
+        fb.style.setProperty('-webkit-line-clamp', 'none', 'important');
+    };
+    // Without ResizeObserver a text shown later ("More reviews", a tab) would stay cut with no link.
+    if (!window.ResizeObserver) return open();
+    const links = grw_more.links || grw_more_watch();
+    const more = rpi.el({tag: 'span', cl: 'wp-more-toggle grw-more', text: rpi.Utils.__('read more', options.trans)});
+    rpi.btn(more);
+    more.onclick = () => {
+        const byKeys = rpi.keyFocus() === more;
+        links.delete(fb);
+        grw_more.ro.unobserve(fb);
+        fb.style.maxHeight = more.getBoundingClientRect().bottom - fb.getBoundingClientRect().top + 'px';
+        fb.style.setProperty('overflow-y', 'auto', 'important');
+        more.remove();
+        open();
+        if (byKeys) rpi.focusOnce(fb);
+    };
+    links.set(fb, more);
+    grw_more.ro.observe(fb);
+    grw_more.mo.observe(fb, {childList: true, characterData: true, subtree: true});
+}
+
+// A text is measured at the theme's full lines, every box before any link moves. A late web font or text swapped in place (WordPress's
+// emoji images, a translator) changes the lines without a resize.
+function grw_more_watch() {
+    const links = grw_more.links = new Map();
+    const check = fbs => {
+        fbs = fbs.filter(fb => links.has(fb));
+        fbs.forEach(fb => { fb.style.removeProperty('-webkit-line-clamp'); fb.style.removeProperty('min-height'); });
+        fbs.map(fb => {
+            const s = getComputedStyle(fb), lh = parseFloat(s.lineHeight) || parseFloat(s.fontSize) * 1.2;
+            // A cut hides at least a line; letters taller than a tight line height stick out by less than half of one.
+            return [fb, fb.isConnected && fb.scrollHeight - fb.clientHeight > lh / 2, parseInt(s.getPropertyValue('--card-text-lines'), 10) || 5, lh];
+        }).forEach(([fb, cut, lines, lh]) => {
+            const more = links.get(fb);
+            if (!fb.isConnected) {
+                links.delete(fb);
+                grw_more.ro.unobserve(fb);
+            } else if (!cut) more.remove();
+            else {
+                fb.style.setProperty('-webkit-line-clamp', Math.max(1, lines - 1), 'important');
+                fb.style.setProperty('min-height', Math.max(1, lines - 1) * lh + 'px', 'important');
+                if (!more.isConnected) fb.after(more);
+            }
+        });
+    };
+    // A frame later: a box resized inside its own observer's callback is a "ResizeObserver loop" error in WebKit.
+    grw_more.ro = new ResizeObserver(es => requestAnimationFrame(() => check(es.map(e => e.target))));
+    grw_more.mo = new MutationObserver(ms => check([...new Set(ms.map(m => m.target.nodeType === 1 ? m.target : m.target.parentElement).filter(Boolean)
+        .map(n => n.closest('.wp-google-feedback')))]));
+    if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => check([...links.keys()]));
+    return links;
+}
+
 function grw_init(el, layout) {
     const rootEl = rpi.Utils.getParent(el, 'wp-gr');
 
     if (rootEl.getAttribute('data-exec') == 'true') return;
     else rootEl.setAttribute('data-exec', 'true');
+
+    // A host's wpautop wraps card lines in <p>, and the card's CSS addresses each line as a child of its row or box.
+    rootEl.querySelectorAll('.rpi-card p').forEach(p => p.replaceWith(...p.childNodes));
 
     const options = JSON.parse(rootEl.getAttribute('data-options'));
 
@@ -149,6 +212,7 @@ function grw_init(el, layout) {
         readmore : 'wp-more-toggle'
     });
     common.init();
+    rootEl.querySelectorAll('.rpi-card .wp-google-feedback').forEach(fb => grw_more(fb, options));
 
     const media = rpi.Media(rootEl, {}, {
         root : 'wp-gr',
@@ -224,3 +288,5 @@ function grw_boot() {
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', grw_boot);
 else grw_boot();
+// Page builders' editors (a framed preview, or Beaver Builder's in the page itself) put a widget in after the page has loaded.
+if (window.self !== window.top || /[?&]fl_builder\b/.test(location.search)) new MutationObserver(grw_boot).observe(document.documentElement, {childList: true, subtree: true});

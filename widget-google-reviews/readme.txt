@@ -3,7 +3,7 @@ Contributors: widgetpack
 Tags: google reviews, reviews, review slider, review widget, reviews plugin
 Requires PHP: 7.2
 Tested up to: 7.1
-Stable tag: 7.1.4
+Stable tag: 7.1.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -123,6 +123,13 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 7.1.5 =
+* New: card styles for the slider and grid: 19 presets with an editable layout and colors.
+* New: card styles show the review text in whole lines with "read more" that opens it in place; the number of lines is adjustable.
+* New: CSS variables field in Advanced Options to restyle the cards and the header by hand.
+* New: option to anonymize profile photos: the first letter of the reviewer's name on a colored circle instead of the photo.
+* Fixed: hiding a review did not work for reviews stored in more than one language.
 
 = 7.1.4 =
 * New: rating label above the business name (Top rated, Excellent, Great...).

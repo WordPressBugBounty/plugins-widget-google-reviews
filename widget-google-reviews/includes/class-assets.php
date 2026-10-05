@@ -20,7 +20,9 @@ class Assets {
         'rpi-common-css'          => 'https://cdn.reviewsplugin.com/assets/css/common.css',
         'rpi-lightbox-css'        => 'https://cdn.reviewsplugin.com/assets/css/lightbox.css',
         'rpi-icons-css'           => 'https://cdn.reviewsplugin.com/assets/css/icons.css',
-        'rpi-badge-css'           => 'https://cdn.reviewsplugin.com/assets/css/badge.css'
+        'rpi-badge-css'           => 'https://cdn.reviewsplugin.com/assets/css/badge.css',
+        'rpi-card-css'            => 'https://cdn.reviewsplugin.com/assets/css/card.css',
+        'rpi-card-editor-css'     => 'https://cdn.reviewsplugin.com/assets/css/card-editor.css'
     );
 
     private static $js_assets = array(
@@ -40,7 +42,9 @@ class Assets {
         'rpi-order-js'            => 'https://cdn.reviewsplugin.com/assets/js/order.js',
         'rpi-media-js'            => 'https://cdn.reviewsplugin.com/assets/js/media.js',
         'rpi-slider-js'           => 'https://cdn.reviewsplugin.com/assets/js/slider.js',
-        'rpi-badge-js'            => 'https://cdn.reviewsplugin.com/assets/js/badge.js'
+        'rpi-badge-js'            => 'https://cdn.reviewsplugin.com/assets/js/badge.js',
+        'rpi-card-js'             => 'https://cdn.reviewsplugin.com/assets/js/card.js',
+        'rpi-card-editor-js'      => 'https://cdn.reviewsplugin.com/assets/js/card-editor.js'
     );
 
     public function __construct($url, $version, $debug) {
@@ -138,7 +142,9 @@ class Assets {
             'rpi-common-css',
             'rpi-lightbox-css',
             'rpi-icons-css',
-            'rpi-badge-css'
+            'rpi-badge-css',
+            'rpi-card-css',
+            'rpi-card-editor-css'
         );
         $this->register_styles_loop($styles);
     }
@@ -159,6 +165,8 @@ class Assets {
             array_push($scripts, 'rpi-media-js');
             array_push($scripts, 'rpi-slider-js');
             array_push($scripts, 'rpi-badge-js');
+            array_push($scripts, 'rpi-card-js');
+            array_push($scripts, 'rpi-card-editor-js');
         }
         $this->register_scripts_loop($scripts);
     }
@@ -167,6 +175,9 @@ class Assets {
         wp_enqueue_style('wp-jquery-ui-dialog');
         wp_enqueue_style('grw-admin-main-css');
         wp_style_add_data('grw-admin-main-css', 'rtl', 'replace');
+        if ($this->debug) {
+            wp_enqueue_style('rpi-card-editor-css');
+        }
         $this->enqueue_public_styles();
     }
 
@@ -187,6 +198,8 @@ class Assets {
             wp_enqueue_script('rpi-lightbox-js');
             wp_enqueue_script('rpi-langs-js');
             wp_enqueue_script('rpi-order-js');
+            wp_enqueue_script('rpi-card-js');
+            wp_enqueue_script('rpi-card-editor-js');
             wp_localize_script('grw-admin-builder-js', 'GRW_VARS', $vars);
             wp_enqueue_script('grw-admin-builder-js');
             wp_enqueue_script('grw-admin-badge-js');
@@ -207,6 +220,7 @@ class Assets {
             wp_enqueue_style('rpi-lightbox-css');
             wp_enqueue_style('rpi-icons-css');
             wp_enqueue_style('rpi-badge-css');
+            wp_enqueue_style('rpi-card-css');
         }
 
         $handle = 'grw-public-main-css';

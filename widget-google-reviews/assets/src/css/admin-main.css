@@ -1159,6 +1159,26 @@ img.grw-connect-photo {
     margin-top: 8px;
 }
 
+.grw-card-lines {
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+}
+
+.grw-builder-inside .rpi-lines-add {
+    width: auto;
+}
+
+.grw-card-hint {
+    color: #646970;
+    font-size: 12px;
+}
+
+.grw-card-error {
+    color: #d63638;
+    font-size: 12px;
+}
+
 .grw-slider-br label {
     display: flex;
     position: relative;

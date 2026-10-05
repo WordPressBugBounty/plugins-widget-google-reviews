@@ -489,7 +489,7 @@ function grw_badge_page() {
         embedStage.classList.toggle('grw-badge-stage-edge', embed && !!state.options.badge_bar);
         embedStage.classList.toggle('grw-badge-stage-glass', /^glass/.test(state.options.badge_tone || ''));
         // The lightbox moves the popup out of the root on the first open, so it is captured once here.
-        const popup = state.data.popup || '';
+        const popup = (state.options.anonym_avatar ? state.data.popup_anonym : state.data.popup) || '';
         let popupEl = null;
         const root = draw(embedStage, state.options, !embed, popup ? () => grw_popup_open(root, popupEl) : null);
         root.insertAdjacentHTML('beforeend', popup);
@@ -641,6 +641,7 @@ function grw_badge_page() {
         b4.append(toggle('badge_order', 'Stars before the rating', {get: () => o.badge_order === 'stars', set: v => { o.badge_order = v ? 'stars' : ''; }}));
         b4.append(toggle('badge_dot', 'Count after a dot, not in brackets'));
         b4.append(toggle('badge_author_hide', 'Hide review authors'));
+        b4.append(toggle('anonym_avatar', 'Anonymize profile photos'));
         const eligible = rpi.Badge.Live.topRated(rpi.Badge.Live.biz({data: state.data}), {badge_toprated: true});
         if (!eligible) o.badge_toprated = false;
         b4.append(toggle('badge_toprated', 'Top rated label', {disabled: !eligible, title: eligible ? '' : TOP_RATED_NOTE}));
