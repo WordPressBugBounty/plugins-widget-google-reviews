@@ -77,11 +77,7 @@ class View {
     }
 
     private function root_cls($options) {
-        $cls = empty($options->style) || $options->style === 'legacy' ? ' wpac' : '';
-        if ($options->dark_theme) {
-            $cls .= ' wp-dark';
-        }
-        return $cls;
+        return $options->dark_theme ? ' wp-dark' : '';
     }
 
     private function options($options, $card) {
@@ -143,17 +139,14 @@ class View {
     private function render_grid($businesses, $reviews, $options, $is_admin = false, $card = null) {
         $pagination = max(0, (int) $options->pagination);
         $hr = false;
-        if (count($businesses) > 0) {
-            $this->grw_place(
-                $businesses[0]->rating,
-                $businesses[0],
-                $businesses[0]->photo,
-                $reviews,
-                $options,
-                true,
-                true
-            );
-        }
+        // Below only on a card preset grid: an older grid may still carry "below" from its slider days, when grids ignored it.
+        $below = $card && $options->slider_head_pos == '3';
+        $header = function() use ($businesses, $reviews, $options) {
+            if (count($businesses) > 0) {
+                $this->grw_place($businesses[0]->rating, $businesses[0], $businesses[0]->photo, $reviews, $options, true, true);
+            }
+        };
+        if (!$below) $header();
         ?><div class="grw-row grw-row-m" data-options='<?php
             echo esc_attr(json_encode(
                 array(
@@ -185,6 +178,7 @@ class View {
             </div>
             <?php } ?>
         </div><?php
+        if ($below) $header();
     }
 
     private function render_list($businesses, $reviews, $options, $is_admin = false) {

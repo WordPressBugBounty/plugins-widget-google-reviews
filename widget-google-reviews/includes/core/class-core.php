@@ -444,7 +444,7 @@ class Core {
             );
     }
 
-    private function get_short_name($author_name){
+    public function get_short_name($author_name){
         $names = explode(" ", $author_name);
         if (count($names) > 1) {
             $last_index = count($names) - 1;

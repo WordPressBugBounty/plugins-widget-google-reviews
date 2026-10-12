@@ -54,6 +54,15 @@ class Admin_Menu {
             'grw-badge'
         );
         $badge_page->add_page();
+
+        $widget_page = new Admin_Page(
+            'grw',
+            __('Create Widget', 'widget-google-reviews'),
+            __('Create Widget', 'widget-google-reviews'),
+            'manage_options',
+            'grw-widget'
+        );
+        $widget_page->add_page();
     }
 
     // Screen ids are toplevel_page_grw, google-reviews_page_grw-*, edit-grw_feed, grw_feed.
@@ -95,6 +104,8 @@ class Admin_Menu {
 
         $hidden_pages = array(
             'grw-builder',
+            'grw-badge',
+            'grw-widget',
         );
 
         if ($plugin_page && in_array($plugin_page, $hidden_pages)) {

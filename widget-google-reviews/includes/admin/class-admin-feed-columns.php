@@ -8,7 +8,7 @@ class Admin_Feed_Columns {
 
     private $feed_deserializer;
 
-    // 'badge' widgets are created and edited on the Badge page, the builder never offers it.
+    // 'badge' widgets are created and edited on the Create Widget page, the builder never offers it.
     private static $plugin_themes = array(
         'list'   => 'List',
         'slider' => 'Slider',
@@ -22,6 +22,7 @@ class Admin_Feed_Columns {
     }
 
     public function register() {
+        add_action('admin_init', array($this, 'keep_editor'));
         add_filter('get_edit_post_link', array($this, 'change_edit_post_link'), 10, 3);
         add_filter('manage_edit-' . Post_Types::FEED_POST_TYPE . '_columns', array($this, 'get_columns'));
         add_action('manage_' . Post_Types::FEED_POST_TYPE . '_posts_custom_column', array($this, 'render'), 10, 2);
@@ -33,15 +34,28 @@ class Admin_Feed_Columns {
         if (get_post_type($id) !== Post_Types::FEED_POST_TYPE) {
             return $link;
         }
-        $badge = $this->is_badge($id);
-        return admin_url('admin.php?page=' . ($badge ? 'grw-badge' : 'grw-builder') . '&' . Post_Types::FEED_POST_TYPE . '_id=' . $id . ($badge ? '&step=1' : ''));
+        $o = $this->options($id);
+        return admin_url('admin.php?page=' . (($o->view_mode ?? '') === 'badge' ? 'grw-widget' : 'grw-builder') . '&' . Post_Types::FEED_POST_TYPE . '_id=' . $id);
     }
 
-    private function is_badge($id) {
-        $feed = $this->feed_deserializer->get_feed($id);
-        if (!$feed) return false;
-        $content = json_decode($feed->post_content);
-        return isset($content->options->view_mode) && $content->options->view_mode === 'badge';
+    // Only its own editor keeps a widget: a builder save turns a badge into a list, a create page save drops an old card's look.
+    public function keep_editor() {
+        global $plugin_page;
+        if ($plugin_page !== 'grw-builder' && $plugin_page !== 'grw-widget') return;
+        $id = isset($_GET[Post_Types::FEED_POST_TYPE . '_id']) ? (int) $_GET[Post_Types::FEED_POST_TYPE . '_id'] : 0;
+        $o = $id ? $this->options($id) : null;
+        if (!$o) return;
+        $mode = $o->view_mode ?? '';
+        $card = in_array($mode, array('slider', 'grid'), true) && !empty($o->card_style);
+        if ($plugin_page === 'grw-builder' ? $mode === 'badge' : $mode !== 'badge' && !$card) {
+            wp_safe_redirect($this->change_edit_post_link('', $id, 'raw'));
+            exit;
+        }
+    }
+
+    private function options($id) {
+        $content = json_decode((string) get_post_field('post_content', $id));
+        return $content->options ?? null;
     }
 
     public function get_columns($columns) {
@@ -83,7 +97,7 @@ class Admin_Feed_Columns {
                 echo isset(self::$plugin_themes[$view_mode]) ? self::$plugin_themes[$view_mode] : 'List';
                 break;
             case 'grw_shortcode':
-                echo '<input type="text" value="[grw id=' . $feed->ID . ']" onclick="this.select(); document.execCommand(\'copy\');var sm=this.nextSibling;sm.className=\'\';setTimeout(function() {sm.className=\'grw_hide\';},10);" readonly=""><small>shortcode copied</small>';
+                echo '<input type="text" value="[grw id=' . $feed->ID . ']" aria-label="' . esc_attr__('Shortcode', 'widget-google-reviews') . '" onclick="this.select(); document.execCommand(\'copy\');var sm=this.nextSibling;sm.className=\'\';setTimeout(function() {sm.className=\'grw_hide\';},10);" readonly=""><small>shortcode copied</small>';
                 break;
         }
     }

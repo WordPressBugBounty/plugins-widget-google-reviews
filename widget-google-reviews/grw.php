@@ -3,7 +3,7 @@
 Plugin Name: Rich Showcase for Google Reviews
 Plugin URI: https://wordpress.org/plugins/widget-google-reviews/
 Description: Instantly display Google reviews on your website to increase user confidence and sales.
-Version: 7.1.5
+Version: 7.1.6
 Requires at least: 6.0
 Requires PHP: 7.2
 Author: RichPlugins <support@richplugins.com>
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 
 require(ABSPATH . 'wp-includes/version.php');
 
-define('GRW_VERSION'              , '7.1.5');
+define('GRW_VERSION'              , '7.1.6');
 define('GRW_PLUGIN_FILE'          , __FILE__);
 define('GRW_PLUGIN_PATH'          , plugin_dir_path(GRW_PLUGIN_FILE));
 define('GRW_PLUGIN_URL'           , plugins_url(basename(GRW_PLUGIN_PATH), basename(__FILE__)));
@@ -35,9 +35,9 @@ require_once __DIR__ . '/autoloader.php';
 function grw_plugin_action_links($links, $file) {
     $plugin_file = basename(__FILE__);
     if (basename($file) == $plugin_file) {
-        $settings_link = '<a href="' . admin_url('admin.php?page=grw-builder') . '">' .
+        $settings_link = '<a href="' . admin_url('admin.php?page=grw-widget') . '">' .
                              '<span style="background-color:#fb8e28;color:#fff;font-weight:bold;padding:0px 8px 2px">' .
-                                 'Connect Reviews' .
+                                 esc_html__('Create Widget', 'widget-google-reviews') .
                              '</span>' .
                          '</a>';
         array_unshift($links, $settings_link);

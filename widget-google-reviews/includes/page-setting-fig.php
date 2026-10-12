@@ -123,4 +123,4 @@
     </div>
 </div>
 
-<p style="text-align:center"><b>Congratulation! Now you need to <a href="<?php echo admin_url('admin.php?page=grw-builder'); ?>" target="_blank">create your first widget and connect Google reviews</a>,<br>then you can show this widget in a sidebar or like a shortcode on the any page of your website.</b></p>
+<p style="text-align:center"><b>Congratulation! Now you need to <a href="<?php echo admin_url('admin.php?page=grw-widget'); ?>" target="_blank">create your first widget and connect Google reviews</a>,<br>then you can show this widget in a sidebar or like a shortcode on the any page of your website.</b></p>

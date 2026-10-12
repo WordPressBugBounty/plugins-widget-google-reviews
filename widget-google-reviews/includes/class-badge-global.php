@@ -44,6 +44,10 @@ class Badge_Global {
         if (empty($data['options']->view_mode) || $data['options']->view_mode !== 'badge') {
             return;
         }
+        // An embed badge belongs in the page content; one made the site's badge before saves stopped that is skipped.
+        if (isset($data['options']->badge_pos) && $data['options']->badge_pos === 'embed') {
+            return;
+        }
 
         $grw_demand_assets = get_option('grw_demand_assets');
         if ($grw_demand_assets || $grw_demand_assets == 'true') {

@@ -28,7 +28,9 @@ class Assets {
     private static $js_assets = array(
         'grw-admin-main-js'       => 'js/admin-main',
         'grw-admin-builder-js'    => 'js/admin-builder',
+        'grw-admin-steps-js'      => 'js/admin-steps',
         'grw-admin-badge-js'      => 'js/admin-badge',
+        'grw-admin-themes-js'     => 'js/admin-themes',
         'grw-admin-apexcharts-js' => 'js/admin-apexcharts',
         'grw-public-main-js'      => 'js/public-main',
 
@@ -153,7 +155,9 @@ class Assets {
         $scripts = array('grw-admin-main-js', 'grw-public-main-js', 'grw-admin-apexcharts-js');
         if ($this->debug) {
             array_push($scripts, 'grw-admin-builder-js');
+            array_push($scripts, 'grw-admin-steps-js');
             array_push($scripts, 'grw-admin-badge-js');
+            array_push($scripts, 'grw-admin-themes-js');
             array_push($scripts, 'rpi-time-js');
             array_push($scripts, 'rpi-utils-js');
             array_push($scripts, 'rpi-column-js');
@@ -202,7 +206,9 @@ class Assets {
             wp_enqueue_script('rpi-card-editor-js');
             wp_localize_script('grw-admin-builder-js', 'GRW_VARS', $vars);
             wp_enqueue_script('grw-admin-builder-js');
+            wp_enqueue_script('grw-admin-steps-js');
             wp_enqueue_script('grw-admin-badge-js');
+            wp_enqueue_script('grw-admin-themes-js');
         } else {
             wp_localize_script('grw-admin-main-js', 'GRW_VARS', $vars);
         }

@@ -102,6 +102,14 @@
 /*-------------------------------- Main CSS --------------------------------*/
 .wp-gr {
     --card-gap: 4px;
+    /* The padding slider.css gives .rpi-slide: 4px 3px. */
+    --slide-pad-x: 3px;
+    --slide-pad-y: 4px;
+    --card-margin: 4px;
+    /* The header's distance from older cards, fixed as in 7.1.5: a page may set --card-gap on .rpi (brb does). */
+    --grw-gap: 18px;
+    /* A card's frame above and below it: an older card fills its slide's height, so its margin there is never seen. */
+    --frame-y: var(--slide-pad-y);
     --rev-gap: 4px;
     --img-size: 44px;
     --media-gap: 8px;
@@ -231,9 +239,22 @@
 .wp-gr.rpi {
     --slider-head-card-bg-color: #f4f4f4;
     --slider-head-card-radius: 8px;
+    /* The plate is off unless style_vars turn it on; the header's style query compares these values. */
+    --slider-head-card-bg: transparent;
+    --slider-head-card-shadow: none;
     /* Declared, not left to the var() fallbacks, so a page theme's variables of the same name cannot reach the button. */
     --btn-txt-color: #fff;
     --btn-txt-shadow: 1px 1px 0 #888;
+}
+
+/* Card preset cards (saved since 7.1.5) bring the outlined review button; older widgets, and browsers without :has, keep the blue one. */
+.wp-gr.rpi:has(.rpi-card) {
+    --btn-txt-color: #1f1f1f;
+    --btn-txt-shadow: none;
+    --btn-bg: #fff;
+    --btn-border: #dadce0;
+    --btn-radius: 16px;
+    --btn-color: initial;
 }
 
 .wp-gr.rpi.wp-dark {
@@ -245,9 +266,16 @@
     --head-name-color: #eeeeee;
 }
 
-/* Edges line up with the cards: 7px = .rpi-slide padding (slider.css) + card margin, 14px + card margin = the gap between cards. */
+/* An engine card keeps its margin above and below; a browser without :has spaces it as an older card. */
+.wp-gr:has(.rpi-card) {
+    --frame-y: calc(var(--slide-pad-y) + var(--card-margin));
+    /* The gap between two cards in a row; the header and the rows of a grid keep the same distance. */
+    --grw-gap: calc(2 * (var(--slide-pad-x) + var(--card-margin)) + var(--card-gap));
+}
+
+/* Edges line up with the cards, and the header stands as far from them as they stand from each other. */
 .wp-gr .grw-header.rpi-flx {
-    padding: 0 calc(var(--slider-offset) + 7px) 14px!important;
+    padding: 0 calc(var(--slider-offset) + var(--slide-pad-x) + var(--card-margin)) calc(var(--grw-gap) - var(--frame-y))!important;
     box-sizing: border-box!important;
 }
 
@@ -257,7 +285,12 @@
 
 /* Below the slider the dots zone is the gap; with the dots hidden the header needs its own. */
 .wp-gr .grw-row:not(:has(.rpi-dots-wrap)) + .grw-header.rpi-flx {
-    padding-top: 14px!important;
+    padding-top: calc(var(--grw-gap) - var(--frame-y))!important;
+}
+
+/* A grid has no dots: the same without :has, for browsers that lack it. */
+.wp-gr[data-layout="grid"] .grw-row + .grw-header.rpi-flx {
+    padding-top: calc(var(--grw-gap) - var(--frame-y))!important;
 }
 
 .wp-gr[data-layout="grid"] .grw-header.rpi-flx {
@@ -273,6 +306,17 @@
     border-radius: var(--slider-head-card-radius)!important;
     background: var(--slider-head-card-bg, transparent)!important;
     box-shadow: var(--slider-head-card-shadow, none)!important;
+}
+
+/* Without a plate the header's inner padding is only space: by preset cards it keeps 6px of it on their side. */
+@container style(--slider-head-card-bg: transparent) and style(--slider-head-card-shadow: none) {
+    .wp-gr:has(.rpi-card) .grw-header.rpi-flx > .grw-header-inner {
+        padding-bottom: 6px!important;
+    }
+
+    .wp-gr:has(.rpi-card) .grw-row + .grw-header.rpi-flx > .grw-header-inner {
+        padding: 6px 16px 16px!important;
+    }
 }
 
 /* Centered, the column grows in height and a zero basis would collapse it; 12px is the rpi-row12 gap beside the photo. */
@@ -649,7 +693,7 @@
 .wp-gr .grw-header-inner,
 .wp-gr .grw-review-inner {
     position: relative!important;
-    margin: 4px!important;
+    margin: var(--card-margin)!important;
     padding: 16px!important;
     width: 100%!important;
 }
@@ -733,11 +777,33 @@
     transition: all .2s ease-in-out!important;
 }
 
+/* An outlined secondary button: the rating stays the loudest thing in the header. A colour picked in the builder fills it. */
+.wp-gr:has(.rpi-card) .wp-google-wr a {
+    display: inline-flex!important;
+    align-items: center!important;
+    box-sizing: border-box!important;
+    min-height: 32px!important;
+    color: var(--btn-txt-color, #1f1f1f)!important;
+    font-size: 14px!important;
+    font-weight: 500!important;
+    line-height: 1.2!important;
+    padding: 0 14px!important;
+    border: 1px solid var(--btn-color, var(--btn-border, #dadce0))!important;
+    border-radius: var(--btn-radius, 16px)!important;
+    background: var(--btn-color, var(--btn-bg, #fff))!important;
+    white-space: nowrap!important;
+    text-shadow: var(--btn-txt-shadow, none)!important;
+    box-shadow: inset 0 0 0 100vmax transparent!important;
+    user-select: none!important;
+    transition: box-shadow .2s ease-in-out!important;
+}
+
 /* :where() adds no specificity: themes that override the button override this too. */
 .wp-gr .wp-google-wr a:where(:not(:focus-visible)) {
     outline: none !important;
 }
 
+/* Inside the button: outside, the header column's overflow cuts the ring, and a white label's ring vanishes on a white page. */
 .wp-gr .wp-google-wr a:focus-visible {
     outline-offset: -4px;
 }
@@ -750,6 +816,26 @@
 .wp-gr .wp-google-wr a:active {
     background: var(--btn-color, #1f67e7)!important;
     box-shadow: inset 0 0 0 100vmax rgba(0, 0, 0, .12)!important;
+}
+
+.wp-gr:has(.rpi-card) .wp-google-wr a:hover {
+    background: var(--btn-color, var(--btn-bg, #fff))!important;
+    box-shadow: inset 0 0 0 100vmax rgba(0, 0, 0, .04)!important;
+}
+
+.wp-gr:has(.rpi-card) .wp-google-wr a:active {
+    background: var(--btn-color, var(--btn-bg, #fff))!important;
+    box-shadow: inset 0 0 0 100vmax rgba(0, 0, 0, .08)!important;
+}
+
+.wp-gr.rpi.wp-dark:has(.rpi-card) {
+    --btn-txt-color: #e3e3e3;
+    --btn-border: #5f6368;
+    --btn-bg: transparent;
+}
+
+.wp-gr.wp-dark:has(.rpi-card) .wp-google-wr a:hover {
+    box-shadow: inset 0 0 0 100vmax rgba(255, 255, 255, .08)!important;
 }
 
 .wp-gr .wp-google-wr .rpi-logo {
@@ -770,6 +856,11 @@
     gap: var(--card-gap, 12px);
     flex-wrap: wrap !important;
     -ms-flex-wrap: wrap!important;
+}
+
+/* Rows as far apart as the cards in a row; grids without engine cards keep their 7.1.5 spacing. */
+.wp-gr[data-layout="grid"]:has(.rpi-card) .grw-reviews {
+    row-gap: calc(var(--grw-gap) - 2 * var(--frame-y));
 }
 
 .wp-gr .grw-b {
@@ -868,10 +959,18 @@
     right: auto!important;
 }
 
-/* Lines outside a bubble keep the frame's 4px shadow margin to stay in line. */
+/* Lines outside a bubble keep the frame's shadow margin to stay in line, and on the card's outer edge too, so --frame-y holds for them. */
 .wp-gr .rpi-card > :not(.grw-review-inner) {
     --logo-size: 14px;
-    margin-inline: 4px!important;
+    margin-inline: var(--card-margin)!important;
+}
+
+.wp-gr .rpi-card > :not(.grw-review-inner):first-child {
+    margin-top: var(--card-margin)!important;
+}
+
+.wp-gr .rpi-card > :not(.grw-review-inner):last-child {
+    margin-bottom: var(--card-margin)!important;
 }
 
 /* The name gives way first: it may break at any letter but shows one line, so it never sets the width of its line

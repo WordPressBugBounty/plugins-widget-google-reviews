@@ -2,27 +2,37 @@
 
 namespace WP_Rplg_Google_Reviews\Includes;
 
+use WP_Rplg_Google_Reviews\Includes\Core\Google_Dao;
+
 class Plugin_Overview {
 
-    private $builder_page;
+    private $dao;
 
-    public function __construct($builder_page) {
-        $this->builder_page = $builder_page;
+    public function __construct(Google_Dao $dao) {
+        $this->dao = $dao;
     }
 
     public function register() {
-        $feed_ids = get_option('grw_feed_ids');
-        if (empty($feed_ids)) {
-            $render_function = array($this, 'connect');
-        } else {
-            $render_function = array($this, 'render');
-        }
-
-        add_action('grw_admin_page_grw', $render_function);
+        add_action('admin_init', array($this, 'first_run'));
+        add_action('grw_admin_page_grw', array($this, 'render'));
     }
 
-    public function connect() {
-        $this->builder_page->render(null);
+    // Until the first widget an administrator starts on Create Widget; a site with businesses keeps Overview and Places, one with an API key Settings.
+    public function first_run() {
+        global $pagenow, $plugin_page;
+        $page = $pagenow === 'edit.php' && ($_GET['post_type'] ?? '') === Post_Types::FEED_POST_TYPE ? 'widgets' : $plugin_page;
+        if (!in_array($page, array('grw', 'grw-places', 'grw-settings', 'widgets'), true) || count($_GET) > 1
+            || !current_user_can('manage_options') || self::has_widgets()) return;
+        if ($page === 'grw-settings' ? get_option('grw_google_api_key') : $page !== 'widgets' && $this->dao->get_places()) return;
+        wp_safe_redirect(admin_url('admin.php?page=grw-widget'));
+        exit;
+    }
+
+    // In any status: a site with only trashed widgets keeps its list and its Trash.
+    private static function has_widgets() {
+        $counts = (array) wp_count_posts(Post_Types::FEED_POST_TYPE);
+        unset($counts['auto-draft']);
+        return array_sum($counts) > 0;
     }
 
     public function render() {
@@ -35,6 +45,10 @@ class Plugin_Overview {
         </div>
 
         <div class="grw-overview-workspace">
+
+            <?php if (!self::has_widgets() && current_user_can('manage_options')) { ?>
+            <p><a class="button button-primary" href="<?php echo esc_url(admin_url('admin.php?page=grw-widget')); ?>"><?php echo esc_html__('Create Widget', 'widget-google-reviews'); ?></a></p>
+            <?php } ?>
 
             <div class="grw-overview-places">
                 <select id="grw-overview-months">

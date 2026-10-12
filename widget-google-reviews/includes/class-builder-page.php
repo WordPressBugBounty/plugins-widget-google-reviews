@@ -27,8 +27,9 @@ class Builder_Page {
 
     public function init() {
         $feed = null;
-        if (isset($_GET[Post_Types::FEED_POST_TYPE . '_id'])) {
-            $feed = $this->feed_deserializer->get_feed(sanitize_text_field(wp_unslash($_GET[Post_Types::FEED_POST_TYPE . '_id'])));
+        $id = isset($_GET[Post_Types::FEED_POST_TYPE . '_id']) ? (int) $_GET[Post_Types::FEED_POST_TYPE . '_id'] : 0;
+        if ($id) {
+            $feed = $this->feed_deserializer->get_feed($id);
         } else if (!empty($_GET['grw_place_id'])) {
             $feed = $this->place_feed(sanitize_text_field(wp_unslash($_GET['grw_place_id'])));
         }

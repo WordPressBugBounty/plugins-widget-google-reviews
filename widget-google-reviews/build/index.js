@@ -24,6 +24,7 @@
             for (let i = 0; i < feeds.length; i++) {
                 options.push({label: feeds[i].name, value: String(feeds[i].id)});
             }
+            var chosen = feeds.some(function(feed) { return String(feed.id) === attributes.id; });
 
             return el(
                 'div',
@@ -31,7 +32,7 @@
                 el(
                     SelectControl,
                     {
-                        id: 'id',
+                        label: __('Reviews widget', 'widget-google-reviews'),
                         name: 'id',
                         value: attributes.id || '',
                         options: options,
@@ -40,19 +41,20 @@
                         }
                     }
                 ),
-                el(
+                grwBlockData.manage && el(
                     Button,
                     {
                         text: __('Edit reviews widget', 'widget-google-reviews'),
                         href: grwBlockData.builderUrl + '&grw_feed_id=' + attributes.id,
+                        disabled: !chosen,
                         target: '_blank'
                     }
                 ),
-                el(
+                grwBlockData.manage && el(
                     Button,
                     {
                         text: __('Create new reviews widget', 'widget-google-reviews'),
-                        href: grwBlockData.builderUrl,
+                        href: grwBlockData.createUrl,
                         target: '_blank'
                     }
                 )

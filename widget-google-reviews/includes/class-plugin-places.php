@@ -7,14 +7,12 @@ use WP_Rplg_Google_Reviews\Includes\Core\Google_Dao;
 class Plugin_Places {
 
     private $dao;
-    private $builder_page;
 
     public function __construct(Google_Dao $dao) {
         $this->dao = $dao;
     }
 
-    public function register(Builder_Page $builder_page) {
-        $this->builder_page = $builder_page;
+    public function register() {
         add_action('grw_admin_page_grw-places', array($this, 'render'));
         add_action('wp_ajax_grw_delete_place', array($this, 'delete_place'));
         add_filter('wp_insert_post_data', array($this, 'drop_missing_places'), 10, 2);
@@ -72,7 +70,11 @@ class Plugin_Places {
     public function render() {
         $places = $this->dao->get_places();
         if (empty($places)) {
-            $this->builder_page->render(null);
+            ?><div class="grw-page-title">Places</div>
+            <div class="grw-places-workspace">
+                <p class="description">No business connected yet.</p>
+                <p><a class="button button-primary" href="<?php echo esc_url(admin_url('admin.php?page=grw-widget')); ?>"><?php echo esc_html__('Create Widget', 'widget-google-reviews'); ?></a></p>
+            </div><?php
             return;
         }
 

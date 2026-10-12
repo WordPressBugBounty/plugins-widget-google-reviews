@@ -1,5 +1,18 @@
 == Changelog ==
 
+= 7.1.6 =
+* New: Create Widget gallery with ready-made slider, grid, list, rating and badge designs, previewed with your own reviews.
+* New: one click creates a draft page with the new widget.
+* Change: badges are listed under Widgets, and the Badges menu item is removed.
+* Change: a site without widgets starts on Create Widget; connecting reviews there needs no API key.
+* Change: widgets with card styles show an outlined review button.
+* Change: the mouse wheel moves the slider one step per turn, and scrolling down goes to the next reviews.
+* Improved: the slider keeps its cards in place when the window is resized or the phone is rotated.
+* Fixed: editing a badge from the block editor could turn it into a list.
+* Fixed: the block's Edit button with no widget chosen opened another widget for editing.
+* Fixed: the Widgets list had no All, Published and Trash links.
+* Fixed: cards showing under the slider arrows in Firefox.
+
 = 7.1.5 =
 * New: card styles for the slider and grid: 19 presets with an editable layout and colors.
 * New: card styles show the review text in whole lines with "read more" that opens it in place; the number of lines is adjustable.

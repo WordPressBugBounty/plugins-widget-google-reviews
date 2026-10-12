@@ -3,7 +3,7 @@ Contributors: widgetpack
 Tags: google reviews, reviews, review slider, review widget, reviews plugin
 Requires PHP: 7.2
 Tested up to: 7.1
-Stable tag: 7.1.5
+Stable tag: 7.1.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -44,7 +44,7 @@ Want to see how it works? Watch the short demo below to see how quickly you can 
 * Show up to 10 Google reviews on initial setup - **NO API KEY REQUIRED**
 * Connect multiple Google business places
 * Places page: every connected place with its rating and last update; update reviews, create a widget or delete the place from there
-* Badges page: pick a preset, set position, tone and size, then publish the badge on the whole site in one click
+* Badges: pick a preset, set position, tone and size, then publish the badge on the whole site in one click
 * Automatically updates reviews and ratings when using your own API key
 * Fully ADA compliant: built for Accessibility
 * Fully GDPR-compliant: no external requests, all data loads from your own website
@@ -84,7 +84,7 @@ Yes. Every review has a hide button in the widget builder, and there is an optio
 Yes. The Rating layout shows the stars, the score and the number of reviews, and can open the reviews in a popup on click.
 
 = How do I add a Google rating badge to every page? =
-Open Google Reviews / Badges, find your place, choose a preset and click "Display on the site" on the Publish step. The badge floats in a corner or as a top or bottom bar on every page; one badge at a time is shown site-wide. To show a badge only on some pages, use its shortcode or the Google Reviews block instead.
+Open Google Reviews / Widgets, click Create Widget, find your place, pick a badge design and click "Display on the site" on the Publish step. The badge floats in a corner or as a top or bottom bar on every page; one badge at a time is shown site-wide. To show a badge only on some pages, use its shortcode or the Google Reviews block instead.
 
 = Can one badge show the rating of several locations? =
 Yes. Connect several places to one badge and it shows their combined rating, weighted by the number of reviews, and the total review count.
@@ -123,6 +123,19 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 7.1.6 =
+* New: Create Widget gallery with ready-made slider, grid, list, rating and badge designs, previewed with your own reviews.
+* New: one click creates a draft page with the new widget.
+* Change: badges are listed under Widgets, and the Badges menu item is removed.
+* Change: a site without widgets starts on Create Widget; connecting reviews there needs no API key.
+* Change: widgets with card styles show an outlined review button.
+* Change: the mouse wheel moves the slider one step per turn, and scrolling down goes to the next reviews.
+* Improved: the slider keeps its cards in place when the window is resized or the phone is rotated.
+* Fixed: editing a badge from the block editor could turn it into a list.
+* Fixed: the block's Edit button with no widget chosen opened another widget for editing.
+* Fixed: the Widgets list had no All, Published and Trash links.
+* Fixed: cards showing under the slider arrows in Firefox.
 
 = 7.1.5 =
 * New: card styles for the slider and grid: 19 presets with an editable layout and colors.

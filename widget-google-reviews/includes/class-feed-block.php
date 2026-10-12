@@ -36,13 +36,16 @@ class Feed_Block {
             $this->assets->version(),
             true
         );
+        wp_set_script_translations(self::$name, 'widget-google-reviews');
 
         wp_localize_script(
             self::$name,
             'grwBlockData',
             array(
                 'feeds' => $this->feed_deserializer->get_all_feeds_short(),
-                'builderUrl' => admin_url('admin.php?page=grw-builder')
+                'builderUrl' => admin_url('admin.php?page=grw-builder'),
+                'createUrl' => admin_url('admin.php?page=grw-widget'),
+                'manage' => current_user_can('manage_options')
             )
         );
 

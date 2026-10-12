@@ -1438,7 +1438,7 @@ img.grw-connect-photo {
 .grw-badge-page {
     margin: 0;
     min-height: calc(100vh - 120px);
-    background: #f6f7f7;
+    background: #f0f0f1;
     font-size: 14px;
 }
 
@@ -1447,11 +1447,17 @@ img.grw-connect-photo {
     align-items: center;
     gap: 0;
     margin: 0;
-    padding: 0 20px;
+    padding: 0 32px;
     height: 64px;
     background: #fff;
     box-shadow: 0 1px 0 #dcdcde;
     list-style: none;
+}
+
+@media screen and (max-width: 782px) {
+    .grw-badge-steps {
+        padding: 0 20px;
+    }
 }
 
 .grw-badge-steps li {
@@ -1510,8 +1516,35 @@ img.grw-connect-photo {
     color: #fff;
 }
 
+@media screen and (max-width: 400px) {
+    .grw-badge-steps {
+        padding: 0 10px;
+    }
+    .grw-badge-steps li {
+        gap: 6px;
+        padding: 0 2px;
+    }
+    .grw-badge-steps li + li::before {
+        margin: 0 10px 0 4px;
+    }
+}
+
 .grw-badge-body {
-    padding: 0 20px 22px;
+    padding: 0 32px 22px;
+}
+
+@media screen and (max-width: 782px) {
+    .grw-badge-body {
+        padding: 0 20px 22px;
+    }
+}
+
+/* The header is shared with the other plugin pages, which keep WordPress's 20px. */
+@media screen and (min-width: 783px) {
+    body:has(.grw-badge-page) .grw-tophead {
+        padding-right: 32px;
+        padding-left: 32px;
+    }
 }
 
 .grw-badge-section h2 {
@@ -1557,8 +1590,20 @@ img.grw-connect-photo {
 }
 
 /* ---- step 1: search ---- */
-/* The inline field block is 68px tall; the frame starts there and only grows for the suggestion list. */
+.grw-badge-search {
+    position: relative;
+}
+
+/* The inline field block is 68px tall: the page keeps that, and the frame grows over what follows for the suggestion list. */
+.grw-badge-search:has(> .grw-badge-frame) {
+    height: 68px;
+}
+
 .grw-badge-frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 30;
     display: block;
     width: 100%;
     height: 68px;
@@ -1573,6 +1618,14 @@ img.grw-connect-photo {
 }
 
 .grw-badge-search .grw-badge-input {
+    max-width: none;
+}
+
+.grw-badge-search .grw-badge-list {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 30;
     max-width: none;
 }
 
@@ -1603,6 +1656,21 @@ img.grw-connect-photo {
 
 .wp-core-ui .grw-badge-tiles-add {
     margin: 0 0 10px;
+}
+
+.grw-badge-connect {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0 12px;
+}
+
+.grw-badge-connect .grw-badge-search {
+    flex: 1 1 320px;
+}
+
+.grw-badge-connect .grw-badge-tiles {
+    flex-basis: 100%;
 }
 
 /* ---- step 1: place tiles ---- */
@@ -1682,6 +1750,12 @@ img.grw-connect-photo {
     background: #dcdcde;
 }
 
+/* Inside the chip: the tile line clips whatever overflows it. */
+.grw-badge-tile-lang:has(select:focus-visible) {
+    outline: auto;
+    outline-offset: -3px;
+}
+
 .wp-core-ui .grw-badge-tile-lang select {
     position: absolute;
     inset: 0;
@@ -1729,14 +1803,6 @@ img.grw-connect-photo {
     background-color: #e8e8e8;
 }
 
-.grw-badge-tile-empty {
-    display: flex;
-    align-items: center;
-    height: 50px;
-    padding: 0 6px;
-    color: #646970;
-}
-
 /* ---- step 1: picker of the places the plugin already holds, in the metrics of the media modal ---- */
 .grw-badge-modal-open {
     overflow: hidden;
@@ -1747,9 +1813,9 @@ img.grw-connect-photo {
     inset: 0;
     z-index: 160000;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    padding: 16px;
+    padding: 10vh 16px 16px;
     background: rgba(0, 0, 0, .7);
 }
 
@@ -1849,7 +1915,7 @@ img.grw-connect-photo {
 .grw-badge-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-    gap: 16px;
+    gap: 24px;
 }
 
 .grw-badge-card {
@@ -1869,8 +1935,9 @@ img.grw-connect-photo {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 12px;
-    border-bottom: 1px solid #f0f0f1;
+    margin: 0 20px;
+    padding: 16px 0 12px;
+    border-bottom: 1px solid #dcdcde;
     font-weight: 600;
 }
 
@@ -1923,6 +1990,11 @@ img.grw-connect-photo {
 
 .grw-badge-switch input:checked + i::after {
     left: 16px;
+}
+
+.grw-badge-switch input:focus-visible + i {
+    outline: auto;
+    outline-offset: 2px;
 }
 
 /* forms.css frames every input[type=color]; the dot is the swatch alone. */
@@ -2048,6 +2120,10 @@ img.grw-connect-photo {
 .grw-badge-stage-head h2 {
     margin: 0;
     padding: 0;
+}
+
+.grw-badge-sample {
+    margin: 0 0 10px;
 }
 
 .grw-badge-devices {
@@ -2201,7 +2277,8 @@ img.grw-connect-photo {
     color: #616161;
 }
 
-.grw-pl-select {
+/* .wp-core-ui select would win over one class and put back its own padding and font size. */
+.wp-core-ui .grw-pl-select {
     width: 100%;
     max-width: 100%;
     height: 32px;
@@ -2319,6 +2396,11 @@ img.grw-connect-photo {
     left: 22px;
 }
 
+.grw-pl-toggle input:focus-visible + i {
+    outline: auto;
+    outline-offset: 2px;
+}
+
 .grw-pl-toggle input:disabled + i {
     opacity: .4;
 }
@@ -2426,6 +2508,317 @@ img.grw-connect-photo {
     display: none;
 }
 
+/*-------------------------------- Themes: slider and grid previews next to the badges --------------------------------*/
+.grw-themes-section + .grw-themes-section {
+    margin-top: 28px;
+}
+
+.grw-themes-section h3 {
+    margin: 0 0 12px;
+    font-size: 15px;
+}
+
+/* The filter and the shared controls stay under the admin bar while the gallery scrolls. */
+.grw-themes-page .grw-badge-head-inline {
+    position: sticky;
+    top: 32px;
+    z-index: 6;
+    align-items: center;
+    margin: 22px -32px 14px;
+    padding: 10px 32px;
+    background: #f0f0f1;
+    box-shadow: 0 1px 0 #dcdcde;
+}
+
+.grw-themes-page-bg {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 12px;
+}
+
+.grw-themes-tools {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 18px;
+}
+
+.grw-themes-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+.grw-badge-stage.grw-themes-stage.grw-themes-dark {
+    background: #2c3338;
+}
+
+/* Off screen the browser neither lays out nor paints a preview; the intrinsic size keeps the scrollbar steady. */
+.grw-themes-grid .grw-badge-card,
+.grw-themes-section[data-kind="badge"] .grw-badge-card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 420px;
+}
+
+.grw-themes-section[data-kind="badge"] .grw-badge-card {
+    contain-intrinsic-size: auto 240px;
+}
+
+.grw-themes-section[data-kind="badge"] .grw-badge-stage:not(.grw-badge-stage-glass) {
+    background-color: #fff;
+}
+
+@media screen and (max-width: 782px) {
+    .grw-themes-page .grw-badge-head-inline {
+        top: 46px;
+        margin-left: -20px;
+        margin-right: -20px;
+        padding: 8px 20px;
+    }
+}
+
+/* WordPress stops fixing its admin bar here, so only the filter row sticks, at the very top. */
+@media screen and (max-width: 600px) {
+    .grw-themes-page .grw-badge-head-inline {
+        display: contents;
+    }
+    .grw-themes-page .grw-badge-head-inline h2 {
+        margin: 22px 0 10px;
+    }
+    .grw-themes-page .grw-themes-filter {
+        position: sticky;
+        top: 0;
+        z-index: 6;
+        display: flex;
+        margin: 0 -20px;
+        padding: 8px 20px;
+        background: #f0f0f1;
+        box-shadow: 0 1px 0 #dcdcde;
+    }
+    .grw-themes-page .grw-themes-tools {
+        margin-top: 12px;
+    }
+    .grw-themes-page .grw-badge-head-inline .description {
+        margin: 10px 0 14px;
+    }
+}
+
+.grw-themes-filter button {
+    height: 32px;
+}
+
+.grw-themes-filter {
+    justify-content: flex-start;
+}
+
+.grw-themes-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grw-themes-grid > .grw-badge-card {
+    grid-column: 1 / -1;
+}
+
+.grw-themes-grid > .grw-themes-half {
+    grid-column: auto;
+}
+
+.grw-themes-pair {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px 24px;
+}
+
+.grw-themes-pair[hidden] {
+    display: none;
+}
+
+.grw-themes-pair > .grw-themes-section {
+    flex: 1 1 360px;
+    min-width: 0;
+    margin: 0;
+}
+
+.grw-themes-section + .grw-themes-pair,
+.grw-themes-pair + .grw-themes-section {
+    margin-top: 28px;
+}
+
+/* A slider or grid fills the stage, unlike a badge centred in it. */
+/* The widget is previewed on a page as most sites have it: white. */
+.grw-themes-stage.grw-badge-stage {
+    display: block;
+    padding: 24px 20px 20px;
+    background: #fff;
+}
+
+/* The card wears its stage's colour, so the caption sits on the preview's own background. */
+.grw-badge-card:has(> .grw-themes-dark) {
+    background: #2c3338;
+}
+
+.grw-badge-card:has(> .grw-themes-dark) > .grw-badge-card-head {
+    color: #f0f0f1;
+    border-bottom-color: #50575e;
+}
+
+.grw-themes-stage .wp-gr {
+    width: 100%;
+}
+
+.grw-pl-side [hidden] {
+    display: none !important;
+}
+
+/* The way forward stays in sight while the settings scroll. */
+.grw-themes-page .grw-pl-foot {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    margin: 0 -1px;
+    padding: 12px 1px;
+    background: #f0f0f1;
+    box-shadow: 0 -1px 0 #dcdcde;
+}
+
+/* Focused controls scroll clear of the sticky bar and footer; a scroll padding on the page would also scroll to the bars' own controls. */
+.grw-themes-page .grw-badge-presets * {
+    scroll-margin-top: 156px;
+}
+
+.grw-themes-page :is(.grw-pl-card, .grw-badge-main-col) * {
+    scroll-margin-bottom: 112px;
+}
+
+@media screen and (max-width: 782px) {
+    .grw-themes-page .grw-badge-presets * {
+        scroll-margin-top: 164px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .grw-themes-page .grw-badge-presets * {
+        scroll-margin-top: 56px;
+    }
+}
+
+.grw-pl-foot .grw-pl-links {
+    margin: 10px 0 0;
+}
+
+/* Light colours vanish on white without an edge. */
+.grw-themes-page .grw-badge-color {
+    box-shadow: inset 0 0 0 1px #8c8f94;
+    border-radius: 4px;
+}
+
+.grw-themes-pick {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.grw-themes-hex {
+    padding: 0;
+    background: none;
+    color: #50575e;
+    font-size: 12px;
+}
+
+.grw-themes-done h2 {
+    margin: 22px 0 4px;
+}
+
+.grw-themes-done .description {
+    margin: 0 0 16px;
+}
+
+.grw-themes-result-stage {
+    max-height: 420px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+}
+
+.grw-themes-result .grw-pl-side {
+    margin-top: 0;
+}
+
+.grw-themes-put {
+    padding: 16px;
+}
+
+.grw-themes-put h3 {
+    margin: 0 0 12px;
+    font-size: 15px;
+}
+
+.grw-themes-put .description {
+    margin: 0 0 8px;
+}
+
+.grw-themes-show {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    margin-bottom: 8px;
+}
+
+.grw-themes-add {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #dcdcde;
+}
+
+.grw-themes-put .grw-themes-made {
+    margin: 8px 0 0;
+}
+
+.grw-themes-made a {
+    white-space: nowrap;
+}
+
+.grw-themes-or {
+    margin: 0 0 8px;
+    font-weight: 600;
+}
+
+.grw-themes-way summary {
+    padding: 4px 0;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.grw-themes-way p {
+    margin: 0 0 8px;
+}
+
+.grw-themes-sc-row {
+    display: flex;
+    gap: 8px;
+    max-width: 420px;
+    margin-bottom: 8px;
+}
+
+input.grw-themes-sc[readonly] {
+    flex: 1;
+    min-width: 0;
+    background: #fff;
+    font-family: Consolas, Monaco, monospace;
+}
+
+.grw-themes-tip {
+    display: flex;
+    gap: 6px;
+    margin: 16px 0 0;
+    color: #50575e;
+}
+
+
 @media screen and (min-width: 1101px) {
     .grw-badge-stage-head {
         position: sticky;
@@ -2447,15 +2840,30 @@ img.grw-connect-photo {
         grid-row: auto;
         margin-top: 16px;
     }
+    .grw-themes-result .grw-pl-side {
+        margin: 0 0 16px;
+    }
 }
 
 @media screen and (max-width: 782px) {
-    .grw-badge-grid {
+    .grw-badge-grid,
+    .grw-themes-grid {
         grid-template-columns: 1fr;
     }
 }
 
 @media screen and (max-width: 600px) {
+    .grw-badge-stage-head {
+        flex-wrap: wrap;
+    }
+    /* On a phone the stage is already a phone's width. */
+    .grw-badge-devices {
+        display: none;
+    }
+    .grw-themes-page-bg {
+        flex-basis: 100%;
+        margin-right: 0;
+    }
     .wp-gr.grw-badge-root .rpi-badge-live .rpi-badge-cnt {
         max-width: 100%;
     }

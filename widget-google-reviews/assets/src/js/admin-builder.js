@@ -35,7 +35,7 @@ const GRW_HTML_CONTENT =
         /* Header Options */
         '<div class="grw-builder-top grw-toggle">Header Options</div>' +
         '<div class="grw-builder-inside" style="display:none">' +
-            '<div class="grw-builder-option" data-if="slider header">' +
+            '<div class="grw-builder-option" data-if="cards header">' +
                 'Header position' +
                 '<select name="slider_head_pos">' +
                     '<option value="2">Left</option>' +
@@ -318,13 +318,13 @@ const GRW_HTML_CONTENT =
                 'Powered color' +
             '</div>' +
             '<div class="grw-builder-option" data-if="header">' +
-                '<input type="color" name="--btn-color" value="#1f67e7" data-val="#1f67e7" data-defval="#1f67e7"/>' +
-                '<input type="text" value="#1f67e7"/>' +
+                '<input type="color" name="--btn-color" value="#ffffff" data-val="#ffffff" data-defval="#ffffff"/>' +
+                '<input type="text" value="#ffffff"/>' +
                 '\'Review us\' button color' +
             '</div>' +
             '<div class="grw-builder-option" data-if="header">' +
-                '<input type="color" name="--btn-txt-color" value="#ffffff" data-val="#ffffff" data-defval="#ffffff" data-vars="--btn-txt-shadow:none"/>' +
-                '<input type="text" value="#ffffff"/>' +
+                '<input type="color" name="--btn-txt-color" value="#1f1f1f" data-val="#1f1f1f" data-defval="#1f1f1f" data-vars="--btn-txt-shadow:none"/>' +
+                '<input type="text" value="#1f1f1f"/>' +
                 '\'Review us\' button text color' +
             '</div>' +
             '<div class="grw-builder-option" data-if="reviews">' +
@@ -534,10 +534,39 @@ function grw_stylechange2(target) {
 }
 
 // The variables the preview root carries (with no place connected there is no preview: the ones kept so far); for a card preset its
-// own ones only where they differ from the preset.
+// own ones only where they differ from the preset. The CSS variables field reaches the root as !important declarations, kept in css_vars.
 function grw_style_vars(rp) {
-    const list = ((rp ? rp.getAttribute('style') || '' : window.style_vars.value).match(/(--[a-z]+(-[a-z]+)*:\s*(var\(--[a-z]+(-[a-z]+)*\)|[#0-9a-z]+)\s*;)+/g) || []).join('').split(';').filter(Boolean);
+    const list = grw_declarations(rp ? rp.getAttribute('style') || '' : window.style_vars.value)
+        .filter(d => /^--[\w-]+:./.test(d) && !/!\s*important$/i.test(d));
     return (GRW_CARD ? GRW_CARD.vars(list) : list).map(v => v + ';').join('');
+}
+
+// "name:value" per declaration; a semicolon inside brackets or quotes, as in url(data:…;…), does not end one.
+function grw_declarations(text) {
+    const list = [];
+    let depth = 0, quote = '', from = 0;
+    const push = to => {
+        const d = text.slice(from, to), i = d.indexOf(':');
+        if (i > 0) list.push(d.slice(0, i).trim() + ':' + d.slice(i + 1).trim());
+        from = to + 1;
+    };
+    for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (quote) {
+            if (c === '\\') i++;
+            else if (c === quote) quote = '';
+        } else if (c === '"' || c === "'") {
+            quote = c;
+        } else if (c === '(') {
+            depth++;
+        } else if (c === ')') {
+            depth = Math.max(0, depth - 1);
+        } else if (c === ';' && !depth) {
+            push(i);
+        }
+    }
+    if (!depth && !quote) push(text.length);
+    return list;
 }
 
 function stylereset() {
@@ -585,6 +614,10 @@ function grw_builder_refresh() {
         seeall   : mode == 'list' || rating && on('rating_popup')
     };
     Object.assign(flags, GRW_CARD ? GRW_CARD.flags(flags.cards) : {});
+    // A grid has no header beside its reviews: "Left" is not offered, and the grid draws it on top as it always has.
+    const headPos = q('slider_head_pos');
+    headPos.querySelector('option[value="2"]').hidden = mode == 'grid';
+    if (mode == 'grid' && headPos.value == '2') headPos.value = '1';
     panel.querySelectorAll('[data-if]').forEach(function(el) {
         el.hidden = !el.getAttribute('data-if').split(' ').every(function(flag) {
             return flag[0] == '!' ? !flags[flag.slice(1)] : flags[flag];
@@ -597,6 +630,41 @@ function grw_builder_refresh() {
 }
 
 var GRW_CARD = null;
+
+// The same variables as Card_Presets::vars() in PHP.
+function grw_card_vars(s, shadows) {
+    const bg = s.bg === 'none' ? 'transparent' : s.bg === 'gradient' ? 'linear-gradient(135deg, ' + s.bg1 + ', ' + s.bg2 + ')' : s.bg1;
+    return {
+        '--card-bg': bg, '--card-tail': s.bg === 'none' && s.border ? s.borderColor : bg, '--card-br': s.border ? '1px solid' : 'none',
+        '--card-br-color': s.borderColor, '--card-shadow': shadows[s.shadow] || 'none', '--card-radius': s.radius + 'px',
+        '--card-band-bg': s.band, '--card-sep-color': s.divider, '--card-star-color': s.stars, '--card-star-size': s.starSize + 'px',
+        '--name-color': s.name, '--card-color': s.text, '--time-color': s.date, '--card-img-size': s.photo + 'px', '--img-filter': s.gray ? 'grayscale(1)' : 'none',
+        '--card-text-lines': s.lines
+    };
+}
+
+function grw_card_pairs(str) {
+    return str.split(';').reduce((o, p) => {
+        const i = p.indexOf(':');
+        if (i > 0) o[p.slice(0, i).trim()] = p.slice(i + 1).trim();
+        return o;
+    }, {});
+}
+
+// The skin back from the variables a widget saved, over the preset's skin s.
+function grw_card_read(sv, s, shadows) {
+    const v = grw_card_pairs(sv), px = k => parseInt(v[k], 10), g = /^linear-gradient\(135deg, (#[0-9a-f]{6}), (#[0-9a-f]{6})\)$/i.exec(v['--card-bg'] || '');
+    if (g) Object.assign(s, {bg: 'gradient', bg1: g[1], bg2: g[2]});
+    else if (v['--card-bg']) Object.assign(s, v['--card-bg'] === 'transparent' ? {bg: 'none'} : {bg: 'color', bg1: v['--card-bg']});
+    if (v['--card-br']) s.border = v['--card-br'] === '1px solid';
+    if (v['--card-shadow']) s.shadow = Object.keys(shadows).find(k => shadows[k] === v['--card-shadow']) || s.shadow;
+    if (v['--img-filter']) s.gray = v['--img-filter'] !== 'none';
+    if (v['--card-text-lines']) s.lines = v['--card-text-lines'];
+    [['borderColor', '--card-br-color'], ['band', '--card-band-bg'], ['divider', '--card-sep-color'], ['stars', '--card-star-color'],
+        ['text', '--card-color'], ['date', '--time-color']].forEach(([k, n]) => { if (v[n]) s[k] = v[n]; });
+    [['radius', '--card-radius'], ['starSize', '--card-star-size'], ['photo', '--card-img-size']].forEach(([k, n]) => { if (v[n]) s[k] = px(n); });
+    return s;
+}
 
 // Card Options: a card preset (Card_Presets in PHP), its layout in rpi.CardEditor's rows and its skin, kept as the values of its
 // controls; the preview root carries the skin as variables, and style_vars only what differs from the preset.
@@ -660,36 +728,9 @@ function grw_card_init(el, cfg, saved) {
         look = (p = preset()) => Object.assign(base(p), p === cfg.presets.c1 && dark() ? DARK : {}),
         layout = () => layoutIn.value || preset().layout;
 
-    // The same variables as Card_Presets::vars() in PHP.
-    const vars = s => {
-        const bg = s.bg === 'none' ? 'transparent' : s.bg === 'gradient' ? 'linear-gradient(135deg, ' + s.bg1 + ', ' + s.bg2 + ')' : s.bg1;
-        return {
-            '--card-bg': bg, '--card-tail': s.bg === 'none' && s.border ? s.borderColor : bg, '--card-br': s.border ? '1px solid' : 'none',
-            '--card-br-color': s.borderColor, '--card-shadow': cfg.shadows[s.shadow] || 'none', '--card-radius': s.radius + 'px',
-            '--card-band-bg': s.band, '--card-sep-color': s.divider, '--card-star-color': s.stars, '--card-star-size': s.starSize + 'px',
-            '--name-color': s.name, '--card-color': s.text, '--time-color': s.date, '--card-img-size': s.photo + 'px', '--img-filter': s.gray ? 'grayscale(1)' : 'none',
-            '--card-text-lines': s.lines
-        };
-    };
-    const pairs = str => str.split(';').reduce((o, p) => {
-        const i = p.indexOf(':');
-        if (i > 0) o[p.slice(0, i).trim()] = p.slice(i + 1).trim();
-        return o;
-    }, {});
-    // The skin back from the variables a widget saved.
-    const read = sv => {
-        const v = pairs(sv), s = base(), px = k => parseInt(v[k], 10), g = /^linear-gradient\(135deg, (#[0-9a-f]{6}), (#[0-9a-f]{6})\)$/i.exec(v['--card-bg'] || '');
-        if (g) Object.assign(s, {bg: 'gradient', bg1: g[1], bg2: g[2]});
-        else if (v['--card-bg']) Object.assign(s, v['--card-bg'] === 'transparent' ? {bg: 'none'} : {bg: 'color', bg1: v['--card-bg']});
-        if (v['--card-br']) s.border = v['--card-br'] === '1px solid';
-        if (v['--card-shadow']) s.shadow = Object.keys(cfg.shadows).find(k => cfg.shadows[k] === v['--card-shadow']) || s.shadow;
-        if (v['--img-filter']) s.gray = v['--img-filter'] !== 'none';
-        if (v['--card-text-lines']) s.lines = v['--card-text-lines'];
-        [['borderColor', '--card-br-color'], ['band', '--card-band-bg'], ['divider', '--card-sep-color'], ['stars', '--card-star-color'],
-            ['text', '--card-color'], ['date', '--time-color']].forEach(([k, n]) => { if (v[n]) s[k] = v[n]; });
-        [['radius', '--card-radius'], ['starSize', '--card-star-size'], ['photo', '--card-img-size']].forEach(([k, n]) => { if (v[n]) s[k] = px(n); });
-        return s;
-    };
+    const vars = s => grw_card_vars(s, cfg.shadows);
+    const pairs = grw_card_pairs;
+    const read = sv => grw_card_read(sv, base(), cfg.shadows);
 
     // A widget saved before card styles had the Standard card: it opens as Classic with that card's look, which its first save keeps.
     const legacy = !cfg.presets[saved.card_style] && 'view_mode' in saved;

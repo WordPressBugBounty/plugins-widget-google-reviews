@@ -4,33 +4,19 @@ namespace WP_Rplg_Google_Reviews\Includes;
 
 class Plugin_Settings {
 
-    private $builder_page;
     private $debug_info;
 
-    public function __construct($builder_page, $debug_info) {
-        $this->builder_page = $builder_page;
+    public function __construct($debug_info) {
         $this->debug_info = $debug_info;
     }
 
     public function register() {
-        $render_func;
-        $feed_ids = get_option('grw_feed_ids');
-        if (empty($feed_ids)) {
-            $render_func = array($this, 'connect');
-        } else {
-            $render_func = array($this, 'render');
-        }
-
         add_action('grw_admin_page_grw-settings', array($this, 'init'));
-        add_action('grw_admin_page_grw-settings', $render_func);
+        add_action('grw_admin_page_grw-settings', array($this, 'render'));
     }
 
     public function init() {
 
-    }
-
-    public function connect() {
-        $this->builder_page->render(null);
     }
 
     public function render() {

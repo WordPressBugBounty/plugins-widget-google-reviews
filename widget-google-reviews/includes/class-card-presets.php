@@ -50,6 +50,8 @@ class Card_Presets {
                        'skin' => array('bg1' => '#ffffff', 'border' => true, 'borderColor' => '#ebebeb', 'shadow' => 'light', 'radius' => 10, 'photo' => 38,
                                        'name' => '#6e6e6d', 'text' => '#6e6e6d', 'date' => '#999999', 'stars' => '#fbbc04', 'starSize' => 12),
                        'vars' => array('--card-name-size' => '15px', '--card-text-size' => '14px', '--card-line-height' => '1.45', '--card-time-size' => '12px')),
+        'r15' => array('name' => 'No background', 'layout' => 'photo(name,time)|stars,text;logo', 'ink' => true,
+                       'skin' => array('bg' => 'none', 'radius' => 0, 'name' => '#222222', 'text' => '#444444', 'date' => '#888888')),
         'c4'  => array('name' => 'Bubble – author above', 'layout' => 'photo(name,time)|{bubble}stars,text;logo'),
         'c3'  => array('name' => 'Bubble – author below', 'layout' => '{bubble}stars,text|photo(name,time);logo'),
         'c5'  => array('name' => 'Centered', 'layout' => '{center}photo{top,logo},name,stars,time|{center}text'),

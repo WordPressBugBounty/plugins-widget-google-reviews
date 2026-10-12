@@ -46,8 +46,10 @@ final class Plugin {
     }
 
     public function admin_init() {
-        if (!wp_doing_ajax() && get_option('grw_do_activation', false)) {
-            delete_option('grw_do_activation');
+        if (wp_doing_ajax() || !get_option('grw_do_activation', false)) return;
+        delete_option('grw_do_activation');
+        // A bulk activation lands back on its plugin list.
+        if (current_user_can('manage_options') && !isset($_GET['activate-multi'])) {
             wp_safe_redirect(admin_url('admin.php?page=grw'));
             exit;
         }
@@ -79,7 +81,7 @@ final class Plugin {
         $builder_page = new Builder_Page($feed_deserializer, $core, $view, $google_dao, $plugin_places);
         $builder_page->register();
 
-        $feed_page = new Feed_Page($builder_page);
+        $feed_page = new Feed_Page();
         $feed_page->register();
 
         $feed_old = new Feed_Old();
@@ -133,20 +135,23 @@ final class Plugin {
             $admin_feed_columns->register();
 
             $plugin_overview_ajax = new Plugin_Overview_Ajax($core);
-            $plugin_overview = new Plugin_Overview($builder_page);
+            $plugin_overview = new Plugin_Overview($google_dao);
             $plugin_overview->register();
 
-            $plugin_places->register($builder_page);
+            $plugin_places->register();
 
             $plugin_badge = new Plugin_Badge($google_dao, $core, $plugin_places, $feed_serializer, $feed_deserializer);
             $plugin_badge->register();
+
+            $plugin_theme = new Plugin_Theme($plugin_badge, $google_dao, $core, $plugin_places, $feed_serializer, $feed_deserializer);
+            $plugin_theme->register();
 
             $settings_save = new Settings_Save($activator, $reviews_cron);
             $settings_save->register();
 
             $debug_info = new Debug_Info($activator, $feed_deserializer);
 
-            $plugin_settings = new Plugin_Settings($builder_page, $debug_info);
+            $plugin_settings = new Plugin_Settings($debug_info);
             $plugin_settings->register();
 
             $plugin_support = new Plugin_Support($debug_info);
@@ -175,7 +180,7 @@ final class Plugin {
             update_option('grw_is_multisite', '0');
         }
 
-        add_option('grw_do_activation', true);
+        if (!$network_wide && !(defined('WP_CLI') && WP_CLI)) add_option('grw_do_activation', true);
 
         $activator = new Activator(new Database());
         $activator->activate();
