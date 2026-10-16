@@ -74,7 +74,7 @@ class Feed_Serializer {
 
         $this->sanitize_json_recurs($arr);
         if (isset($arr['options']) && is_array($arr['options'])) {
-            $arr['options'] = Card_Presets::sanitize($arr['options']);
+            $arr['options'] = Themes::sanitize($arr['options']);
         }
         return wp_json_encode($arr, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }

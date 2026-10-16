@@ -56,8 +56,8 @@ class Admin_Notice {
         }
 
         ?>
-        <div class="notice notice-<?php echo get_option('grw_notice_type'); ?> is-dismissible">
-            <p><?php echo $this->notice_id != 'custom_msg' ? self::$plugin_notices[$this->notice_id] : get_option('grw_notice_msg'); ?></p>
+        <div class="notice notice-<?php echo esc_attr(get_option('grw_notice_type')); ?> is-dismissible">
+            <p><?php echo $this->notice_id != 'custom_msg' ? self::$plugin_notices[$this->notice_id] : esc_html(get_option('grw_notice_msg')); ?></p>
         </div>
         <?php
 

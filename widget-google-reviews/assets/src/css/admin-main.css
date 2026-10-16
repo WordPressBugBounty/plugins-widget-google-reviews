@@ -62,6 +62,21 @@
     color: #d63638;
 }
 
+/* iOS Safari enlarges the text when the phone turns to landscape. */
+.grw-admin {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+/* iOS Safari zooms the page in on a focused field under 16px and does not zoom back out. */
+@media (hover: none) and (pointer: coarse) {
+    .grw-admin input:not([type=button], [type=submit], [type=reset], [type=image], [type=checkbox], [type=radio], [type=range], [type=file], .grw-toolbar-title-input),
+    .grw-admin select,
+    .grw-admin textarea {
+        font-size: max(16px, 1em) !important;
+    }
+}
+
 .grw-flex {
     display: flex;
     align-items: center;
@@ -1047,6 +1062,7 @@ img.grw-connect-photo {
   color: #e60909;
   font-size: 16px;
   line-height: 26px;
+  overflow-wrap: anywhere;
 }
 
 .grw-connection-checkbox {
@@ -1124,6 +1140,13 @@ img.grw-connect-photo {
     vertical-align: middle;
 }
 
+/* Fits a hex value at the 16px that fields get on touch screens. */
+@media (hover: none) and (pointer: coarse) {
+    .grw-builder-inside input[type="color"] + input[type="text"] {
+        width: 72px;
+    }
+}
+
 .grw-builder-inside input[type="range"] {
     padding: 8px 0;
     cursor: pointer;
@@ -1159,10 +1182,16 @@ img.grw-connect-photo {
     margin-top: 8px;
 }
 
-.grw-card-lines {
+.grw-card-lines,
+.grw-head-lines {
     display: flex;
     flex-direction: column;
     margin-top: 8px;
+}
+
+.grw-head-attr {
+    display: block;
+    margin-top: 6px;
 }
 
 .grw-builder-inside .rpi-lines-add {
@@ -1671,6 +1700,12 @@ img.grw-connect-photo {
 
 .grw-badge-connect .grw-badge-tiles {
     flex-basis: 100%;
+}
+
+.grw-badge-connect > .grw-badge-search-note {
+    flex-basis: 100%;
+    margin: 0 0 10px;
+    overflow-wrap: anywhere;
 }
 
 /* ---- step 1: place tiles ---- */
@@ -2550,11 +2585,6 @@ img.grw-connect-photo {
     gap: 8px;
 }
 
-
-.grw-badge-stage.grw-themes-stage.grw-themes-dark {
-    background: #2c3338;
-}
-
 /* Off screen the browser neither lays out nor paints a preview; the intrinsic size keeps the scrollbar steady. */
 .grw-themes-grid .grw-badge-card,
 .grw-themes-section[data-kind="badge"] .grw-badge-card {
@@ -2566,7 +2596,7 @@ img.grw-connect-photo {
     contain-intrinsic-size: auto 240px;
 }
 
-.grw-themes-section[data-kind="badge"] .grw-badge-stage:not(.grw-badge-stage-glass) {
+.grw-themes-section[data-kind="badge"] .grw-badge-stage:not(.grw-badge-stage-glass):not(.grw-themes-dark) {
     background-color: #fff;
 }
 
@@ -2654,6 +2684,10 @@ img.grw-connect-photo {
     background: #fff;
 }
 
+.grw-badge-stage.grw-themes-dark {
+    background: #2c3338;
+}
+
 /* The card wears its stage's colour, so the caption sits on the preview's own background. */
 .grw-badge-card:has(> .grw-themes-dark) {
     background: #2c3338;
@@ -2737,7 +2771,7 @@ img.grw-connect-photo {
 
 .grw-themes-result-stage {
     max-height: 420px;
-    overflow: hidden;
+    overflow: auto;
     margin-bottom: 16px;
     border: 1px solid #dcdcde;
     border-radius: 8px;

@@ -44,6 +44,23 @@ class Connect_Helper {
         return isset($upload['url']) ? $upload['url'] : $url;
     }
 
+    // What failed when a request brought no place back; never a word about the place, which may well have a rating.
+    public static function failed($res, $json = null) {
+        if (is_wp_error($res)) {
+            $reason = $res->get_error_message();
+        } else if (isset($json->error_message) || isset($json->status)) {
+            $reason = isset($json->error_message) ? $json->error_message : $json->status;
+        } else if (isset($json->error->message)) {
+            $reason = $json->error->message;
+        } else {
+            $code = wp_remote_retrieve_response_code($res);
+            $reason = $code == 200 ? 'the answer was empty or broken' : 'HTTP ' . trim($code . ' ' . wp_remote_retrieve_response_message($res));
+        }
+        // A wrong or deleted Place ID: trying again would not help.
+        $later = in_array($reason, array('NOT_FOUND', 'INVALID_REQUEST'), true) ? '' : ' Try again in a few minutes.';
+        return 'Could not connect: ' . rtrim($reason, '. ') . '.' . $later;
+    }
+
     private function log_error($message) {
         $opt = get_option('grw_last_error', '');
         if (empty($opt)) {

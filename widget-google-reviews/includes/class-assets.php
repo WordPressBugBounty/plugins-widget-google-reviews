@@ -27,6 +27,7 @@ class Assets {
 
     private static $js_assets = array(
         'grw-admin-main-js'       => 'js/admin-main',
+        'grw-admin-model-js'      => 'js/admin-model',
         'grw-admin-builder-js'    => 'js/admin-builder',
         'grw-admin-steps-js'      => 'js/admin-steps',
         'grw-admin-badge-js'      => 'js/admin-badge',
@@ -154,6 +155,7 @@ class Assets {
     public function register_scripts() {
         $scripts = array('grw-admin-main-js', 'grw-public-main-js', 'grw-admin-apexcharts-js');
         if ($this->debug) {
+            array_push($scripts, 'grw-admin-model-js');
             array_push($scripts, 'grw-admin-builder-js');
             array_push($scripts, 'grw-admin-steps-js');
             array_push($scripts, 'grw-admin-badge-js');
@@ -205,6 +207,7 @@ class Assets {
             wp_enqueue_script('rpi-card-js');
             wp_enqueue_script('rpi-card-editor-js');
             wp_localize_script('grw-admin-builder-js', 'GRW_VARS', $vars);
+            wp_enqueue_script('grw-admin-model-js');
             wp_enqueue_script('grw-admin-builder-js');
             wp_enqueue_script('grw-admin-steps-js');
             wp_enqueue_script('grw-admin-badge-js');

@@ -46,7 +46,7 @@ class Admin_Feed_Columns {
         $o = $id ? $this->options($id) : null;
         if (!$o) return;
         $mode = $o->view_mode ?? '';
-        $card = in_array($mode, array('slider', 'grid'), true) && !empty($o->card_style);
+        $card = in_array($mode, array('slider', 'grid'), true) && (!empty($o->card_layout) || !empty($o->card_style));
         if ($plugin_page === 'grw-builder' ? $mode === 'badge' : $mode !== 'badge' && !$card) {
             wp_safe_redirect($this->change_edit_post_link('', $id, 'raw'));
             exit;

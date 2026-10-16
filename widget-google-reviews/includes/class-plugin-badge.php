@@ -14,8 +14,6 @@ class Plugin_Badge extends Plugin_Step_Page {
     const CONTENT_MARK = '"view_mode":"badge"';
 
     public function register() {
-        add_action('grw_admin_page_grw-badge', array($this, 'render'));
-        add_action('wp_ajax_grw_badge_data', array($this, 'data'));
         add_action('wp_ajax_grw_badge_save', array($this, 'save'));
         add_action('admin_init', array($this, 'redirect'));
         add_action('pre_get_posts', array($this, 'only_badges'));
@@ -95,23 +93,10 @@ class Plugin_Badge extends Plugin_Step_Page {
     }
 
     private static function keys() {
-        return array_merge(Core::badge_option_keys(), array('style_vars', 'anonym_avatar'));
+        return array_merge(Core::badge_option_keys(), array('rating_layout', 'style_vars', 'anonym_avatar'));
     }
 
-    public function render() {
-        $feed = $this->feed();
-        $this->render_page('grw-badge', '', $this->page_vars($feed, array(
-            'global' => $feed ? (int) get_option(self::GLOBAL_OPTION) === (int) $feed->ID : true,
-        )), 'Choose a badge');
-    }
-
-    public function data() {
-        $this->guard();
-        $pids = $this->pids();
-        $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
-        wp_send_json(array('status' => 'success', 'result' => $this->preview_data($pids, $post_id)));
-    }
-
+    // What the badge tiles and the badge editor need beside the plugin's renders: the businesses for the "Top rated" gate, the popup.
     public function preview_data($pids, $post_id = 0) {
         if (empty($pids)) {
             return self::sample();
@@ -180,10 +165,7 @@ class Plugin_Badge extends Plugin_Step_Page {
     }
 
     private function badge_content($pids, $options, $old = null, $langs = array()) {
-        $content = $this->content($pids, $options, $old, $langs, array_merge(self::keys(), array('view_mode')), array('view_mode' => 'badge'));
-        // A badge switched to a slider or grid in the builder must not land on the legacy Standard card.
-        if (empty($content->options->card_style)) $content->options->card_style = 'c1';
-        return $content;
+        return $this->content($pids, $options, $old, $langs, array_merge(self::keys(), array('view_mode')), array('view_mode' => 'badge'));
     }
 
     public function save() {

@@ -1,83 +1,32 @@
-// Create Widget: every card preset as a slider and as a grid, a list, a rating, then the badges (grw_badge_kit), on one step page.
-// Slider and grid previews are rendered by PHP's View, so they are the production markup; the card skin is painted over them live.
+// Create Widget: every design of themes.json as the plugin draws it (grw_theme_data), on one step page with the badges (grw_badge_kit).
+// A pick copies the design's options and variables into the widget; from then on the widget holds its own look.
 function grw_themes_page() {
     const root = document.getElementById('grw-themes');
     if (!root || !window.rpi || !rpi.Badge) return;
 
-    const V0 = JSON.parse(root.dataset.vars), C = V0.cards;
+    const V0 = JSON.parse(root.dataset.vars), C = V0.cards, M = GRW_MODEL;
+    const CFG = {themes: C.themes, shadows: C.shadows, legacy: C.legacy};
     const LAYOUTS = [['slider', 'Slider'], ['grid', 'Grid']];
     // Layouts without cards: one look each.
     const PLAIN = [['list', 'List'], ['rating', 'Rating']];
     const KINDS = LAYOUTS.concat(PLAIN);
     const hasCards = mode => LAYOUTS.some(([k]) => k === mode);
-    const THEME_DEFAULTS = {view_mode: 'slider', card_style: 'c1'};
-    const BADGE_DEFAULTS = {badge_pos: 'right', badge_tone: 'light', badge_icon: 'medal', badge_click: 'sidebar'};
-    // Each preset comes with a header: the widget's own header options and header variables, so step 2 and the builder edit it as usual.
-    const RATING = {header_hide_photo: true, header_hide_name: true, header_show_scale: true, header_platform: true, header_bold_count: true};
-    const COLUMN = Object.assign({header_center: true, header_hide_grade: true, hide_writereview: true, header_order: 'scale,stars,based,platform'}, RATING);
-    const COLUMN_VARS = '--head-scale-fs:24px;--head-star-size:36px;--head-logo-size:40px;';
-    const LINE = Object.assign({header_center: true, hide_writereview: true, header_order: 'platform+stars+based'}, RATING, {header_show_scale: false});
-    const LINE_VARS = '--head-star-size:18px;--head-logo-size:20px;';
-    const HEADERS = {
-        bar:      {opts: Object.assign({slider_head_pos: '1', header_short_count: true, header_order: 'platform+scale+stars+based'}, RATING),
-                   vars: '--slider-head-card-bg:#ffffff;--slider-head-card-shadow:0 0 0 1px rgba(0, 0, 0, .08), 0 1px 2px rgba(0, 0, 0, .04);--slider-head-card-radius:12px;--head-scale-fs:15px;--head-star-size:21px;--head-logo-size:28px;--btn-radius:5px;'},
-        column:   {opts: Object.assign({slider_head_pos: '2'}, COLUMN), vars: COLUMN_VARS},
-        top:      {opts: Object.assign({slider_head_pos: '1'}, COLUMN), vars: COLUMN_VARS},
-        line:     {opts: Object.assign({slider_head_pos: '3'}, LINE), vars: LINE_VARS},
-        lineUp:   {opts: Object.assign({slider_head_pos: '1'}, LINE), vars: LINE_VARS},
-        classic:  {opts: {}, vars: ''},
-        noname:   {opts: {header_hide_name: true}, vars: ''},
-        nonameUp: {opts: {header_hide_name: true, slider_head_pos: '1'}, vars: ''},
-        above:    {opts: {slider_head_pos: '1'}, vars: ''},
-        none:     {opts: {header_hide_social: true}, vars: ''}
-    };
-    // A header that contrasts with the card: no gray plate over gray cards, nothing above a photo on the card's top border.
-    const PAIRS = {
-        c1: ['column', 'noname'],   r1: ['bar', 'top'],       r9: ['classic', 'nonameUp'],  r6: ['line', 'lineUp'],
-        r11: ['nonameUp', 'bar'],   r12: ['lineUp', 'line'],  r15: ['bar', 'classic'],      c4: ['above', 'none'],
-        c3: ['column', 'top'],      c5: ['line', 'none'],     r3: ['top', 'column'],        r7: ['classic', 'line'],
-        r5: ['none', 'above'],      r8: ['top', 'bar'],       c2: ['nonameUp', 'classic'],  r10: ['bar', 'column'],
-        r13: ['above', 'nonameUp'], r2: ['noname', 'line'],   r14: ['column', 'noname'],    r4: ['none', 'classic']
-    };
-    const THEME_OPTS = {'slider:c5': {slider_hide_dots: true}, 'slider:r6': {slider_hide_dots: true}};
-    // The gallery's own order; the builder lists the presets as Card_Presets defines them.
-    const ORDER = ['c1', 'r10', 'r7', 'c3', 'r2', 'r8', 'r5', 'r1', 'c5', 'r3', 'c4', 'r12', 'r15', 'r4', 'c2', 'r14', 'r9', 'r13', 'r6', 'r11'];
-    const headerOf = (id, layout) => {
-        const hd = HEADERS[(PAIRS[id] || ['bar', 'bar'])[layout === 'grid' ? 1 : 0]];
-        return {vars: hd.vars, opts: Object.assign({}, hd.opts, THEME_OPTS[layout + ':' + id])};
-    };
-    // The bar's plate goes dark with the cards: its text turns light under "Dark background".
-    const PLATE = '#ffffff';
-    const plate = (sv, dark) => sv.replace(/--slider-head-card-bg:[^;]+/, '--slider-head-card-bg:' + (dark ? DARK_CARD : PLATE));
-    // Header variables and anything else in style_vars that is not a card variable: kept when the card skin is written again.
-    const extraVars = sv => (sv || '').split(';').map(s => s.trim()).filter(s => s && C.vars.indexOf(s.split(':')[0].trim()) < 0).map(s => s + ';').join('');
+    const BADGE_DEFAULTS = {badge_pos: 'right', badge_tone: 'light', badge_click: 'sidebar'};
+    // The variables the page's own controls change: a widget still carries its design when only these differ.
+    const OWN_VARS = M.CARD_VARS.concat(['--star-color', '--badge-star-color', '--slider-head-card-bg']);
 
     const asked = (V0.feedId && V0.options.view_mode) || new URLSearchParams(location.search).get('kind');
-    let W, state, h, esc, kit, filter = KINDS.concat([['badge']]).some(([k]) => k === asked) ? asked : 'all';
+    let W, state, h, esc, kit, filter = KINDS.concat([['badge'], ['sticker']]).some(([k]) => k === asked) ? asked : 'all';
 
     const isTheme = o => !!o && KINDS.some(([k]) => k === o.view_mode);
     const theme = () => isTheme(state ? state.options : V0.feedId ? V0.options : null);
 
-    /* ------------------------------------------------------------ card skin */
-
-    const base = id => { const p = C.presets[id] || C.presets.c1; return Object.assign({}, C.skin, p.ink ? C.ink : {}, p.skin || {}); };
-    // The skin of the options: the preset's, with the changes style_vars keeps. The name colour is kept there as the builder's shared control keeps it.
-    const skinOf = o => {
-        const s = grw_card_read(o.style_vars || '', base(o.card_style), C.shadows), name = grw_card_pairs(o.style_vars || '')['--name-color'];
-        if (name) s.name = name;
-        return s;
-    };
-    // style_vars as the builder saves it: only the card variables that differ from the preset.
-    const styleVars = (id, s) => {
-        const b = grw_card_vars(base(id), C.shadows), v = grw_card_vars(s, C.shadows);
-        return Object.keys(v).filter(n => v[n] !== b[n]).map(n => n + ':' + v[n] + ';').join('');
-    };
     // The CSS variables field reaches the root as !important declarations rendered by PHP, and they must stay.
     const setVar = (r, n, v) => { if (!r.style.getPropertyPriority(n)) v ? r.style.setProperty(n, v) : r.style.removeProperty(n); };
-    const paint = (host, s) => {
+    const paint = (host, styleVars) => {
         const r = host.querySelector('.wp-gr');
         if (!r) return;
-        const v = grw_card_vars(s, C.shadows);
+        const v = M.pairs(styleVars);
         Object.keys(v).forEach(n => setVar(r, n, v[n]));
     };
 
@@ -91,20 +40,13 @@ function grw_themes_page() {
 
     /* ------------------------------------------------------------ step 1 */
 
-    // "Dark background" makes the widget's text light (public-main.css .wp-dark), so a light card goes dark with it: a solid
-    // dark fill that holds on any site, light lines. A card that is dark already stays.
-    const DARK_CARD = '#383e45';
-    const DARK = {borderColor: '#4c535b', band: '#41474e', divider: '#4c535b', name: '#eeeeee', text: '#ececec', date: '#bbbbbb'};
-    const lum = hex => { const n = parseInt(String(hex).slice(1, 7), 16); return ((n >> 16) * 299 + (n >> 8 & 255) * 587 + (n & 255) * 114) / 255000; };
-    // Only the preset's own near-black stars turn light: a colour the user chose stays.
-    const darkOf = (s, id) => s.bg === 'color' && lum(s.bg1) < .3 ? s : Object.assign({}, s, DARK, s.bg === 'none' ? {} : {bg: 'color', bg1: DARK_CARD}, s.stars === base(id).stars && lum(s.stars) < .3 ? {stars: DARK.name} : {});
-    // Back from dark: the fill and lines of the preset, the rest as changed.
-    const lightOf = (s, id) => { const b = base(id); return Object.assign({}, s, ...['bg', 'bg1', 'bg2'].concat(Object.keys(DARK), s.stars === DARK.name && lum(b.stars) < .3 ? ['stars'] : []).map(k => ({[k]: b[k]}))); };
-
-    const gallerySkin = id => {
-        const s = state.shared.dark ? darkOf(base(id), id) : base(id);
-        if (state.shared.color) s.stars = state.shared.color;
-        return s;
+    // The design's variables as the gallery shows them: under "Dark site background" the dark look, with the stars colour picked above.
+    const galleryVars = t => {
+        const sh = state.shared;
+        let sv = M.text(t.vars);
+        if (sh.dark) sv = M.dark(sv, true, C.shadows);
+        if (sh.color) sv += '--star-color:' + sh.color + ';';
+        return sv;
     };
 
     // The look over the server's render: star colour and dark come from the controls above the gallery.
@@ -113,9 +55,7 @@ function grw_themes_page() {
         stage.classList.toggle('grw-themes-dark', sh.dark);
         if (!r) return;
         r.classList.toggle('wp-dark', sh.dark);
-        if (stage.grwId) paint(stage, gallerySkin(stage.grwId));
-        setVar(r, '--star-color', sh.color);
-        if (r.style.getPropertyValue('--slider-head-card-bg')) setVar(r, '--slider-head-card-bg', sh.dark ? DARK_CARD : PLATE);
+        if (stage.grwTheme) paint(stage, galleryVars(stage.grwTheme) + (sh.color ? '' : '--star-color:;'));
     }
 
     // A grid tile shows whole rows: two, then two more on each "More reviews", as many cards a row as its width holds.
@@ -136,6 +76,7 @@ function grw_themes_page() {
 
     function renderPresets(host, head) {
         const sh = state.shared;
+        if (filter === 'badge' && kit.sticker()) filter = 'sticker';
         const filters = h('div', {class: 'grw-pl-seg grw-themes-filter', role: 'group', 'aria-label': 'Layout'});
         const tools = h('div', {class: 'grw-themes-tools'});
         // The first colour of the palette stands for each theme's own stars, as on the badges.
@@ -153,9 +94,7 @@ function grw_themes_page() {
                 const c = sh.color || '';
                 stages.forEach(st => {
                     const r = st.querySelector('.wp-gr');
-                    if (!r) return;
-                    if (st.grwId) setVar(r, '--card-star-color', gallerySkin(st.grwId).stars);
-                    setVar(r, '--star-color', c);
+                    if (r) setVar(r, '--star-color', c);
                 });
                 host.querySelectorAll('.grw-badge-root').forEach(r => c ? r.style.setProperty('--badge-star-color', c) : r.style.removeProperty('--badge-star-color'));
             });
@@ -195,39 +134,37 @@ function grw_themes_page() {
         const pair = h('div', {class: 'grw-themes-pair'});
 
         const stages = [];
-        // The server renders the previews in the presets' order, so i is the place of a preset there.
-        const ids = Object.keys(C.presets);
-        const order = ORDER.filter(id => C.presets[id]).concat(ids.filter(id => ORDER.indexOf(id) < 0));
         // A design without a header takes half a row.
-        const half = (id, layout) => (PAIRS[id] || [])[layout === 'grid' ? 1 : 0] === 'none';
+        const half = t => !!t.opts.header_hide_social;
         // A half tile left alone between whole ones takes the next half tile up beside it in the page itself, so Tab goes in the order seen.
-        const arranged = layout => {
+        const arranged = themes => {
             const out = [];
             let alone = -1;
-            order.forEach(id => {
-                if (!half(id, layout)) out.push(id);
-                else if (alone < 0) alone = out.push(id) - 1;
-                else { out.splice(alone + 1, 0, id); alone = -1; }
+            themes.forEach(t => {
+                if (!half(t)) out.push(t);
+                else if (alone < 0) alone = out.push(t) - 1;
+                else { out.splice(alone + 1, 0, t); alone = -1; }
             });
             return out;
         };
-        // id is the card preset, none on a list or rating tile.
-        const tile = (grid, layout, id, i, name) => {
-            const card = h('div', {class: 'grw-badge-card' + (id && half(id, layout) ? ' grw-themes-half' : '')});
+        const tile = (grid, t) => {
+            const layout = t.opts.view_mode, name = t.name || layout;
+            const card = h('div', {class: 'grw-badge-card' + (half(t) ? ' grw-themes-half' : '')});
             const top = h('div', {class: 'grw-badge-card-head'}, '<span>' + esc(name) + '</span>');
-            const chosen = () => theme() && state.options.view_mode === layout && (!id || state.options.card_style === id);
+            const chosen = () => theme() && M.hasTheme(state.options, t, OWN_VARS);
             const stage = h('div', {class: 'grw-badge-stage grw-themes-stage'});
-            stage.grwId = id;
+            stage.grwTheme = t;
             stages.push(stage);
             const btn = h('button', {type: 'button', class: 'button button-primary', 'aria-label': (chosen() ? 'Selected: ' : 'Select ') + name + ' ' + layout}, chosen() ? 'Selected' : 'Select');
             card.classList.toggle('grw-badge-card-sel', chosen());
             btn.onclick = () => {
                 if (!chosen()) {
-                    state.options = Object.assign({}, THEME_DEFAULTS, {view_mode: layout}, id ? {card_style: id} : {});
-                    state.options.style_vars = (id ? styleVars(id, gallerySkin(id)) : '') + (sh.color ? '--star-color:' + sh.color + ';' : '') + (id ? plate(headerOf(id, layout).vars, sh.dark) : '');
+                    state.options = M.applyTheme({}, t);
+                    state.options.style_vars = galleryVars(t);
+                    // The design's own light look, for "Dark site background" switched off on step 2 after a pick made with it on.
+                    state.light = sh.dark ? M.text(t.vars) + (sh.color ? '--star-color:' + sh.color + ';' : '') : null;
                     if (sh.dark) state.options.dark_theme = true;
                     if (sh.anonym) state.options.anonym_avatar = true;
-                    if (id) Object.assign(state.options, headerOf(id, layout).opts);
                     state.preset = Object.assign({}, state.options);
                     state.presetName = null;
                 }
@@ -238,26 +175,29 @@ function grw_themes_page() {
             grid.append(card);
             // While a place connects there is no data; the gallery is drawn again once it comes.
             // Shaped before the widget lays itself out: a first layout with the server's two reviews makes scroll anchoring jump a row.
-            return () => { stage.grwDraw = () => { if (!state.data) return; mount(stage, state.data[layout][i], () => { look(stage); if (layout === 'grid') twoRows(stage); }); }; lazy.observe(stage); };
+            return () => { stage.grwDraw = () => { if (!state.data) return; mount(stage, state.data.themes[t.id], () => { look(stage); if (layout === 'grid') twoRows(stage); }); }; lazy.observe(stage); };
         };
         KINDS.forEach(([layout, title]) => {
             const sec = section(layout, title, hasCards(layout) ? host : pair);
             const grid = h('div', {class: 'grw-badge-grid grw-themes-grid'});
             sec.append(grid);
-            const cards = hasCards(layout) ? arranged(layout).map(id => tile(grid, layout, id, ids.indexOf(id), C.presets[id].name)) : [tile(grid, layout, null, 0, 'Original')];
+            const cards = arranged(C.themes.filter(t => t.opts.view_mode === layout)).map(t => tile(grid, t));
             sections.push({sec, key: layout, draw: () => cards.forEach(f => f())});
         });
         host.append(pair);
 
-        const badgeSec = section('badge', 'Badge');
-        const badges = kit.presets(badgeSec, null, sh);
-        sections.push({sec: badgeSec, key: 'badge', draw: () => badges.refresh(), drawn: true});
+        const badges = [['badge', 'Badge'], ['sticker', 'Stickers']].map(([key, title]) => {
+            const sec = section(key, title);
+            const drawn = kit.presets(sec, null, sh, key);
+            sections.push({sec, key, draw: () => drawn.refresh(), drawn: true});
+            return drawn;
+        });
 
         // Colour and dark repaint what is drawn; the photos are the server's, so they need the data again.
         function changed(key) {
             if (key === 'anonym') return W.loadData(refresh, host);
             stages.forEach(look);
-            badges.refresh();
+            badges.forEach(b => b.refresh());
         }
 
         // A hidden section is drawn when it is shown: a slider started at zero width would keep the narrowest columns.
@@ -269,7 +209,7 @@ function grw_themes_page() {
             pair.hidden = [...pair.children].every(s => s.hidden);
             count.textContent = '(' + host.querySelectorAll('.grw-themes-section:not([hidden]) .grw-badge-card').length + ')';
         };
-        [['all', 'All']].concat(KINDS, [['badge', 'Badge']]).forEach(([v, t]) => {
+        [['all', 'All']].concat(KINDS, [['badge', 'Badge'], ['sticker', 'Stickers']]).forEach(([v, t]) => {
             const b = h('button', {type: 'button', class: v === filter ? 'grw-pl-on' : '', 'aria-pressed': String(v === filter)}, esc(t));
             b.onclick = () => {
                 filter = v;
@@ -291,7 +231,7 @@ function grw_themes_page() {
     function renderEditor(ctx) {
         if (!theme()) return kit.editor(ctx);
         const o = state.options, ui = ctx.ui, stage = ctx.stage;
-        const skin = hasCards(o.view_mode) ? skinOf(o) : null;
+        const skin = hasCards(o.view_mode) ? M.skinOf(o.style_vars, C.shadows) : null;
         stage.classList.add('grw-themes-stage');
         stage.classList.toggle('grw-themes-dark', !!o.dark_theme);
 
@@ -328,7 +268,6 @@ function grw_themes_page() {
                     if (mine !== seq) return;
                     if (res.status !== 'success') return W.toast(W.errorOf(res) || 'Could not load the preview.', 'error');
                     mount(stage, res.result.html);
-                    if (skin) paint(stage, skin);
                 });
             }, 250);
         };
@@ -353,7 +292,8 @@ function grw_themes_page() {
             return key => { if (key !== 'device') load(); };
         }
 
-        const skinChanged = () => { o.style_vars = styleVars(o.card_style, skin) + extraVars(o.style_vars); paint(stage, skin); };
+        // Every card variable is the widget's own: a change writes the whole set and paints it over the render.
+        const skinChanged = () => { o.style_vars = M.withCard(o.style_vars, skin, C.shadows); paint(stage, o.style_vars); };
         const sk = W.controls(ctx.side, skin, () => { skinChanged(); sync(); });
         const show = (el, on) => { (el.parentNode && el.parentNode.classList.contains('grw-pl-row') ? el.parentNode : el).hidden = !on; };
         // The controls that show a skin value Dark changes.
@@ -373,15 +313,16 @@ function grw_themes_page() {
         const per = perPage();
         b1.append(...ui.row('Reviews per page', per));
         b1.append(ui.toggle('header_hide_social', 'Show the business header', {get: () => !o.header_hide_social, set: v => { o.header_hide_social = !v; sync(); }}));
-        // The card follows the background, and the color controls show its new values.
+        // The card follows the background, and the colour controls show its new values; off again gives the look before it went on.
+        let light = state.light || null;
         b1.append(ui.toggle('dark_theme', 'Dark site background', {set: v => {
+            if (v) light = o.style_vars;
             o.dark_theme = v;
-            Object.assign(skin, v ? darkOf(skin, o.card_style) : lightOf(skin, o.card_style));
-            o.style_vars = styleVars(o.card_style, skin) + plate(extraVars(o.style_vars), v);
+            o.style_vars = M.dark(o.style_vars, v, C.shadows, v ? null : light);
+            Object.assign(skin, M.skinOf(o.style_vars, C.shadows));
             shown.forEach(f => f());
-            paint(stage, skin);
-            const r = darken(v);
-            if (r && r.style.getPropertyValue('--slider-head-card-bg')) setVar(r, '--slider-head-card-bg', v ? DARK_CARD : PLATE);
+            paint(stage, o.style_vars);
+            darken(v);
         }}));
         const headPos = ui.select('slider_head_pos', [['1', 'Above the reviews'], ['2', 'Beside the reviews'], ['3', 'Below the reviews']]);
         headPos.value = o.slider_head_pos || '2';
@@ -467,7 +408,7 @@ function grw_themes_page() {
         const badge = !theme(), floating = badge && state.options.badge_pos !== 'embed';
         const sc = '[grw id=' + state.feedId + ']';
         const head = h('div', {class: 'grw-themes-done'});
-        head.append(h('h2', null, 'Your ' + esc(badge ? 'badge' : state.options.view_mode) + ' is ready'),
+        head.append(h('h2', null, 'Your ' + esc(badge ? kit.noun() : state.options.view_mode) + ' is ready'),
             h('p', {class: 'description'}, 'Saved as <b>' + esc(state.title) + '</b>. You find it later under Widgets.'));
         const cols = h('div', {class: 'grw-badge-cols grw-themes-result'});
         const main = h('div', {class: 'grw-badge-main-col'});
@@ -555,18 +496,23 @@ function grw_themes_page() {
 
 
     grw_steps(root, {
-        noun: () => theme() ? state.options.view_mode : 'badge',
+        noun: () => theme() ? state.options.view_mode : kit.noun(),
         pick: 'Select a design',
-        previewTitle: () => theme() ? 'Widget preview' : 'Badge preview',
+        previewTitle: () => theme() ? 'Widget preview' : kit.sticker() ? 'Sticker preview' : 'Badge preview',
         data: 'grw_theme_data',
         dataKey: () => state.shared.anonym ? 'anonym' : '',
-        dataFields: () => ({anonym: state.shared.anonym ? '1' : '', headers: JSON.stringify(LAYOUTS.reduce((m, [layout]) => { Object.keys(C.presets).forEach(id => { const hd = headerOf(id, layout); m[layout + ':' + id] = Object.assign({style_vars: hd.vars}, hd.opts); }); return m; }, {}))}),
+        dataFields: () => ({anonym: state.shared.anonym ? '1' : ''}),
         save: () => theme() ? 'grw_theme_save' : 'grw_badge_save',
-        defaults: () => theme() ? THEME_DEFAULTS : BADGE_DEFAULTS,
+        defaults: () => theme() ? {view_mode: 'slider'} : BADGE_DEFAULTS,
         init(w) {
             W = w; state = w.state; h = w.h; esc = w.esc;
             state.shared = {color: null, dark: false, anonym: false};
-            kit = grw_badge_kit(W, () => state.data && state.data.badge);
+            // A widget saved by an older version opens in the current model; nothing is saved until the user does.
+            if (state.options && M.isLegacy(state.options)) {
+                state.options = M.convert(state.options, CFG);
+                state.preset = Object.assign({}, state.options);
+            }
+            kit = grw_badge_kit(W, () => state.data && state.data.badge, CFG);
             if (theme()) state.global = false;
             else kit.init();
         },

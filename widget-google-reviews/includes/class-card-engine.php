@@ -3,15 +3,32 @@
 namespace WP_Rplg_Google_Reviews\Includes;
 
 /*
- * Review card engine, format v1: the PHP twin of the CDN js/card.js, which describes the format; both pass fixtures.json.
- * This master lives in richplugins/plugins/shared/card-engine: plugin builds copy it, changing only the namespace line.
+ * Layout engine, format v1, for review cards and rating blocks: the PHP twin of the CDN js/card.js, which describes the format and
+ * the kinds; both pass fixtures.json. This master lives in richplugins/plugins/shared/card-engine: plugin builds copy it, changing
+ * only the namespace line.
  */
 class Card_Engine {
 
-    const ELEMENTS = array('photo', 'name', 'time', 'stars', 'text', 'logo', 'platform');
-    const CARRIERS = array('photo', 'name', 'stars');
+    const KINDS = array(
+        'card' => array(
+            'root'     => 'rpi-card',
+            'required' => 'text',
+            'elements' => array('photo', 'name', 'time', 'stars', 'text', 'logo', 'platform'),
+            'attrs'    => array('top' => array('photo'), 'logo' => array('photo', 'name', 'stars')),
+        ),
+        'rating' => array(
+            'root'     => 'rpi-rate',
+            'required' => null,
+            'elements' => array('photo', 'name', 'title', 'scale', 'grade', 'stars', 'based', 'count', 'powered', 'logo', 'label', 'phrase', 'avatars', 'write', 'seeall'),
+            'attrs'    => array('top' => array('photo'), 'logo' => array('photo', 'name', 'stars'), 'nonum' => array('stars'), 'one' => array('stars'), 'first' => array('stars'),
+                                'outof' => array('grade'), 'short' => array('based', 'powered'), 'bold' => array('based', 'count'), 'dot' => array('count', 'based', 'label'),
+                                'noauthor' => array('phrase'), 'icon' => array('label'), 'n' => array('avatars')),
+        ),
+    );
     const SECTION_ATTRS = array('center', 'band', 'sep', 'bubble', 'gap');
-    const ITEM_ATTRS = array('top', 'logo', 'gap');
+    const GROUP_ATTRS = array('center', 'band', 'sep', 'gap');
+    // Every element takes these, after the kind's own.
+    const ITEM_ATTRS = array('band', 'sep', 'gap');
     const MAX_DEPTH = 16;
     // What JavaScript's \s matches; PCRE's \s differs (U+0085, U+180E, U+FEFF).
     const SPACE = '/[\t\n\x0b\f\r \x{a0}\x{1680}\x{2000}-\x{200a}\x{2028}\x{2029}\x{202f}\x{205f}\x{3000}\x{feff}]+/u';
@@ -20,16 +37,20 @@ class Card_Engine {
     private $i = 0;
     private $depth = 0;
 
-    private $review;
+    private $data;
     private $p;
     private $logo_on;
     private $bubble;
     private $avatop;
-    private $text_at;
+    private $anchor_at;
+
+    private static function kind($name) {
+        return isset(self::KINDS[$name]) ? self::KINDS[$name] : self::KINDS['card'];
+    }
 
     /* ------------------------------------------------------------ format */
 
-    public static function parse($src) {
+    public static function parse($src, $kind = 'card') {
         $p = new self();
         $s = $p->s = (string) preg_replace(self::SPACE, '', (string) $src);
         $cut = strpos($s, ';');
@@ -52,7 +73,7 @@ class Card_Engine {
                 $p->i += strlen($o) + 1;
             }
         }
-        return self::normalize(array('sections' => $sections, 'corner' => $corner));
+        return self::normalize(array('kind' => isset(self::KINDS[$kind]) ? $kind : 'card', 'sections' => $sections, 'corner' => $corner));
     }
 
     private function at() {
@@ -135,63 +156,67 @@ class Card_Engine {
     }
 
     // Known attrs in a fixed order, so one layout has one spelling; attrs from a newer format are kept as they are.
-    private static function tidy($a, $known) {
+    private static function tidy($a, $known, $K) {
         if (!$a) return null;
         $out = array();
         foreach ($known as $k) {
             if (isset($a[$k]) && ($k !== 'gap' || is_int($a[$k]))) $out[$k] = $a[$k];
         }
         foreach ($a as $k => $v) {
-            if (!in_array($k, self::SECTION_ATTRS, true) && !in_array($k, self::ITEM_ATTRS, true)) $out[$k] = $v;
+            if (!in_array($k, self::SECTION_ATTRS, true) && !in_array($k, self::ITEM_ATTRS, true) && !array_key_exists($k, $K['attrs'])) $out[$k] = $v;
         }
         return $out ? $out : null;
     }
 
     private static function normalize($model) {
+        $K = self::kind($model['kind']);
         $seen = array();
         $sections = array();
         foreach ($model['sections'] as $c) {
-            $c['attrs'] = (array) self::tidy($c['attrs'], self::SECTION_ATTRS);
-            $c['items'] = self::clean_all($c['items'], $seen);
+            $c['attrs'] = (array) self::tidy($c['attrs'], self::SECTION_ATTRS, $K);
+            $c['items'] = self::clean_all($c['items'], $seen, $K);
             if (self::filled($c['items'])) $sections[] = $c;
         }
-        if (!isset($seen['text'])) {
+        if ($K['required'] && !isset($seen[$K['required']])) {
             if (!$sections) $sections[] = array('attrs' => array(), 'items' => array());
-            $sections[count($sections) - 1]['items'][] = array('el' => 'text');
+            $sections[count($sections) - 1]['items'][] = array('el' => $K['required']);
         }
-        return array('sections' => $sections, 'corner' => $model['corner'] && !isset($seen['logo']));
+        if (!$sections) throw new \InvalidArgumentException('no elements');
+        return array('kind' => $model['kind'], 'sections' => $sections, 'corner' => $model['corner'] && !isset($seen['logo']));
     }
 
-    private static function clean_all($items, &$seen) {
+    private static function clean_all($items, &$seen, $K) {
         $out = array();
         foreach ($items as $n) {
-            $n = self::clean($n, $seen);
+            $n = self::clean($n, $seen, $K);
             if ($n !== null) $out[] = $n;
         }
         return $out;
     }
 
-    private static function clean($n, &$seen) {
+    private static function clean($n, &$seen, $K) {
         if (isset($n['el'])) {
-            if (!in_array($n['el'], self::ELEMENTS, true) || isset($seen[$n['el']])) return null;
+            if (!in_array($n['el'], $K['elements'], true) || isset($seen[$n['el']])) return null;
             $seen[$n['el']] = true;
-            if ($n['el'] === 'text') unset($n['hidden']);
+            if ($n['el'] === $K['required']) unset($n['hidden']);
             $a = isset($n['attrs']) ? $n['attrs'] : array();
-            if ($n['el'] !== 'photo') unset($a['top']);
+            foreach ($K['attrs'] as $k => $on) {
+                if (isset($a[$k]) && !in_array($n['el'], $on, true)) unset($a[$k]);
+            }
             if (!empty($a['logo'])) {
-                if (!in_array($n['el'], self::CARRIERS, true) || isset($seen['logo'])) unset($a['logo']);
+                if (isset($seen['logo'])) unset($a['logo']);
                 else $seen['logo'] = true;
             }
-            $n['attrs'] = self::tidy($a, self::ITEM_ATTRS);
+            $n['attrs'] = self::tidy($a, array_merge(array_keys($K['attrs']), self::ITEM_ATTRS), $K);
             if (!$n['attrs']) unset($n['attrs']);
             return $n;
         }
         // The grammar accepts "-" on groups and spacers, but only elements can be hidden.
         unset($n['hidden']);
-        $n['attrs'] = self::tidy(isset($n['attrs']) ? $n['attrs'] : null, isset($n['spacer']) ? array() : array('gap'));
+        $n['attrs'] = self::tidy(isset($n['attrs']) ? $n['attrs'] : null, isset($n['spacer']) ? array() : self::GROUP_ATTRS, $K);
         if (!$n['attrs']) unset($n['attrs']);
         if (isset($n['spacer'])) return $n;
-        $n['items'] = self::clean_all($n['items'], $seen);
+        $n['items'] = self::clean_all($n['items'], $seen, $K);
         if (!self::filled($n['items'])) return null;
         // Serialize writes a one-item row as a group, and parse merges a group that holds only a group: undo both here.
         $only = count($n['items']) === 1 ? $n['items'][0] : null;
@@ -245,25 +270,27 @@ class Card_Engine {
     /* ------------------------------------------------------------ render */
 
     /*
-     * $p is the product, an array: 'slot' and 'frame' classes and one callable per element (photo, name, ...), called with the
-     * review and array('cls' => ..., 'logo' => bool); each returns a single root that carries cls. An optional 'slot_attrs'.
+     * $p is the product, an array: 'slot' and 'frame' classes and one callable per element it draws, called with the data (a review
+     * or a business) and array('cls' => ..., 'logo' => bool, 'attrs' => array); each returns a single root that carries cls.
+     * An element without a callable renders nothing. An optional 'slot_attrs'.
      */
-    public static function render($review, $model, $p) {
+    public static function render($data, $model, $p) {
         $r = new self();
-        $r->review = $review;
+        $r->data = $data;
         $r->p = $p;
-        return $r->card($model);
+        return $r->block($model);
     }
 
-    private function card($model) {
+    private function block($model) {
+        $K = self::kind($model['kind']);
         $shown = $all = array();
         foreach ($model['sections'] as $c) {
             $all = array_merge($all, self::leaves($c));
             if (self::visible($c)) $shown[] = $c;
         }
-        $this->text_at = $bubble_at = -1;
+        $this->anchor_at = $bubble_at = -1;
         foreach ($shown as $k => $c) {
-            if ($this->text_at < 0 && in_array('text', array_column(self::leaves($c), 'el'), true)) $this->text_at = $k;
+            if ($K['required'] && $this->anchor_at < 0 && in_array($K['required'], array_column(self::leaves($c), 'el'), true)) $this->anchor_at = $k;
             if ($bubble_at < 0 && !empty($c['attrs']['bubble'])) $bubble_at = $k;
         }
         $this->bubble = $bubble_at >= 0;
@@ -297,30 +324,38 @@ class Card_Engine {
             else $after .= $this->section($c, $k, true);
         }
 
-        $provider = empty($this->review->provider) ? 'google' : htmlspecialchars($this->review->provider, ENT_QUOTES);
+        $provider = empty($this->data->provider) ? 'google' : htmlspecialchars($this->data->provider, ENT_QUOTES);
         $frame = self::join('rpi-col12', $this->p['frame'], $this->bubble ? 'rpi-bubble' : '', $this->avatop ? 'rpi-avatop' : '', $corner ? 'rpi-logo rpi-logo-' . $provider : '');
-        return '<div class="' . self::join($this->p['slot'], 'rpi-card') . '"' . (isset($this->p['slot_attrs']) ? $this->p['slot_attrs']($this->review) : '') . '>' .
+        return '<div class="' . self::join($this->p['slot'], $K['root']) . '"' . (isset($this->p['slot_attrs']) ? $this->p['slot_attrs']($this->data) : '') . '>' .
             $before . '<div class="' . $frame . '">' . $inside . '</div>' . $after . '</div>';
     }
 
+    private static function own($a) {
+        return self::join(empty($a['center']) ? '' : 'rpi-center', empty($a['band']) ? '' : 'rpi-band', empty($a['sep']) ? '' : 'rpi-sep');
+    }
+
     private function node($n, $cls) {
-        if (isset($n['el'])) return empty($n['hidden']) ? $this->p[$n['el']]($this->review, array('cls' => $cls, 'logo' => $n['el'] === $this->logo_on)) : '';
+        $a = isset($n['attrs']) ? $n['attrs'] : array();
+        if (isset($n['el'])) {
+            if (!empty($n['hidden']) || !isset($this->p[$n['el']])) return '';
+            return $this->p[$n['el']]($this->data, array('cls' => self::join($cls, self::own($a)), 'logo' => $n['el'] === $this->logo_on, 'attrs' => $a));
+        }
         if (!self::visible($n)) return '';
         $html = '';
         foreach (self::lines($n['items']) as $l) $html .= $this->node($l[0], $l[1] ? 'rpi-push' : '');
-        return '<div class="' . self::join($n['dir'] === 'row' ? 'rpi-row12-center' : 'rpi-col6', $cls) . '"' . self::gap($n) . '>' . $html . '</div>';
+        return '<div class="' . self::join($n['dir'] === 'row' ? 'rpi-row12-center' : 'rpi-col6', $cls, self::own($a)) . '"' . self::gap($n) . '>' . $html . '</div>';
     }
 
-    // A section is a box only when it needs one: several lines kept tight that are not the text's, or a band behind several lines.
+    // A section is a box only when it needs one: several lines kept tight that are not the anchor's, or a band behind several lines.
     private function section($c, $k, $outside) {
         $a = $c['attrs'];
         $ls = self::lines($c['items']);
         $center = empty($a['center']) ? '' : 'rpi-center';
         $band = !$this->bubble && !($this->avatop && $k === 0) && !empty($a['band']) ? 'rpi-band' : '';
         $sep = !$this->bubble && !empty($a['sep']) && $k > 0 ? 'rpi-sep' : '';
-        $bottom = !$this->bubble && $this->text_at >= 0 && $k === $this->text_at + 1 ? 'rpi-push' : '';
+        $bottom = !$this->bubble && $this->anchor_at >= 0 && $k === $this->anchor_at + 1 ? 'rpi-push' : '';
         $html = '';
-        if (count($ls) > 1 && ($k !== $this->text_at || $band || isset($a['gap']))) {
+        if (count($ls) > 1 && ($k !== $this->anchor_at || $band || isset($a['gap']))) {
             foreach ($ls as $l) $html .= $this->node($l[0], self::join($center, $l[1] ? 'rpi-push' : ''));
             return '<div class="' . self::join('rpi-col8', $center, $band, $sep, $bottom) . '"' . self::gap($c) . '>' . $html . '</div>';
         }

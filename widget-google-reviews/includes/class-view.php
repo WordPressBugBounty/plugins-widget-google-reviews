@@ -40,12 +40,12 @@ class View {
         if (!empty($options->style_vars) && is_string($options->style_vars)) {
             $style .= $options->style_vars;
         }
-        $style .= Card_Presets::css_vars(isset($options->css_vars) ? $options->css_vars : '');
+        $style .= Themes::css_vars(isset($options->css_vars) ? $options->css_vars : '');
 
         $cls = $this->root_cls($options);
         self::$rendered[] = (string) $feed_id;
 
-        ?><div class="wp-gr rpi<?php echo $cls; ?>"<?php if ($style) { ?> style="<?php echo esc_attr($style); ?>"<?php } ?> data-id="<?php echo esc_attr($feed_id); ?>" data-layout="<?php echo esc_attr($options->view_mode); ?>" data-exec="false" data-options='<?php echo esc_attr($this->options($options, $card)); ?>'<?php if ($this->badge_popup($reviews, $options)) { ?> data-reviews="<?php echo esc_url(admin_url('admin-ajax.php?action=grw_reviews&id=' . (int) $feed_id)); ?>"<?php } ?>><?php
+        ?><div class="wp-gr rpi<?php echo $cls; ?>"<?php if ($style) { ?> style="<?php echo esc_attr($style); ?>"<?php } ?> data-id="<?php echo esc_attr($feed_id); ?>" data-layout="<?php echo esc_attr($options->view_mode); ?>" data-exec="false" data-options='<?php echo esc_attr($this->options($options)); ?>'<?php if ($this->badge_popup($reviews, $options)) { ?> data-reviews="<?php echo esc_url(admin_url('admin-ajax.php?action=grw_reviews&id=' . (int) $feed_id)); ?>"<?php } ?>><?php
             $rows = false;
             switch ($options->view_mode) {
                 case 'slider':
@@ -80,10 +80,10 @@ class View {
         return $options->dark_theme ? ' wp-dark' : '';
     }
 
-    private function options($options, $card) {
+    private function options($options) {
         return json_encode(
             array(
-                'text_size' => $card ? '' : $options->text_size,
+                'text_size' => $options->text_size,
                 'trans'     => array(
                     'read more' => __('read more', 'widget-google-reviews')
                 )
@@ -114,8 +114,7 @@ class View {
                 $cls = 'rpi-slides grw-reviews';
                 if (!$options->slider_hide_prevnext) {
                     $cls .= ' rpi-slides-bite';
-                    $aria_label = $this->grw_aria_label($options, 'Previous');
-                    ?><button class="rpi-ltgt rpi-lt grw-prev"<?php echo $aria_label; ?> tabindex="0"></button><?php
+                    ?><button class="rpi-ltgt rpi-lt grw-prev" aria-label="<?php esc_attr_e('Previous', 'widget-google-reviews'); ?>" tabindex="0"></button><?php
                 }
                     ?><div class="<?php echo $cls; ?>" data-count="<?php echo $count; ?>" data-offset="<?php echo $count; ?>"><?php
                         foreach ($reviews as $review) {
@@ -123,8 +122,7 @@ class View {
                         }
                     ?></div><?php
                 if (!$options->slider_hide_prevnext) {
-                    $aria_label = $this->grw_aria_label($options, 'Next');
-                    ?><button class="rpi-ltgt rpi-gt grw-next"<?php echo $aria_label; ?> tabindex="0"></button><?php
+                    ?><button class="rpi-ltgt rpi-gt grw-next" aria-label="<?php esc_attr_e('Next', 'widget-google-reviews'); ?>" tabindex="0"></button><?php
                 }
                 if (!$options->slider_hide_dots) {
                     ?><div class="rpi-dots-wrap"><div class="rpi-dots"></div></div><?php
@@ -247,10 +245,17 @@ class View {
             && (float) $biz->rating >= Badge_Live::TOP_RATED_MIN_RATING
             && (int) $biz->review_count >= Badge_Live::TOP_RATED_MIN_TOTAL;
         $popup = $this->badge_popup($reviews, $options);
+        $model = $this->rating_model($options);
 
-        ?><div class="rpi-badge-cnt rpi-badge-live rpi-badge-<?php echo esc_attr($edge); if ($bar) echo ' rpi-badge-cnt-bar'; if ($options->hide_float_badge) echo ' rpi-badge-hide'; ?>" data-opts='<?php echo esc_attr($this->badge_options($options, $live, $biz, $businesses)); ?>'>
+        ?><div class="rpi-badge-cnt rpi-badge-live rpi-badge-<?php echo esc_attr($edge); if ($bar) echo ' rpi-badge-cnt-bar'; if ($options->hide_float_badge) echo ' rpi-badge-hide'; ?>" data-opts='<?php echo esc_attr($this->badge_options($options, $live, $biz, $businesses, $model)); ?>'>
             <div class="<?php echo implode(' ', $cls); ?>" style="<?php echo esc_attr(implode(';', $style)); ?>"<?php if ($biz->provider !== 'summary') { ?> data-id="<?php echo esc_attr($biz->id); ?>" data-provider="<?php echo esc_attr($biz->provider); ?>"<?php } ?>>
                 <?php if ($options->badge_close) { ?><div class="rpi-x"></div><?php } ?>
+                <?php if ($model) {
+                    $p = $this->rating_product($biz, $biz->rating, $biz->photo, $reviews, $options, $live);
+                    $p['slot'] = 'rpi-badge-body' . ($popup ? ' rpi-badge-clickable' : '');
+                    $p['frame'] = '';
+                    echo Card_Engine::render((object) array('provider' => $provider), $model, $p);
+                } else { ?>
                 <div class="rpi-badge-body<?php if ($popup) echo ' rpi-badge-clickable'; ?>">
                     <?php if (!$compact && !$options->badge_logo_hide) echo $this->logo($provider); ?>
                     <div class="rpi-badge-main">
@@ -259,11 +264,138 @@ class View {
                             <?php if (!$options->badge_based_hide) { ?><span class="rpi-badge-count"><?php echo $options->badge_dot ? '· ' . $count : '(' . $count . ')'; ?></span><?php } ?>
                             <?php if ($top_rated) { ?><span class="rpi-badge-label<?php if ($options->badge_icon) echo ' rpi-badge-ico-' . esc_attr($options->badge_icon); ?>">· <i><?php echo esc_html__('Top rated', 'widget-google-reviews'); ?></i></span><?php } ?>
                         </div>
-                        <div class="rpi-badge-feed"><span><?php echo $this->badge_first($biz, $live, $options); ?></span></div>
+                        <div class="rpi-badge-feed"><span><?php echo $this->badge_first($biz, $live, $options->badge_author_hide); ?></span></div>
                     </div>
                 </div>
+                <?php } ?>
             </div>
         </div><?php
+    }
+
+    // The attrs of an element in a parsed layout, or an empty array.
+    private static function element_attrs($model, $el) {
+        $walk = function($n) use (&$walk, $el) {
+            if (isset($n['el'])) return $n['el'] === $el ? (isset($n['attrs']) ? $n['attrs'] : array()) : null;
+            foreach (isset($n['items']) ? $n['items'] : array() as $c) {
+                $found = $walk($c);
+                if ($found !== null) return $found;
+            }
+            return null;
+        };
+        foreach ($model['sections'] as $c) {
+            $found = $walk($c);
+            if ($found !== null) return $found;
+        }
+        return array();
+    }
+
+    // The rating layout as a model, or null when the widget has none or it does not parse: the header and badge flags draw it then.
+    private function rating_model($options) {
+        if (empty($options->rating_layout) || !is_string($options->rating_layout)) return null;
+        try {
+            return Card_Engine::parse($options->rating_layout, 'rating');
+        } catch (\InvalidArgumentException $e) {
+            return null;
+        }
+    }
+
+    /*
+     * The elements of a rating block, each drawn by grw's own helpers; the engine arranges them for a header or a live badge.
+     * $live (phrases, recent) is built from the reviews only when an element needs it.
+     */
+    private function rating_product($place, $rating, $photo, $reviews, $options, $live = null) {
+        $cls = function($o, $base = '') { return trim($base . ' ' . $o['cls']); };
+        $attr = function($o, $name) { return isset($o['attrs'][$name]) ? $o['attrs'][$name] : null; };
+        $provider = $place->provider === 'summary' ? 'google' : $place->provider;
+        $count = number_format_i18n((int) $place->review_count);
+        $top = !empty($options->preview_toprated)
+            || (float) $rating >= Badge_Live::TOP_RATED_MIN_RATING && (int) $place->review_count >= Badge_Live::TOP_RATED_MIN_TOTAL;
+        $phrases = function() use (&$live, $reviews) {
+            if ($live === null) $live = Badge_Live::build($reviews);
+            return $live;
+        };
+        $logo = function($o) use ($provider) {
+            return $o['logo'] ? ' rpi-logo_after rpi-logo-' . esc_attr($provider) : '';
+        };
+        return array(
+            'photo' => function($d, $o) use ($place, $photo, $options, $cls, $logo) {
+                $alt = empty($options->aria_label) ? sprintf(__('%s place picture', 'widget-google-reviews'), $place->name) : '';
+                return $this->capture('grw_image', $photo, $alt, $options->lazy_load_img, 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', '', $cls($o) . $logo($o));
+            },
+            'name' => function($d, $o) use ($place, $options, $cls, $logo) {
+                $inner = $options->disable_biz_link || empty($place->url)
+                    ? '<span>' . esc_html($place->name) . '</span>'
+                    : $this->capture('grw_anchor', $place->url, '', $place->name, $options, sprintf(__('%s place profile', 'widget-google-reviews'), $place->name));
+                return '<div class="' . $cls($o, 'wp-google-name') . $logo($o) . '">' . $inner . '</div>';
+            },
+            'title' => function($d, $o) use ($cls) {
+                return '<div class="' . $cls($o, 'wp-google-title') . '">' . esc_html__('Google Rating', 'widget-google-reviews') . '</div>';
+            },
+            'scale' => function($d, $o) use ($rating, $place, $cls) {
+                return '<div class="' . $cls($o, 'wp-google-scale') . '">' . esc_html($this->scale($rating, $place->review_count)) . '</div>';
+            },
+            'grade' => function($d, $o) use ($rating, $cls, $attr) {
+                return '<span class="' . $cls($o, 'grw-grade') . '">' . esc_html($rating) . ($attr($o, 'outof') ? '<small>/5</small>' : '') . '</span>';
+            },
+            // A logo drawn by ::before would clash with the stars' own pseudo-elements, so the stars get a wrapper that carries it.
+            'stars' => function($d, $o) use ($rating, $options, $provider, $attr) {
+                $stars = '<span class="' . trim('rpi-stars ' . ($attr($o, 'first') ? 'rpi-stars-first ' : '') . ($o['logo'] ? '' : $o['cls'])) . '"' . $this->grw_rating_label($options, $rating) .
+                    ' style="--rating:' . esc_attr($rating) . ($attr($o, 'one') ? ';--stars:1' : '') . '">' . ($attr($o, 'nonum') ? '' : esc_html($rating)) . '</span>';
+                return $o['logo'] ? '<span class="' . trim('rpi-logo rpi-logo-' . esc_attr($provider) . ' ' . $o['cls']) . '" aria-hidden="true">' . $stars . '</span>' : $stars;
+            },
+            'based' => function($d, $o) use ($place, $options, $count, $cls, $attr) {
+                // The badge's '%1 reviews' is already translated into every plugin language.
+                $text = $attr($o, 'short') ? str_replace('%1', '%s', __('%1 reviews', 'widget-google-reviews')) : __('Based on %s reviews', 'widget-google-reviews');
+                return '<div class="' . $cls($o, 'wp-google-based') . '">' . ($attr($o, 'dot') ? '· ' : '') . $this->based($text, $count, $attr($o, 'bold')) . '</div>';
+            },
+            'count' => function($d, $o) use ($count, $cls, $attr) {
+                $n = $attr($o, 'bold') ? '<b>' . $count . '</b>' : $count;
+                return '<span class="' . $cls($o, 'rpi-badge-count') . '">' . ($attr($o, 'dot') ? '· ' . $n : '(' . $n . ')') . '</span>';
+            },
+            'powered' => function($d, $o) use ($cls, $attr) {
+                return $this->capture('grw_powered', (bool) $attr($o, 'short'), $o['cls']);
+            },
+            'logo' => function($d, $o) use ($provider) {
+                return $this->logo($provider, '', $o['cls']);
+            },
+            'label' => function($d, $o) use ($top, $cls, $attr) {
+                if (!$top) return '';
+                $icon = $attr($o, 'icon');
+                return '<span class="' . $cls($o, 'rpi-badge-label' . (is_string($icon) && $icon !== '' ? ' rpi-badge-ico-' . esc_attr($icon) : '')) . '">' . ($attr($o, 'dot') ? '· ' : '') . '<i>' . esc_html__('Top rated', 'widget-google-reviews') . '</i></span>';
+            },
+            'phrase' => function($d, $o) use ($place, $phrases, $cls, $attr) {
+                return '<div class="' . $cls($o, 'rpi-badge-feed') . '"><span>' . $this->badge_first($place, $phrases(), (bool) $attr($o, 'noauthor')) . '</span></div>';
+            },
+            'avatars' => function($d, $o) use ($reviews, $options, $cls, $attr) {
+                $n = is_int($attr($o, 'n')) ? max(1, min(10, $attr($o, 'n'))) : 5;
+                $html = '';
+                foreach (array_slice($reviews, 0, $n) as $review) $html .= $this->capture('review_photo', $review, $options);
+                return '<span class="' . $cls($o, 'grw-avatars') . '">' . $html . '</span>';
+            },
+            'write' => function($d, $o) use ($place, $options, $cls) {
+                $id = $place->provider === 'summary' && !empty($place->wr) ? substr($place->wr, strlen('google:')) : $place->id;
+                return '<div class="' . $cls($o, 'wp-google-wr') . '">' . $this->capture('grw_anchor', 'https://search.google.com/local/writereview?placeid=' . $id, '', __('review us on', 'widget-google-reviews'),
+                    $options, __('review us on Google', 'widget-google-reviews'), 'return rplg_leave_review_window.call(this)', $this->logo('google')) . '</div>';
+            },
+            'seeall' => function($d, $o) use ($place, $options, $cls) {
+                $url = $options->google_def_rev_link && !empty($place->url) ? $place->url : 'https://search.google.com/local/reviews?placeid=' . $place->id;
+                return $this->capture('grw_anchor', $url, $cls($o, 'wp-google-url'), __('See All Reviews', 'widget-google-reviews'), $options, __('All reviews', 'widget-google-reviews'));
+            },
+        );
+    }
+
+    // The header of a rating layout; false when the widget has none, so the header flags draw it.
+    private function rating($rating, $place, $photo, $reviews, $options, $wide) {
+        $model = $this->rating_model($options);
+        if (!$model) return false;
+        $p = $this->rating_product($place, $rating, $photo, $reviews, $options);
+        $p['slot'] = 'grw-header' . ($wide ? ' rpi-flx rpi-row12-center' : '');
+        $p['slot_attrs'] = function() use ($wide, $options) {
+            return $wide && $options->slider_hide_prevnext ? ' style="--slider-offset:0px"' : '';
+        };
+        $p['frame'] = 'grw-header-inner';
+        echo Card_Engine::render((object) array('provider' => 'google'), $model, $p);
+        return true;
     }
 
     public function badge_popup($reviews, $options) {
@@ -284,13 +416,15 @@ class View {
         return in_array($options->badge_pos, $valid, true) ? $options->badge_pos : 'right';
     }
 
-    private function badge_options($options, $live, $biz, $businesses) {
+    private function badge_options($options, $live, $biz, $businesses, $model = null) {
         $opts = array();
         foreach (Core::badge_option_keys() as $key) {
             if (isset($options->$key) && $options->$key !== '' && $options->$key !== false) {
                 $opts[$key] = $options->$key;
             }
         }
+        // badge.js rotates the phrases itself and takes the author decision from the options: the layout owns it, so it is handed over here.
+        if ($model) $opts['badge_author_hide'] = !empty(self::element_attrs($model, 'phrase')['noauthor']);
         $opts['badge_style'] = 'live';
         $opts['badge_pos'] = $this->badge_pos($options);
         $opts['live'] = $live;
@@ -315,10 +449,10 @@ class View {
         return json_encode($opts, JSON_UNESCAPED_UNICODE);
     }
 
-    private function badge_first($biz, $live, $options) {
+    private function badge_first($biz, $live, $hide_author) {
         if (!empty($live['phrases'])) {
             $p = $live['phrases'][0];
-            $author = $options->badge_author_hide ? '' : Badge_Live::short_name($p['a']);
+            $author = $hide_author ? '' : Badge_Live::short_name($p['a']);
             return '<q>' . esc_html($p['t']) . '…</q>' . ($author ? ' <b>' . esc_html($author) . '</b>' : '');
         }
         $provider = $biz->provider === 'summary' ? '' : ucfirst($biz->provider);
@@ -329,6 +463,7 @@ class View {
     }
 
     function grw_place($rating, $place, $place_img, $reviews, $options, $show_powered = true, $wide = false) {
+        if ($this->rating($rating, $place, $place_img, $reviews, $options, $wide)) return;
         $style = $options->header_center ? 'style="--dir:column;--align:center;--star-align-self:center"' : '';
         $wr = function() use ($place, $options) {
             if ($options->hide_writereview) return;
@@ -445,9 +580,9 @@ class View {
         return __('Poor', 'widget-google-reviews');
     }
 
-    function grw_powered($logo_only = false) {
+    function grw_powered($logo_only = false, $cls = '') {
         $label = $logo_only ? 'Google' : __('powered by Google', 'widget-google-reviews');
-        ?><div class="wp-google-powered" role="img" aria-label="<?php echo esc_attr($label); ?>"><?php if (!$logo_only) echo 'powered by '; ?><span class="rpi-goog" aria-hidden="true"></span></div><?php
+        ?><div class="wp-google-powered<?php if ($cls) echo ' ' . $cls; ?>" role="img" aria-label="<?php echo esc_attr($label); ?>"><?php if (!$logo_only) echo 'powered by '; ?><span class="rpi-goog" aria-hidden="true"></span></div><?php
     }
 
     function grw_place_reviews($reviews, $options, $is_admin = false) {
@@ -542,19 +677,22 @@ class View {
         </div><?php
     }
 
-    // A widget with a card style gets the engine's card; its elements are the ones grw_slider_review() prints.
+    // A widget with a card layout gets the engine's card; its elements are the ones grw_slider_review() prints. A widget of
+    // 7.1.5–7.1.6 keeps its preset's layout and variables, which it stored only by the preset's id.
     private function card($options, $is_admin) {
-        $preset = empty($options->card_style) ? null : Card_Presets::get($options->card_style);
-        if (!$preset) return null;
+        $preset = empty($options->card_style) ? null : Legacy_Presets::get($options->card_style);
+        $layout = empty($options->card_layout) || !is_string($options->card_layout) ? ($preset ? $preset['layout'] : '') : $options->card_layout;
+        if ($layout === '') return null;
         try {
-            $model = Card_Engine::parse(empty($options->card_layout) ? $preset['layout'] : $options->card_layout);
+            $model = Card_Engine::parse($layout, 'card');
         } catch (\InvalidArgumentException $e) {
-            $model = Card_Engine::parse($preset['layout']);
+            if (!$preset) return null;
+            $model = Card_Engine::parse($preset['layout'], 'card');
         }
         $logo = function($review, $o) {
             return $o['logo'] ? ' rpi-logo_after rpi-logo-' . esc_attr($review->provider) : '';
         };
-        return array('model' => $model, 'style' => Card_Presets::style($preset), 'product' => array(
+        return array('model' => $model, 'style' => $preset ? Themes::declarations($preset['vars']) : '', 'product' => array(
             'photo' => function($review, $o) use ($options, $logo) {
                 return $this->capture('review_photo', $review, $options, trim($logo($review, $o) . ' ' . $o['cls']));
             },

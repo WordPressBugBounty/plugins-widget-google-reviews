@@ -66,8 +66,10 @@ class Google_Api_New {
         } else {
             if (isset($json->error)) {
                 $result = array('error_message' => $json->error);
-            } else {
+            } else if (isset($json->id)) {
                 $result = array('error_message' => 'The place you are trying to connect to does not have a rating yet.');
+            } else {
+                $result = array('error_message' => Connect_Helper::failed($res, $json));
             }
             $error_status = isset($json->error->status) ? $json->error->status : '';
             $error_reason = isset($json->error->details[0]->reason) ? $json->error->details[0]->reason : '';

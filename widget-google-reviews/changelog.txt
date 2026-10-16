@@ -1,5 +1,16 @@
 == Changelog ==
 
+= 7.1.7 =
+* New: sticker designs for the site badge: round stamps and seals, a Google ring, a pennant, a trust strip with reviewer photos, partner cards.
+* New: wordmark badge designs.
+* New: size and color controls for the badge elements on the design step.
+* Change: a saved widget keeps its own design; Reset to default style in the builder returns to it.
+* Improved: a failed connection says why.
+* Improved: slider arrows have names for screen readers.
+* Improved: a badge that opens reviews lifts on hover.
+* Fixed: the header of a list or rating widget ran past the page edge on full-width themes.
+* Fixed: Create widget on the Places page opened the wrong editor and saved a list.
+
 = 7.1.6 =
 * New: Create Widget gallery with ready-made slider, grid, list, rating and badge designs, previewed with your own reviews.
 * New: one click creates a draft page with the new widget.

@@ -49,18 +49,7 @@ const GRW_HTML_CONTENT =
                     'Hide rating header, leave only reviews' +
                 '</label>' +
             '</div>' +
-            '<div class="grw-builder-option" data-if="header">' +
-                '<label>' +
-                    '<input type="checkbox" name="header_center" value="">' +
-                    'Center the header' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option" data-if="header">' +
-                '<label>' +
-                    '<input type="checkbox" name="header_hide_photo" value="">' +
-                    'Hide business photo' +
-                '</label>' +
-            '</div>' +
+            '<div class="grw-builder-option grw-card-ui grw-head-ui" data-if="header"></div>' +
             '<div class="grw-builder-option" data-if="header">' +
                 '<label>' +
                     '<input type="checkbox" name="disable_biz_link">' +
@@ -68,32 +57,6 @@ const GRW_HTML_CONTENT =
                 '</label>' +
                 '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
                 '<div class="grw-quest-help" style="display:none;">Show the business name as plain text instead of a link to the Google Local Business Page.</div>' +
-            '</div>' +
-            '<div class="grw-builder-option" data-if="header">' +
-                '<label>' +
-                    '<input type="checkbox" name="header_hide_grade" value="">' +
-                    'Hide rating number' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option" data-if="header">' +
-                '<label>' +
-                    '<input type="checkbox" name="header_bold_count" value="">' +
-                    'Bold review count' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option" data-if="header">' +
-                '<label>' +
-                    '<input type="checkbox" name="header_short_count" value="">' +
-                    'Use short review count' +
-                '</label>' +
-                '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span>' +
-                '<div class="grw-quest-help" style="display:none;">Shows \'256 reviews\' instead of \'Based on 256 reviews\'.</div>' +
-            '</div>' +
-            '<div class="grw-builder-option" data-if="header">' +
-                '<label>' +
-                    '<input type="checkbox" name="hide_writereview" value="">' +
-                    'Hide \'review us on G\' button' +
-                '</label>' +
             '</div>' +
             '<div class="grw-builder-option" data-if="header headcard">' +
                 '<label>' +
@@ -118,16 +81,6 @@ const GRW_HTML_CONTENT =
                     'Show header shadow' +
                 '</label>' +
             '</div>' +
-            '<div class="grw-builder-option grw-header-order" data-if="header">' +
-                'Header lines' +
-                '<input type="hidden" name="header_order" value="">' +
-                '<div hidden>' +
-                    '<input type="checkbox" name="header_show_scale" value="">' +
-                    '<input type="checkbox" name="header_hide_name" value="">' +
-                    '<input type="checkbox" name="hide_based_on" value="">' +
-                    '<input type="checkbox" name="header_platform" value="">' +
-                '</div>' +
-            '</div>' +
         '</div>' +
 
         /* Common Options */
@@ -137,13 +90,9 @@ const GRW_HTML_CONTENT =
                 'Reviews shown before \'More reviews\'' +
                 '<input type="text" name="pagination" value="">' +
             '</div>' +
-            '<div class="grw-builder-option" data-if="reviews !engine">' +
+            '<div class="grw-builder-option" data-if="reviews">' +
                 'Maximum characters before \'read more\' link' +
                 '<input type="text" name="text_size" value="">' +
-            '</div>' +
-            '<div class="grw-builder-option" data-if="cards !engine">' +
-                'Text height' +
-                '<input type="text" name="slider_text_height" value="" placeholder="Default: 100px">' +
             '</div>' +
             '<div class="grw-builder-option" data-if="reviews">' +
                 '<label>' +
@@ -246,7 +195,7 @@ const GRW_HTML_CONTENT =
 
         /* Card Options */
         '<div class="grw-builder-top grw-toggle" data-if="cards">Card Options</div>' +
-        '<div class="grw-builder-inside grw-card-ui" style="display:none" data-if="cards"></div>' +
+        '<div class="grw-builder-inside grw-card-ui grw-card-box" style="display:none" data-if="cards"></div>' +
 
         /* Style Options */
         '<div class="grw-builder-top grw-toggle">Style Options</div>' +
@@ -263,29 +212,6 @@ const GRW_HTML_CONTENT =
                     'Hide reviews background' +
                 '</label>' +
             '</div>' +*/
-            '<div class="grw-builder-option" data-if="cards !engine">' +
-                '<label>' +
-                    '<input type="checkbox" name="--rev-bg" value="transparent" data-on="transparent" data-off="var(--rev-color)">' +
-                    'Hide reviews background' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option" data-if="cards revbg !engine">' +
-                '<input type="color" name="--rev-color" value="#f4f4f4" data-val="#f4f4f4" data-defval="#f4f4f4"/>' +
-                '<input type="text" value="#f4f4f4"/>' +
-                'Reviews color' +
-            '</div>' +
-            '<div class="grw-builder-option" data-if="cards !engine">' +
-                '<label>' +
-                    '<input type="checkbox" name="show_round" value="" checked>' +
-                    'Rounded review corners' +
-                '</label>' +
-            '</div>' +
-            '<div class="grw-builder-option" data-if="cards !engine">' +
-                '<label>' +
-                    '<input type="checkbox" name="show_shadow" value="">' +
-                    'Show reviews shadow' +
-                '</label>' +
-            '</div>' +
             '<div class="grw-builder-option" data-if="header">' +
                 '<label>' +
                     '<input type="checkbox" name="--head-scale-case" value="uppercase" data-on="uppercase" data-off="none" checked>' +
@@ -295,7 +221,7 @@ const GRW_HTML_CONTENT =
             '<div class="grw-builder-option">' +
                 '<input type="color" name="--star-color" value="#fb8e28" data-val="#fb8e28" data-defval="#fb8e28"/>' +
                 '<input type="text" value="#fb8e28"/>' +
-                '<span data-if="!engine">Stars color</span><span data-if="engine">Rating stars color</span>' +
+                '<span data-if="!cards">Stars color</span><span data-if="cards">Rating stars color</span>' +
             '</div>' +
             '<div class="grw-builder-option" data-if="header">' +
                 '<input type="color" name="--head-name-color" value="#333333" data-val="#333333" data-defval="#333333"/>' +
@@ -332,7 +258,7 @@ const GRW_HTML_CONTENT =
                 '<input type="text" value="#154fc1"/>' +
                 'Review author name color' +
             '</div>' +
-            '<div class="grw-builder-option" data-if="reviews !engine">' +
+            '<div class="grw-builder-option" data-if="reviews !cards">' +
                 '<input type="color" name="--text-color" value="#222222" data-val="#222222" data-defval="#222222"/>' +
                 '<input type="text" value="#222222"/>' +
                 'Reviews text color' +
@@ -366,7 +292,7 @@ const GRW_HTML_CONTENT =
                 '</div>' +
             '</div>' +
             '<div class="grw-builder-option">' +
-                '<a href="#" class="grw-style-reset">Reset to default style</a>' +
+                '<a href="#" class="grw-style-reset">Reset colors and sizes to the default design</a>' +
             '</div>' +
             '<input id="style_vars" name="style_vars" type="hidden"/>' +
         '</div>' +
@@ -374,7 +300,8 @@ const GRW_HTML_CONTENT =
         /* Advanced Options */
         '<div class="grw-builder-top grw-toggle">Advanced Options</div>' +
         '<div class="grw-builder-inside" style="display:none">' +
-            '<div class="grw-builder-option grw-card-ui grw-card-code" data-if="engine"></div>' +
+            '<div class="grw-builder-option grw-card-ui grw-card-code" data-if="cards"></div>' +
+            '<div class="grw-builder-option grw-card-ui grw-head-code" data-if="header"></div>' +
             '<div class="grw-builder-option">' +
                 'CSS variables' +
                 '<textarea name="css_vars" class="large-text code" rows="5" maxlength="20000" aria-label="CSS variables" spellcheck="false" autocomplete="off" placeholder="--card-bg: #ffffff;&#10;--card-text-size: 14px;&#10;--head-star-size: 18px;"></textarea>' +
@@ -533,12 +460,14 @@ function grw_stylechange2(target) {
     window.style_vars.value = grw_style_vars(rp);
 }
 
-// The variables the preview root carries (with no place connected there is no preview: the ones kept so far); for a card preset its
-// own ones only where they differ from the preset. The CSS variables field reaches the root as !important declarations, kept in css_vars.
+// The variables the preview root carries (with no place connected there is no preview: the ones kept so far). The CSS variables
+// field reaches the root as !important declarations, kept in css_vars.
 function grw_style_vars(rp) {
-    const list = grw_declarations(rp ? rp.getAttribute('style') || '' : window.style_vars.value)
-        .filter(d => /^--[\w-]+:./.test(d) && !/!\s*important$/i.test(d));
-    return (GRW_CARD ? GRW_CARD.vars(list) : list).map(v => v + ';').join('');
+    // A preset's variables and the widget's own can both be on the root; the browser takes the last one, so does the widget.
+    const last = {};
+    grw_declarations(rp ? rp.getAttribute('style') || '' : window.style_vars.value)
+        .filter(d => /^--[\w-]+:./.test(d) && !/!\s*important$/i.test(d)).forEach(d => { last[d.slice(0, d.indexOf(':'))] = d; });
+    return Object.keys(last).map(n => last[n] + ';').join('');
 }
 
 // "name:value" per declaration; a semicolon inside brackets or quotes, as in url(data:…;…), does not end one.
@@ -569,6 +498,7 @@ function grw_declarations(text) {
     return list;
 }
 
+// Colours and sizes back to the default design of the widget's layout: the Style Options at their defaults, the design's variables over them.
 function stylereset() {
     const rp = document.querySelector('.wp-gr');
     if (rp) {
@@ -584,7 +514,7 @@ function stylereset() {
         }
     });
     window.style_vars.value = '';
-    if (GRW_CARD) GRW_CARD.resetSkin();
+    if (GRW_CARD) GRW_CARD.reset();
     grw_builder_refresh();
 }
 
@@ -595,11 +525,6 @@ function grw_builder_refresh() {
         mode = q('view_mode').value,
         rating = mode == 'rating';
 
-    // Until the user sets it, the card background follows the theme: public CSS turns it off in the dark one.
-    if (!/--rev-bg:/.test(window.style_vars.value)) {
-        q('--rev-bg').checked = on('dark_theme');
-    }
-
     const flags = {
         slider   : mode == 'slider',
         rating   : rating,
@@ -608,7 +533,6 @@ function grw_builder_refresh() {
         header   : !on('header_hide_social'),
         headcard : mode == 'grid' || mode == 'slider' && q('slider_head_pos').value != '2',
         headbg   : on('--slider-head-card-bg'),
-        revbg    : !on('--rev-bg'),
         autoplay : on('slider_autoplay'),
         reviews  : !rating || on('rating_popup'),
         seeall   : mode == 'list' || rating && on('rating_popup')
@@ -631,46 +555,16 @@ function grw_builder_refresh() {
 
 var GRW_CARD = null;
 
-// The same variables as Card_Presets::vars() in PHP.
-function grw_card_vars(s, shadows) {
-    const bg = s.bg === 'none' ? 'transparent' : s.bg === 'gradient' ? 'linear-gradient(135deg, ' + s.bg1 + ', ' + s.bg2 + ')' : s.bg1;
-    return {
-        '--card-bg': bg, '--card-tail': s.bg === 'none' && s.border ? s.borderColor : bg, '--card-br': s.border ? '1px solid' : 'none',
-        '--card-br-color': s.borderColor, '--card-shadow': shadows[s.shadow] || 'none', '--card-radius': s.radius + 'px',
-        '--card-band-bg': s.band, '--card-sep-color': s.divider, '--card-star-color': s.stars, '--card-star-size': s.starSize + 'px',
-        '--name-color': s.name, '--card-color': s.text, '--time-color': s.date, '--card-img-size': s.photo + 'px', '--img-filter': s.gray ? 'grayscale(1)' : 'none',
-        '--card-text-lines': s.lines
-    };
-}
-
-function grw_card_pairs(str) {
-    return str.split(';').reduce((o, p) => {
-        const i = p.indexOf(':');
-        if (i > 0) o[p.slice(0, i).trim()] = p.slice(i + 1).trim();
-        return o;
-    }, {});
-}
-
-// The skin back from the variables a widget saved, over the preset's skin s.
-function grw_card_read(sv, s, shadows) {
-    const v = grw_card_pairs(sv), px = k => parseInt(v[k], 10), g = /^linear-gradient\(135deg, (#[0-9a-f]{6}), (#[0-9a-f]{6})\)$/i.exec(v['--card-bg'] || '');
-    if (g) Object.assign(s, {bg: 'gradient', bg1: g[1], bg2: g[2]});
-    else if (v['--card-bg']) Object.assign(s, v['--card-bg'] === 'transparent' ? {bg: 'none'} : {bg: 'color', bg1: v['--card-bg']});
-    if (v['--card-br']) s.border = v['--card-br'] === '1px solid';
-    if (v['--card-shadow']) s.shadow = Object.keys(shadows).find(k => shadows[k] === v['--card-shadow']) || s.shadow;
-    if (v['--img-filter']) s.gray = v['--img-filter'] !== 'none';
-    if (v['--card-text-lines']) s.lines = v['--card-text-lines'];
-    [['borderColor', '--card-br-color'], ['band', '--card-band-bg'], ['divider', '--card-sep-color'], ['stars', '--card-star-color'],
-        ['text', '--card-color'], ['date', '--time-color']].forEach(([k, n]) => { if (v[n]) s[k] = v[n]; });
-    [['radius', '--card-radius'], ['starSize', '--card-star-size'], ['photo', '--card-img-size']].forEach(([k, n]) => { if (v[n]) s[k] = px(n); });
-    return s;
-}
-
-// Card Options: a card preset (Card_Presets in PHP), its layout in rpi.CardEditor's rows and its skin, kept as the values of its
-// controls; the preview root carries the skin as variables, and style_vars only what differs from the preset.
+/*
+ * Card Options and Header lines of a widget in the current model: its card layout in rpi.CardEditor's rows and its card variables
+ * as the controls' values, its rating layout in a second set of rows with the attribute checkboxes. A widget saved by an older
+ * version opens converted (GRW_MODEL.convert); the preview root carries every variable and style_vars holds them all.
+ */
 function grw_card_init(el, cfg, saved) {
-    const E = rpi.Card, Ed = rpi.CardEditor,
-        box = el.querySelector('.grw-card-ui'),
+    const E = rpi.Card, Ed = rpi.CardEditor, M = GRW_MODEL,
+        CFG = {themes: cfg.themes, shadows: cfg.shadows, legacy: cfg.legacy},
+        panel = el.querySelector('.grw-connect-options'),
+        box = el.querySelector('.grw-card-box'), head = el.querySelector('.grw-head-ui'),
         esc = s => String(s).replace(/[&<>"']/g, c => '&#' + c.charCodeAt(0) + ';'),
         option = (html, cond) => '<div class="grw-builder-option"' + (cond ? ' data-if="' + cond + '"' : '') + '>' + html + '</div>',
         select = (cls, label, opts) => label + '<select class="' + cls + '" aria-label="' + label + '">' + opts.map(o => '<option value="' + o[0] + '">' + o[1] + '</option>').join('') + '</select>',
@@ -679,107 +573,97 @@ function grw_card_init(el, cfg, saved) {
             '" step="' + step + '" data-postfix="px"><span class="grw-range-val"></span></div>',
         check = (key, label) => '<label><input type="checkbox" data-skin="' + key + '">' + label + '</label>',
         help = text => '<span class="grw-quest grw-quest-top grw-toggle" title="Click to help">?</span><div class="grw-quest-help" style="display:none;">' + text + '</div>';
+    const HEAD_ATTRS = [['stars', 'nonum', 'Hide rating number'], ['based', 'bold', 'Bold review count'], ['based', 'short', 'Use short review count'], ['powered', 'short', 'Use short Google logo']];
 
     box.innerHTML =
-        option('Card style<select name="card_style" aria-label="Card style">' +
-            Object.keys(cfg.presets).map(id => '<option value="' + id + '">' + esc(cfg.presets[id].name) + '</option>').join('') + '</select>' +
-            '<input type="hidden" name="card_layout" value="">') +
-        option('<span class="grw-card-changes"></span> <a href="#" class="grw-card-reset">Reset to preset</a>', 'engine') +
+        option('<a href="#" class="grw-card-design">Choose another design</a>' + help('Opens the design gallery for this widget. Picking a design there replaces the card and header settings with the design\'s.')) +
         option('Card lines' + help('Drag rows by ⋮⋮, also between sections. The two squares put a row on the line above; the arrow to a bar pushes it to the right edge.') +
-            '<div class="grw-card-lines"></div>', 'engine') +
+            '<div class="grw-card-lines"></div><input type="hidden" name="card_layout" value="">') +
         option(select('grw-card-photo', 'Photo', [['beside', 'Beside the rows below it'], ['above', 'On its own line'], ['top', 'On the top border']]) +
-            '<div class="grw-card-hint" data-if="cardtop">Drag Photo to the very top of Section 1 to put it on the border.</div>', 'engine') +
+            '<div class="grw-card-hint" data-if="cardtop">Drag Photo to the very top of Section 1 to put it on the border.</div>') +
         option(select('grw-card-logo', 'Google logo', [['corner', 'Corner'], ['photo', 'On the photo'], ['name', 'Next to the name'],
-            ['stars', 'Next to the stars'], ['layout', 'In the rows above'], ['hidden', 'Hidden']]), 'engine') +
-        option(select('grw-card-bg', 'Background', [['color', 'Color'], ['gradient', 'Gradient'], ['none', 'None']]), 'engine') +
-        option(color('bg1', 'Background color'), 'engine cardbg') +
-        option(color('bg2', 'Gradient end color'), 'engine cardgrad') +
-        option(check('border', 'Border'), 'engine') +
-        option(color('borderColor', 'Border color'), 'engine cardborder') +
-        option(select('grw-card-shadow', 'Shadow', [['none', 'None'], ['light', 'Light'], ['soft', 'Soft'], ['grw', 'Classic']]), 'engine') +
-        option(range('radius', 'Corner radius', 0, 24, 1), 'engine') +
-        option(color('band', 'Band color'), 'engine cardband') +
-        option(color('divider', 'Line color'), 'engine cardsep') +
-        option(color('stars', 'Stars color'), 'engine') +
-        option(range('starSize', 'Stars size', 12, 28, 1), 'engine') +
-        option(color('text', 'Text color'), 'engine') +
+            ['stars', 'Next to the stars'], ['layout', 'In the rows above'], ['hidden', 'Hidden']])) +
+        option(select('grw-card-bg', 'Background', [['color', 'Color'], ['gradient', 'Gradient'], ['none', 'None']])) +
+        option(color('bg1', 'Background color'), 'cardbg') +
+        option(color('bg2', 'Gradient end color'), 'cardgrad') +
+        option(check('border', 'Border')) +
+        option(color('borderColor', 'Border color'), 'cardborder') +
+        option(select('grw-card-shadow', 'Shadow', [['none', 'None'], ['light', 'Light'], ['soft', 'Soft'], ['grw', 'Classic']])) +
+        option(range('radius', 'Corner radius', 0, 24, 1)) +
+        option(color('band', 'Band color'), 'cardband') +
+        option(color('divider', 'Line color'), 'cardsep') +
+        option(color('stars', 'Stars color')) +
+        option(range('starSize', 'Stars size', 12, 28, 1)) +
+        option(color('text', 'Text color')) +
         option(select('grw-card-textlines', 'Text lines', [['2', '2'], ['3', '3'], ['4', '4'], ['5', '5'], ['6', '6'], ['7', '7'], ['8', '8'], ['none', 'All']]) +
-            help('Longer reviews end with "read more", which opens the rest in the card.'), 'engine') +
-        option(color('date', 'Date color'), 'engine') +
-        option(range('photo', 'Photo size', 32, 64, 2), 'engine') +
-        option(check('gray', 'Gray photos'), 'engine');
+            help('Longer reviews end with "read more", which opens the rest in the card.')) +
+        option(color('date', 'Date color')) +
+        option(range('photo', 'Photo size', 32, 64, 2)) +
+        option(check('gray', 'Gray photos'));
+    head.innerHTML = 'Header lines' + help('The parts of the rating header and their order: drag rows by ⋮⋮, the two squares put a row on the line above, the arrow to a bar pushes it to the right edge.') +
+        '<div class="grw-head-lines"></div><div class="grw-card-hint grw-head-note"></div><input type="hidden" name="rating_layout" value="">' +
+        HEAD_ATTRS.map(([e, a, label]) => '<label class="grw-head-attr"><input type="checkbox" data-head="' + e + ':' + a + '">' + label + '</label>').join('');
     el.querySelector('.grw-card-code').innerHTML = 'Layout code' +
         help('The card lines as one line: sections "|", lines ",", side by side "+", groups "( )", hidden "-", push to the edge "~". ' +
             'The logo: "photo{logo}", "name{logo}", "stars{logo}", a row of its own, or ";logo" for the corner. Press Enter to apply.') +
         '<input type="text" class="large-text code grw-card-input" aria-label="Layout code" spellcheck="false" autocomplete="off">' +
         '<div class="grw-card-hint grw-card-note"></div><div class="grw-card-error" hidden></div>';
+    el.querySelector('.grw-head-code').innerHTML = 'Header layout code' +
+        help('The header lines as one line, in the card lines\' language: photo, name, scale, stars{nonum}, based{short,bold}, count, powered{short}, logo, label, phrase, write, seeall. Press Enter to apply.') +
+        '<input type="text" class="large-text code grw-head-input" aria-label="Header layout code" spellcheck="false" autocomplete="off">' +
+        '<div class="grw-card-error grw-head-error" hidden></div>';
 
     const q = s => el.querySelector(s),
-        card = q('[name="card_style"]'), layoutIn = q('[name="card_layout"]'), code = q('.grw-card-input'), photo = q('.grw-card-photo'), logo = q('.grw-card-logo'),
+        layoutIn = q('[name="card_layout"]'), ratingIn = q('[name="rating_layout"]'), code = q('.grw-card-input'), hcode = q('.grw-head-input'),
+        photo = q('.grw-card-photo'), logo = q('.grw-card-logo'), design = q('.grw-card-design'),
         root = () => document.getElementsByClassName('wp-gr')[0],
-        preset = () => cfg.presets[card.value] || null,
-        base = (p = preset()) => Object.assign({}, cfg.skin, p && p.ink ? cfg.ink : {}, p && p.skin || {}),
-        // Classic under "Dark background" takes the colours the Standard card had there (public-main.css, .wp-dark). Only the builder
-        // knows them: PHP renders a preset from base(), so style_vars must keep them as changes.
-        DARK = {bg: 'none', text: '#ececec', date: '#bbbbbb'},
-        // The Standard card's own dark background, when its owner had not hidden it.
-        GLASS = '#ffffff14',
-        dark = () => el.querySelector('input[name="dark_theme"]').checked,
-        look = (p = preset()) => Object.assign(base(p), p === cfg.presets.c1 && dark() ? DARK : {}),
-        layout = () => layoutIn.value || preset().layout;
+        mode = () => q('[name="view_mode"]').value,
+        cards = () => mode() === 'slider' || mode() === 'grid',
+        layout = () => layoutIn.value;
 
-    const vars = s => grw_card_vars(s, cfg.shadows);
-    const pairs = grw_card_pairs;
-    const read = sv => grw_card_read(sv, base(), cfg.shadows);
-
-    // A widget saved before card styles had the Standard card: it opens as Classic with that card's look, which its first save keeps.
-    const legacy = !cfg.presets[saved.card_style] && 'view_mode' in saved;
-    card.value = cfg.presets[saved.card_style] ? saved.card_style : 'c1';
-    layoutIn.value = card.value && saved.card_layout || '';
+    // The widget as it opens: an older one in the current model, a new one with the default design.
+    const opened = 'view_mode' in saved ? (M.isLegacy(saved) ? M.convert(saved, CFG) : saved) : M.applyTheme({view_mode: 'slider'}, M.defaultTheme(cfg.themes, 'slider') || {opts: {}, vars: {}});
+    layoutIn.value = opened.card_layout || '';
+    ratingIn.value = opened.rating_layout || '';
     // A widget without a place skips grw_deserialize_connections(), which fills style_vars for the others.
-    if (!window.style_vars.value && saved.style_vars) window.style_vars.value = saved.style_vars;
+    if (opened.style_vars !== undefined) window.style_vars.value = opened.style_vars;
 
-    // The Standard card's look in Classic's controls (public-main.css: --rev-color, --rev-bg, --text-color, --star-color, grw-round,
-    // grw-shadow, wp-dark; the options missing from old widgets are Core's defaults). The name colour is shared already.
-    const legacySkin = () => {
-        const v = pairs(window.style_vars.value), s = Object.assign(base(), saved.dark_theme ? DARK : {});
-        if (saved.hide_backgnd || (v['--rev-bg'] || (saved.dark_theme ? 'transparent' : '')) === 'transparent') s.bg = 'none';
-        else Object.assign(s, {bg: 'color', bg1: v['--rev-color'] || (saved.dark_theme ? GLASS : s.bg1)});
-        s.radius = saved.show_round ? 8 : 0;
-        s.shadow = saved.show_shadow ? 'grw' : 'none';
-        if (v['--text-color']) s.text = v['--text-color'];
-        if (v['--star-color']) s.stars = v['--star-color'];
-        // Its fixed text height in lines of the Standard card's 24px, plus the line "read more" takes in a cut text: the 100px default is
-        // five. A height such as auto or 100% showed the whole text; one the browser ignored left the default.
-        const h = String(saved.slider_text_height || '').trim().toLowerCase(), n = /^(\d*\.?\d+)(px|r?em)?$/.exec(h);
-        if (n && +n[1] > 0) s.lines = String(Math.min(8, Math.max(2, Math.round(n[1] * (n[2] && n[2] !== 'px' ? 16 : 1) / 24) + 1)));
-        else if (/^(auto|unset|initial|inherit|revert|(min-|max-|fit-)content|\d*\.?\d+%)$/.test(h)) s.lines = 'none';
-        return s;
-    };
-    let skin = legacy ? legacySkin() : read(window.style_vars.value), current = card.value;
-    const changes = (p = preset()) => (layoutIn.value ? 1 : 0) + Object.keys(skin).filter(k => k !== 'name' && skin[k] !== look(p)[k]).length;
-    const nameOver = () => pairs(window.style_vars.value)['--name-color'];
+    let skin = M.skinOf(window.style_vars.value, cfg.shadows);
+    const nameOver = () => M.pairs(window.style_vars.value)['--name-color'];
 
-    // The skin on the preview root: the name colour is the shared control's when set. The CSS variables field reaches the root as
-    // !important declarations rendered by PHP, and they must stay.
-    function paint() {
+    // Every declaration of style_vars onto the preview root, then style_vars read back from it as the builder keeps it. The CSS
+    // variables field reaches the root as !important declarations rendered by PHP, and they must stay.
+    function applyText(sv) {
         const rp = root();
         if (rp) {
-            const v = preset() ? Object.assign(vars(skin), preset().vars) : {};
-            cfg.vars.forEach(n => {
-                if (rp.style.getPropertyPriority(n)) return;
-                const val = n === '--name-color' ? nameOver() || v[n] : v[n];
-                if (val) rp.style.setProperty(n, val);
-                else rp.style.removeProperty(n);
-            });
+            const v = M.pairs(sv);
+            Object.keys(v).forEach(n => { if (!rp.style.getPropertyPriority(n)) rp.style.setProperty(n, v[n]); });
+            window.style_vars.value = grw_style_vars(rp);
+        } else {
+            window.style_vars.value = sv;
         }
-        window.style_vars.value = grw_style_vars(rp);
+        // Without variables the controls stay as they are; an empty parse would reset them, and reset() comes from a reset already.
+        if (window.style_vars.value) rplg_sv_parse(panel, window.style_vars.value);
+        syncName();
+    }
+
+    // The skin's card variables onto the root; the name colour is the shared control's.
+    function paint() {
+        if (!cards()) return;
+        const rp = root(), v = M.cardVars(skin, cfg.shadows);
+        delete v['--name-color'];
+        if (rp) {
+            Object.keys(v).forEach(n => { if (!rp.style.getPropertyPriority(n)) rp.style.setProperty(n, v[n]); });
+            window.style_vars.value = grw_style_vars(rp);
+        } else {
+            window.style_vars.value = M.text(Object.assign(M.pairs(window.style_vars.value), v));
+        }
     }
 
     // The shared name colour control shows the colour in use.
     function syncName() {
         const ctl = el.querySelector('input[name="--name-color"]');
-        const v = nameOver() || (preset() ? skin.name : ctl.defaultValue);
+        const v = nameOver() || ctl.defaultValue;
         ctl.value = v;
         ctl.setAttribute('data-val', v);
         ctl.nextElementSibling.value = v;
@@ -806,17 +690,21 @@ function grw_card_init(el, cfg, saved) {
         top.disabled = !!top.title;
     }
 
-    // The rows show a layout as written when the layout they would save draws the same card.
-    const stub = {slot: '', frame: ''};
-    E.ELEMENTS.forEach(k => { stub[k] = (r, o) => '<' + k + ' ' + o.cls + (o.logo ? ' logo' : '') + '>'; });
-    const drawn = s => E.render({}, E.parse(s), stub);
+    // The rows show a layout as written when the layout they would save draws the same block.
+    const stub = kind => {
+        const S = {slot: '', frame: ''};
+        E.KINDS[kind].elements.forEach(k => { S[k] = (r, o) => '<' + k + ' ' + o.cls + (o.logo ? ' logo' : '') + '>'; });
+        return S;
+    };
+    const drawn = (s, kind) => E.render({}, E.parse(s, kind), stub(kind));
     const note = s => {
-        q('.grw-card-note').textContent = drawn(Ed.canonical(s)) === drawn(s) ? ''
+        q('.grw-card-note').textContent = drawn(Ed.canonical(s, 'card'), 'card') === drawn(s, 'card') ? ''
             : 'This layout has more nesting than the rows above can show. It renders as written; editing the rows will simplify it.';
     };
 
     function syncLayout() {
-        const view = Ed.project(E.parse(layout()));
+        if (!layout()) return;
+        const view = Ed.project(E.parse(layout(), 'card'));
         lines.set(view);
         syncSelects(view);
         code.value = layout();
@@ -824,43 +712,24 @@ function grw_card_init(el, cfg, saved) {
         note(layout());
     }
 
-    function state() {
-        const n = changes();
-        q('.grw-card-changes').textContent = (n ? n + (n === 1 ? ' change' : ' changes') : 'No changes') + (preset() ? ' to ' + preset().name : '');
-        q('.grw-card-reset').hidden = !n;
-    }
-
     function setLayout(str) {
-        layoutIn.value = str === preset().layout ? '' : str;
-        state();
+        layoutIn.value = str;
         grw_serialize_connections();
     }
 
     function setSkin(key, val) {
         skin[key] = val;
         paint();
-        state();
         grw_autosave();
     }
 
-    // A new preset, or the same one without its changes; the shared name colour stays.
-    function reset(save) {
-        current = card.value;
-        layoutIn.value = '';
-        if (preset()) syncLayout();
-        resetSkin();
-        grw_builder_refresh();
-        if (save) grw_serialize_connections();
-    }
-
-    function resetSkin() {
-        skin = look();
-        if (preset()) {
-            syncSkin();
-            state();
-        }
+    // The default design of the widget's layout: its variables, over the Style Options as stylereset() has just put them.
+    function reset() {
+        const t = M.defaultTheme(cfg.themes, mode());
+        applyText(t ? M.text(t.vars) : '');
+        skin = M.skinOf(window.style_vars.value, cfg.shadows);
+        syncSkin();
         paint();
-        syncName();
     }
 
     const lines = Ed.Lines(q('.grw-card-lines'), (str, view) => {
@@ -869,21 +738,52 @@ function grw_card_init(el, cfg, saved) {
         q('.grw-card-error').hidden = true;
         note(str);
         setLayout(str);
-    }, {logo: 'Google logo'});
+    }, {logo: 'Google logo'}, 'card');
 
-    card.addEventListener('change', () => {
-        // The select already shows the new preset: the changes counted are the ones made to the preset left.
-        if (cfg.presets[current] && changes(cfg.presets[current]) && !confirm('Discard your changes to ' + cfg.presets[current].name + '?')) {
-            card.value = current;
-            return;
-        }
-        reset(true);
-    });
-    q('.grw-card-reset').addEventListener('click', e => {
+    /* ---- the header ---- */
+    const hlines = Ed.Lines(q('.grw-head-lines'), (str, view) => {
+        hcode.value = str;
+        q('.grw-head-error').hidden = true;
+        setRating(str);
+    }, {logo: 'Google logo', powered: 'Powered by Google'}, 'rating');
+
+    // An attribute checkbox follows its element: off and locked while the element is not in the header.
+    function syncHeadBoxes() {
+        head.querySelectorAll('[data-head]').forEach(b => {
+            const [e, a] = b.dataset.head.split(':');
+            const present = ratingIn.value && M.has(ratingIn.value, 'rating', e);
+            b.checked = !!present && !!M.attr(ratingIn.value, 'rating', e, a);
+            b.disabled = !present;
+        });
+    }
+
+    function syncHead() {
+        if (!ratingIn.value) return;
+        hlines.set(Ed.project(E.parse(ratingIn.value, 'rating')));
+        hcode.value = ratingIn.value;
+        q('.grw-head-error').hidden = true;
+        q('.grw-head-note').textContent = drawn(Ed.canonical(ratingIn.value, 'rating'), 'rating') === drawn(ratingIn.value, 'rating') ? ''
+            : 'This header has more nesting than the rows above can show. It renders as written; editing the rows will simplify it.';
+        syncHeadBoxes();
+    }
+
+    function setRating(str) {
+        ratingIn.value = str;
+        syncHeadBoxes();
+        grw_serialize_connections();
+    }
+
+    head.querySelectorAll('[data-head]').forEach(b => b.addEventListener('change', () => {
+        const [e, a] = b.dataset.head.split(':');
+        setRating(M.attr(ratingIn.value, 'rating', e, a, b.checked));
+        syncHead();
+    }));
+
+    design.addEventListener('click', e => {
         e.preventDefault();
-        reset(true);
-        // The link hides itself once nothing is changed, which would leave the keyboard nowhere.
-        card.focus();
+        const id = window.grw_post_id.value;
+        if (!id) return GRW_TOAST.show({msg: 'Save the widget first, then choose another design.', type: 'error'});
+        location.href = GRW_VARS.builderUrl.replace('page=grw-builder', 'page=grw-widget') + '&grw_feed_id=' + id;
     });
     photo.addEventListener('change', () => lines.edit(v => Ed.photoMode(v, photo.value)));
     logo.addEventListener('change', () => lines.edit(v => { v.logo = logo.value; }));
@@ -908,80 +808,60 @@ function grw_card_init(el, cfg, saved) {
             hex.value = input.value;
         });
     });
-    const apply = () => {
-        const err = q('.grw-card-error');
+    // A code field applies on Enter or when left: the canonical form goes into the rows, an error stays in the field.
+    const applier = (input, err, kind, current, put) => () => {
         let str;
         try {
-            str = E.serialize(E.parse(code.value));
-            Ed.canonical(str);
+            str = E.serialize(E.parse(input.value, kind));
+            Ed.canonical(str, kind);
         } catch (e) {
             err.textContent = e.message;
             err.hidden = false;
             return;
         }
         err.hidden = true;
-        code.value = str;
-        if (str === layout()) return;
-        layoutIn.value = str === preset().layout ? '' : str;
-        syncLayout();
-        state();
-        grw_serialize_connections();
+        input.value = str;
+        if (str !== current()) put(str);
     };
-    code.addEventListener('keydown', e => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            apply();
-        }
+    const apply = applier(code, q('.grw-card-error'), 'card', layout, str => { layoutIn.value = str; syncLayout(); grw_serialize_connections(); });
+    const happly = applier(hcode, q('.grw-head-error'), 'rating', () => ratingIn.value, str => { ratingIn.value = str; syncHead(); grw_serialize_connections(); });
+    [[code, apply], [hcode, happly]].forEach(([input, fn]) => {
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                fn();
+            }
+        });
+        input.addEventListener('change', fn);
     });
-    code.addEventListener('change', apply);
-    // "Dark background" swaps Classic's light and dark colours, in the capture phase: before the checkbox's own handler saves the
-    // widget. Colours picked by hand stay; a card background picked by hand also keeps the text and date that go with it.
+    // "Dark background" in the capture phase: before the checkbox's own handler saves the widget. Off again gives the look before it went on.
+    let light = null;
     el.addEventListener('change', e => {
-        if (e.target.name !== 'dark_theme' || preset() !== cfg.presets.c1) return;
-        const light = base(), dk = Object.assign(base(), DARK), [from, to] = e.target.checked ? [light, dk] : [dk, light];
-        const glass = !e.target.checked && skin.bg === 'color' && skin.bg1 === GLASS;
-        if (!glass && ['bg', 'bg1', 'bg2'].some(x => skin[x] !== from[x])) return;
-        if (glass) Object.assign(skin, {bg1: light.bg1});
-        Object.keys(DARK).forEach(k => { if (skin[k] === from[k]) skin[k] = to[k]; });
+        if (e.target.name !== 'dark_theme' || !cards()) return;
+        const on = e.target.checked;
+        if (on) light = window.style_vars.value;
+        applyText(M.dark(window.style_vars.value, on, cfg.shadows, on ? null : light));
+        skin = M.skinOf(window.style_vars.value, cfg.shadows);
         syncSkin();
-        paint();
-        state();
     }, true);
 
-    if (preset()) {
-        syncLayout();
-        syncSkin();
-        state();
-    }
-    syncName();
+    syncLayout();
+    syncSkin();
+    syncHead();
+    applyText(window.style_vars.value);
 
     return {
-        resetSkin,
-        repaint() {
-            if (preset() && root() && root().querySelector('.rpi-card')) paint();
-            // A list, or no place yet: no card to paint, but the old look must reach style_vars before the first save.
-            else if (legacy) window.style_vars.value = grw_style_vars(root());
-        },
-        // style_vars from the preview root's list: card variables from the skin; the name colour only the user's, its last declaration (the root has the preset's first).
-        vars(list) {
-            const b = preset() ? vars(base()) : {}, v = preset() ? vars(skin) : {},
-                name = list.map(p => p.split(':')[0].trim()).lastIndexOf('--name-color');
-            return list.filter((p, i) => {
-                const n = p.split(':')[0].trim();
-                return cfg.vars.indexOf(n) < 0 || i === name && (nameOver() || p.slice(p.indexOf(':') + 1).trim() !== b[n]);
-            }).concat(Object.keys(v).filter(n => n !== '--name-color' && v[n] !== b[n]).map(n => n + ':' + v[n]));
-        },
-        flags(cards) {
-            const engine = cards && !!preset(), rp = root(), m = engine && E.parse(layout());
+        reset,
+        flags(on) {
+            const rp = root(), m = on && layout() && E.parse(layout(), 'card');
             const lead = m && m.sections[0] && m.sections[0].items[0];
             return {
-                engine,
-                cardbg: engine && skin.bg !== 'none',
-                cardgrad: engine && skin.bg === 'gradient',
-                cardborder: engine && skin.border,
-                cardband: engine && !!rp && !!rp.querySelector('.rpi-band'),
-                cardsep: engine && !!rp && !!rp.querySelector('.rpi-sep'),
-                cardtop: engine && photo.value === 'top' && !(lead && (lead.el === 'photo' || lead.dir === 'row' && lead.items[0].el === 'photo'))
+                cardbg: on && skin.bg !== 'none',
+                cardgrad: on && skin.bg === 'gradient',
+                cardborder: on && skin.border,
+                cardband: on && !!rp && !!rp.querySelector('.rpi-card .rpi-band'),
+                cardsep: on && !!rp && !!rp.querySelector('.rpi-card .rpi-sep'),
+                cardtop: on && photo.value === 'top' && !(lead && (lead.el === 'photo' || lead.dir === 'row' && lead.items[0].el === 'photo'))
             };
         }
     };
@@ -1049,17 +929,6 @@ function grw_builder_init($, data) {
     // Init slider breakpoints
     grw_sbs_init();
 
-    const order = el.querySelector('input[name="header_order"]'),
-        box = name => el.querySelector('input[name="' + name + '"]');
-    order.parentNode.append(rpi.Order(order, [
-        {key: 'scale',    label: 'Rating label (Top rated, Excellent...)', input: box('header_show_scale')},
-        {key: 'name',     label: 'Business name',                          input: box('header_hide_name'), invert: true},
-        {key: 'stars',    label: 'Stars'},
-        {key: 'based',    label: '\'Based on ... reviews\'',                input: box('hide_based_on'), invert: true},
-        {key: 'platform', label: 'Use short Google logo',                  input: box('header_platform')}
-    ]));
-    order.addEventListener('change', grw_serialize_connections);
-
     $('.grw-connect-options input[type="text"]:not([name^="--"]),.grw-connect-options textarea').keyup(function() {
         grw_autosave();
     });
@@ -1082,8 +951,6 @@ function grw_builder_init($, data) {
 
     // After the handlers above, which would save the card's own controls as options; before the help toggles, which it uses.
     GRW_CARD = data.cards ? grw_card_init(el, data.cards, data.conns && data.conns.options || {}) : null;
-    // Loading a widget without style variables of its own has just cleared the preview root, the preset's skin with it.
-    if (GRW_CARD) GRW_CARD.repaint();
 
     $('.grw-toggle', el).unbind('click').click(function () {
         $(this).toggleClass('toggled');
@@ -1094,7 +961,7 @@ function grw_builder_init($, data) {
     panel.addEventListener('change', grw_builder_refresh);
     panel.addEventListener('input', grw_builder_refresh);
     panel.querySelector('.grw-style-reset').onclick = function() {
-        if (confirm('Reset all colors and sizes to their defaults?')) {
+        if (confirm('Reset all colors and sizes to the default design?')) {
             stylereset();
             grw_serialize_connections();
         }
@@ -1792,7 +1659,8 @@ function grw_serialize_connections() {
             var input = options_el[o],
                 name  = input.getAttribute('name');
 
-            if (!name && input.closest('.grw-card-ui')) continue;
+            // Unnamed controls (a breakpoint row's own select and range) hold nothing the widget stores.
+            if (!name) continue;
             if (input.type == 'checkbox') {
                 options[name] = input.checked;
             } else if (input.value != undefined) {
@@ -1891,16 +1759,6 @@ function grw_deserialize_connections($, el, data) {
 
 function rplg_sv_parse(el, val) {
     if (val) {
-        // Widgets saved before the card background checkbox hid the background by making the card color itself transparent.
-        const legacy = /--rev-color:\s*transparent/;
-        if (legacy.test(val)) {
-            val = window.style_vars.value = val.replace(legacy, '--rev-bg: transparent');
-            const rp = document.querySelector('.wp-gr');
-            if (rp) {
-                rp.style.removeProperty('--rev-color');
-                rp.style.setProperty('--rev-bg', 'transparent');
-            }
-        }
         let sv = val.split(';');
         for (let i = 0; i < sv.length; i++) {
             if (sv[i]) {

@@ -8,6 +8,8 @@ function grw_steps(root, cfg) {
     const CONNECT_ORIGIN = new URL(CONNECT_URL).origin;
     // A field of cfg may be a function: in the gallery it depends on what was picked.
     const val = k => typeof cfg[k] === 'function' ? cfg[k]() : cfg[k];
+    // On a touch screen a focused field keeps the keyboard open over the list or the presets.
+    const touch = () => matchMedia('(hover: none) and (pointer: coarse)').matches;
 
     const state = {
         step: V.feedId ? Math.min(3, Math.max(1, parseInt(new URLSearchParams(location.search).get('step'), 10) || 2)) : 1,
@@ -329,7 +331,7 @@ function grw_steps(root, cfg) {
         modal.append(box);
         document.body.append(modal);
         document.body.classList.add('grw-badge-modal-open');
-        input.focus();
+        if (touch()) { box.tabIndex = -1; box.focus(); } else input.focus();
     }
 
     function addTile(place) {
@@ -366,17 +368,22 @@ function grw_steps(root, cfg) {
             clearTimeout(frameTimer);
             cb('The connection was interrupted, please pick the place again.');
         }
-        frame = h('iframe', {class: 'grw-badge-frame', src: CONNECT_URL + '?inline=1&authcode=' + encodeURIComponent(V.authcode) + '&lang=' + encodeURIComponent(V.lang), title: 'Find your business'});
+        const f = frame = h('iframe', {class: 'grw-badge-frame', src: CONNECT_URL + '?inline=1&authcode=' + encodeURIComponent(V.authcode) + '&lang=' + encodeURIComponent(V.lang), title: 'Find your business'});
         host.append(frame);
         // The field alone: the frame keeps its list open inside, its 68px box would show the top of it; the next keystroke resizes the frame again.
         foldSearch = () => { if (frame.offsetHeight > host.offsetHeight) frame.style.height = '40px'; };
         frame.addEventListener('load', () => frame.focus());
+        // Its page posts its height as soon as it runs; a blocked frame stays silent, while its load event fires on the error page too.
+        const silent = setTimeout(() => {
+            if (f.isConnected) searchNote(host, 'The business search did not load. Allow app.richplugins.com in your blocker and reload the page.');
+        }, 10000);
         // Step 1 is rebuilt on every visit: one listener for the page, dispatching to the current handlers.
-        frameOn = {pick: onPick, redraw};
+        frameOn = {pick: onPick, redraw, heard: () => { clearTimeout(silent); searchNote(host, ''); }};
         if (listening) return;
         listening = true;
         window.addEventListener('message', function onMsg(e) {
             if (e.origin !== CONNECT_ORIGIN || !e.data || !frame || !frame.isConnected || e.source !== frame.contentWindow) return;
+            frameOn.heard();
             const d = e.data;
             if (d.action === 'resize' && d.height) frame.style.height = Math.min(600, Math.max(40, d.height)) + 'px';
             if (d.action === 'place' && d.place) frameOn.pick(d.place);
@@ -398,6 +405,13 @@ function grw_steps(root, cfg) {
             }
         });
     }
+    // What keeps the search from working, on a line under it until it works.
+    function searchNote(host, text) {
+        const card = host.parentNode, old = card.querySelector('.grw-badge-search-note');
+        if (old) old.remove();
+        if (text) card.querySelector('.grw-badge-tiles').before(h('div', {class: 'notice notice-error inline grw-badge-search-note', role: 'alert'}, '<p>' + esc(text) + '</p>'));
+    }
+
     function frameConnect(params, cb) {
         frameCb = cb;
         clearTimeout(frameTimer);
@@ -411,7 +425,7 @@ function grw_steps(root, cfg) {
         host.append(input, list);
         foldSearch = () => { list.hidden = true; };
         input.addEventListener('keydown', e => { if (e.key === 'Escape') list.hidden = true; });
-        input.focus();
+        if (!touch()) input.focus();
         let timer = 0, last = '';
         input.addEventListener('input', () => {
             clearTimeout(timer);
@@ -424,6 +438,7 @@ function grw_steps(root, cfg) {
                 last = v;
                 post('grw_place_autocomplete', {input: v}, res => {
                     list.innerHTML = '';
+                    searchNote(host, res && (res.error_message || errorOf(res)));
                     const preds = (res && res.predictions) || [];
                     if (!preds.length) return;
                     preds.slice(0, 8).forEach(p => {
@@ -440,6 +455,7 @@ function grw_steps(root, cfg) {
             list.hidden = true;
             input.value = '';
             last = '';
+            if (touch()) input.blur();
             post('grw_get_place', {pid, lang: V.lang}, res => {
                 if (res.status !== 'success') return toast(errorOf(res) || 'Could not read the place.', 'error');
                 const r = res.result;
@@ -520,7 +536,7 @@ function grw_steps(root, cfg) {
         const select = (key, items, onchange) => {
             const s = h('select', {class: 'grw-pl-select'}, items.map(([v, t]) => '<option value="' + esc(v) + '">' + esc(t) + '</option>').join(''));
             s.value = o[key] || '';
-            s.onchange = () => { o[key] = s.value; (onchange || redraw)(key); };
+            s.onchange = () => { if (key) o[key] = s.value; (onchange || redraw)(key); };
             return s;
         };
         const seg = (key, items, onchange) => {
@@ -542,6 +558,7 @@ function grw_steps(root, cfg) {
             const fill = () => r.style.setProperty('--fill', ((r.value - min) / (max - min) * 100) + '%');
             fill();
             r.oninput = () => { out.textContent = r.value + unit; fill(); onchange(r.value); };
+            box.set = v => { r.value = v; out.textContent = r.value + unit; fill(); };
             box.append(top, r);
             return box;
         };

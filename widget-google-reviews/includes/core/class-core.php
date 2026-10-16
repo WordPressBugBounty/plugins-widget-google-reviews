@@ -71,6 +71,7 @@ class Core {
             'css_vars'                  => '',
             'card_style'                => '',
             'card_layout'               => '',
+            'rating_layout'             => '',
 
             'open_link'                 => true,
             'nofollow_link'             => true,

@@ -141,7 +141,7 @@ class Google_Connect {
                     $input = isset($_POST['input']) ? sanitize_text_field(wp_unslash($_POST['input'])) : '';
                     $url = add_query_arg(
                         array(
-                            'input' => $input,
+                            'input' => rawurlencode($input),
                             'types' => 'establishment',
                             'key'   => $key,
                         ),
@@ -150,6 +150,33 @@ class Google_Connect {
                     $res = wp_remote_get($url);
                     $body = wp_remote_retrieve_body($res);
                     $result = json_decode($body);
+                    $status = isset($result->status) ? $result->status : '';
+                    // Google projects created after March 2025 cannot enable the legacy API
+                    if ($status == 'REQUEST_DENIED') {
+                        $res = wp_remote_post('https://places.googleapis.com/v1/places:autocomplete', array(
+                            'headers' => array('Content-Type' => 'application/json', 'X-Goog-Api-Key' => $key),
+                            'body'    => json_encode(array('input' => $input, 'includedPrimaryTypes' => array('establishment'))),
+                        ));
+                        $result = json_decode(wp_remote_retrieve_body($res));
+                        $status = isset($result->error->status) ? $result->error->status : (is_object($result) ? 'OK' : '');
+                        if ($status == 'OK') {
+                            $predictions = array();
+                            foreach (isset($result->suggestions) ? $result->suggestions : array() as $s) {
+                                $f = $s->placePrediction->structuredFormat;
+                                $predictions[] = array(
+                                    'place_id'              => $s->placePrediction->placeId,
+                                    'structured_formatting' => array('main_text' => $f->mainText->text, 'secondary_text' => isset($f->secondaryText) ? $f->secondaryText->text : ''),
+                                );
+                            }
+                            $result = array('predictions' => $predictions);
+                        }
+                    }
+                    if (in_array($status, array('REQUEST_DENIED', 'OVER_QUERY_LIMIT', 'INVALID_ARGUMENT', 'PERMISSION_DENIED', 'RESOURCE_EXHAUSTED'), true)) {
+                        $reason = isset($result->error->message) ? $result->error->message : (isset($result->error_message) ? $result->error_message : $status);
+                        $result = array('error_message' => 'Google rejected your API key: ' . rtrim($reason, '. ') . '. Check Settings → Google.');
+                    } else if (!in_array($status, array('OK', 'ZERO_RESULTS'), true)) {
+                        $result = array('error_message' => Connect_Helper::failed($res, $result));
+                    }
                 }
             }
             header('Content-type: text/json');

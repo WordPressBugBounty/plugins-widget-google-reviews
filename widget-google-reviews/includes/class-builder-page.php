@@ -43,12 +43,14 @@ class Builder_Page {
         if (!$place) {
             return null;
         }
+        $theme = Themes::first('slider');
         return (object) array(
             'ID'           => '',
             'post_title'   => $place->name,
             'post_content' => wp_json_encode(array(
                 'connections' => array($this->places->connection($place)),
-                'options'     => new \stdClass(),
+                // The default design, as a new widget starts in the gallery; Save & Update without a change stores it as it is.
+                'options'     => $theme ? Themes::options($theme) : array('view_mode' => 'slider'),
             ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
         );
     }
@@ -68,7 +70,8 @@ class Builder_Page {
         $reviews = null;
 
         $rate_us = get_option('grw_rate_us');
-        $authcode = get_option('grw_auth_code');
+        // The page is open to edit_posts, the code is the site's secret: only admins connect places with it.
+        $authcode = current_user_can('manage_options') ? get_option('grw_auth_code') : '';
         $api_key = get_option('grw_google_api_key');
 
         if ($feed != null) {
@@ -87,8 +90,6 @@ class Builder_Page {
             $businesses = $data['businesses'];
             $reviews = $data['reviews'];
             $options = $data['options'];
-            // A widget saved before card styles opens as Classic, which its first save keeps; admin-builder.js carries its old look over.
-            if (empty($options->card_style)) $options->card_style = 'c1';
             if (isset($businesses) && count($businesses) || isset($reviews) && count($reviews)) {
                 $feed_inited = true;
             }
@@ -136,7 +137,7 @@ class Builder_Page {
             </form>
         </div>
 
-        <?php if (!$rate_us) { ?>
+        <?php if (!$rate_us && current_user_can('manage_options')) { ?>
         <div id="grw-rate_us-wrap">
             <div id="grw-rate_us">
                 <div class="grw-rate_us-content">
@@ -191,7 +192,7 @@ class Builder_Page {
                     grw_builder_init($, {
                         el       : '#grw-builder-option',
                         authcode : <?php echo wp_json_encode((string) $authcode); ?>,
-                        cards    : <?php echo wp_json_encode(array('presets' => Card_Presets::PRESETS, 'skin' => Card_Presets::SKIN, 'ink' => Card_Presets::INK, 'shadows' => Card_Presets::SHADOWS, 'vars' => Card_Presets::VARS)); ?>,
+                        cards    : <?php echo wp_json_encode(Themes::client()); ?>,
                         <?php if (!empty($api_key)) echo 'key: true,'; ?>
                         <?php if (!empty($feed_content)) echo 'conns: ' . wp_json_encode($decoded_content); ?>
                     });

@@ -36,6 +36,19 @@ class Plugin_Overview {
     }
 
     public function render() {
+        // grw_overview_ajax answers administrators only.
+        if (!current_user_can('manage_options')) {
+            ?>
+            <div class="grw-page-title">
+                Overview
+            </div>
+            <div class="grw-overview-workspace">
+                <p><?php echo esc_html__('To show a widget on a page, add the Google Reviews Block in the editor. Widgets are created and changed by administrators.', 'widget-google-reviews'); ?></p>
+            </div>
+            <?php
+            return;
+        }
+
         wp_nonce_field('grw_wpnonce', 'grw_nonce');
         wp_enqueue_script('grw-admin-apexcharts-js');
         ?>
@@ -46,7 +59,7 @@ class Plugin_Overview {
 
         <div class="grw-overview-workspace">
 
-            <?php if (!self::has_widgets() && current_user_can('manage_options')) { ?>
+            <?php if (!self::has_widgets()) { ?>
             <p><a class="button button-primary" href="<?php echo esc_url(admin_url('admin.php?page=grw-widget')); ?>"><?php echo esc_html__('Create Widget', 'widget-google-reviews'); ?></a></p>
             <?php } ?>
 

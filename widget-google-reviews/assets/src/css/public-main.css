@@ -698,6 +698,11 @@
     width: 100%!important;
 }
 
+/* In a block parent 100% plus the margins ran 4px past the page. */
+.wp-gr .grw-header-inner {
+    width: auto!important;
+}
+
 .wp-gr .wp-google-list .grw-header-inner {
     padding: 0 0 16px 0!important;
 }
@@ -996,8 +1001,8 @@
     color: var(--card-color, #222222)!important;
 }
 
-.wp-gr .rpi-card > .grw-review-inner .wp-google-time,
-.wp-gr .rpi-card > .grw-review-inner .grw-platform {
+.wp-gr .rpi-card .wp-google-time,
+.wp-gr .rpi-card .grw-platform {
     color: var(--time-color, #555555)!important;
 }
 
@@ -1085,7 +1090,8 @@
 
 /* In a group within a line (beside the photo, or pushed to its end) the date keeps 5em, about two words: in a narrower space the
    group moves under the line instead of squeezing the name to a letter. */
-.wp-gr .rpi-card .rpi-row12-center > .rpi-col6 > .wp-google-time {
+.wp-gr .rpi-card .rpi-row12-center > .rpi-col6 > .wp-google-time,
+.wp-gr .rpi-card .rpi-row12-center > .wp-google-time.rpi-push {
     min-width: 5em;
 }
 
@@ -1122,7 +1128,7 @@
     text-overflow: ellipsis;
 }
 
-.wp-gr .rpi-card .grw-img-wrap.rpi-logo_after::after {
+.wp-gr :is(.rpi-card, .rpi-rate) .grw-img-wrap.rpi-logo_after::after {
     position: absolute;
     right: -1px;
     bottom: -1px;
@@ -1140,14 +1146,99 @@
 }
 
 /* Positioned rather than a flex item, so a long name still ends in an ellipsis. */
-.wp-gr .rpi-card .wp-google-name.rpi-logo_after {
+.wp-gr :is(.rpi-card, .rpi-rate) .wp-google-name.rpi-logo_after {
     position: relative;
     padding-inline-end: calc(var(--logo-size) + 6px)!important;
 }
 
-.wp-gr .rpi-card .wp-google-name.rpi-logo_after::after {
+.wp-gr :is(.rpi-card, .rpi-rate) .wp-google-name.rpi-logo_after::after {
     position: absolute;
     inset-inline-end: 0;
     top: 50%;
     transform: translateY(-50%);
+}
+
+/*-------------------------------- Rating header drawn by the layout engine (rating_layout): the header is .rpi-rate --------------------------------*/
+/* The engine's groups keep the 8px the header column had, and the lines inside the header see the card padding it was given. */
+.wp-gr .grw-header.rpi-rate {
+    --card-padding: 16px;
+    --logo-size: 14px;
+}
+
+.wp-gr .grw-header.rpi-rate .rpi-col6 {
+    --gap: 8px;
+}
+
+/* The photo stays at the top of its line, as it did beside the header column; a button pushed to the edge centres as before. */
+.wp-gr .grw-header.rpi-rate > .rpi-col12 > .rpi-row12-center:has(> .grw-img-wrap) {
+    --align: flex-start;
+}
+
+.wp-gr .grw-header.rpi-rate .rpi-row12-center > .wp-google-wr.rpi-push {
+    align-self: center!important;
+}
+
+/* grw's header elements carry margin: 0!important, which a push must still override. */
+.wp-gr.rpi .rpi-rate .rpi-row12-center > .rpi-push {
+    margin-inline-start: auto!important;
+}
+
+.wp-gr.rpi .rpi-rate :is(.rpi-col12, .rpi-col8, .rpi-col6) > .rpi-push {
+    margin-top: auto!important;
+}
+
+.wp-gr .grw-header.rpi-rate .wp-google-name {
+    width: auto!important;
+    max-width: 100%;
+}
+
+.wp-gr .wp-google-title {
+    font-size: 100%!important;
+    font-weight: 700!important;
+    color: var(--head-name-color, #333333)!important;
+}
+
+.wp-gr .grw-grade {
+    color: var(--head-grade-color, var(--head-scale-color, #333333))!important;
+    font-size: var(--head-grade-fs, 24px)!important;
+    font-weight: var(--head-grade-weight, 700)!important;
+    line-height: 1!important;
+}
+
+.wp-gr .grw-grade small {
+    font-size: 60%!important;
+    font-weight: 400!important;
+    opacity: .7;
+}
+
+.wp-gr .grw-header .rpi-badge-count {
+    color: var(--head-based-color, #555555)!important;
+    font-size: 15px!important;
+}
+
+.wp-gr .grw-avatars {
+    display: inline-flex!important;
+    align-items: center!important;
+}
+
+.wp-gr .grw-avatars .grw-img-wrap {
+    --img-size: 30px;
+    margin-inline-start: -8px!important;
+    border-radius: 50%;
+    /* The ring is the plate it sits on: the stack reads as cut-outs on any tone. */
+    box-shadow: 0 0 0 2px var(--gb-ring, #ffffff);
+}
+
+.wp-gr .grw-avatars .grw-img-wrap:first-child {
+    margin-inline-start: 0!important;
+}
+
+/* A logo in front of the stack is its first disc: the avatars overlap it as they overlap each other. */
+.wp-gr .rpi-rate .rpi-logo:not(:has(> .rpi-stars)) + .grw-avatars {
+    margin-inline-start: calc(-8px - var(--gap, 0px))!important;
+}
+
+.wp-gr .grw-header.rpi-rate .wp-google-url {
+    display: inline-block;
+    margin: 0!important;
 }

@@ -143,6 +143,13 @@ function grw_more(fb, options) {
         // Inline: "remove unused CSS" optimizers drop the rules of a class the page only gets on a click.
         fb.style.setProperty('-webkit-line-clamp', 'none', 'important');
     };
+    // A character limit cuts the text itself (rpi.Common); the card shows what is left open, scrolling within the theme's lines.
+    if (parseInt(options.text_size, 10) > 0) {
+        const s = getComputedStyle(fb), lines = s.getPropertyValue('--card-text-lines').trim() || '5';
+        if (/^\d+$/.test(lines)) fb.style.maxHeight = lines * (parseFloat(s.lineHeight) || parseFloat(s.fontSize) * 1.2) + 'px';
+        fb.style.setProperty('overflow-y', 'auto', 'important');
+        return open();
+    }
     // Without ResizeObserver a text shown later ("More reviews", a tab) would stay cut with no link.
     if (!window.ResizeObserver) return open();
     const links = grw_more.links || grw_more_watch();
@@ -201,8 +208,8 @@ function grw_init(el, layout) {
     if (rootEl.getAttribute('data-exec') == 'true') return;
     else rootEl.setAttribute('data-exec', 'true');
 
-    // A host's wpautop wraps card lines in <p>, and the card's CSS addresses each line as a child of its row or box.
-    rootEl.querySelectorAll('.rpi-card p').forEach(p => p.replaceWith(...p.childNodes));
+    // A host's wpautop wraps the engine's lines in <p>, and its CSS addresses each line as a child of its row or box.
+    rootEl.querySelectorAll('.rpi-card p, .rpi-rate p').forEach(p => p.replaceWith(...p.childNodes));
 
     const options = JSON.parse(rootEl.getAttribute('data-options'));
 

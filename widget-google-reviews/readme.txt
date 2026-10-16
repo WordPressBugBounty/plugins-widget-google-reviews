@@ -3,7 +3,7 @@ Contributors: widgetpack
 Tags: google reviews, reviews, review slider, review widget, reviews plugin
 Requires PHP: 7.2
 Tested up to: 7.1
-Stable tag: 7.1.6
+Stable tag: 7.1.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -123,6 +123,17 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Improve: New option Style Options / Review photos max lines
 
 == Changelog ==
+
+= 7.1.7 =
+* New: sticker designs for the site badge: round stamps and seals, a Google ring, a pennant, a trust strip with reviewer photos, partner cards.
+* New: wordmark badge designs.
+* New: size and color controls for the badge elements on the design step.
+* Change: a saved widget keeps its own design; Reset to default style in the builder returns to it.
+* Improved: a failed connection says why.
+* Improved: slider arrows have names for screen readers.
+* Improved: a badge that opens reviews lifts on hover.
+* Fixed: the header of a list or rating widget ran past the page edge on full-width themes.
+* Fixed: Create widget on the Places page opened the wrong editor and saved a list.
 
 = 7.1.6 =
 * New: Create Widget gallery with ready-made slider, grid, list, rating and badge designs, previewed with your own reviews.

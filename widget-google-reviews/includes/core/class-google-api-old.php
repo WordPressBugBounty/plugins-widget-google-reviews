@@ -99,8 +99,10 @@ class Google_Api_Old {
         } else {
             if (isset($json->error_message)) {
                 $result = array('error_message' => $json->error_message);
-            } else {
+            } else if (isset($json->result)) {
                 $result = array('error_message' => 'The place you are trying to connect to does not have a rating yet.');
+            } else {
+                $result = array('error_message' => Connect_Helper::failed($res, $json));
             }
             $result['denied'] = isset($json->status) && $json->status == 'REQUEST_DENIED';
             $status = 'failed';

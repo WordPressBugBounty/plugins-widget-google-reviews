@@ -41,7 +41,7 @@ class Admin_Rateus_Ajax {
     }
 
     private function check_nonce() {
-        if (!current_user_can('edit_posts')) {
+        if (!current_user_can('manage_options')) {
             die('The account you\'re logged in to doesn\'t have permission to access this page.');
         }
         check_admin_referer('grw_wpnonce', 'grw_nonce');

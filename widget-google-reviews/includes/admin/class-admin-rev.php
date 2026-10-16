@@ -10,7 +10,7 @@ class Admin_Rev {
     }
 
     public function snooze() {
-        if (!current_user_can('edit_posts')) {
+        if (!current_user_can('manage_options')) {
             die('The account you\'re logged in to doesn\'t have permission to access this page.');
         }
         check_admin_referer('grw_wpnonce', 'grw_nonce');
@@ -19,6 +19,10 @@ class Admin_Rev {
     }
 
     public function leaverev() {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+
         $activation_time = get_option('grw_activation_time');
 
         if ($activation_time == '') {
@@ -26,7 +30,7 @@ class Admin_Rev {
             update_option('grw_activation_time', $activation_time);
         }
 
-        $rev_notice = isset($_GET['grw_rev_notice']) ? $_GET['grw_rev_notice'] : '';
+        $rev_notice = isset($_GET['grw_rev_notice'], $_GET['grw_rev_nonce']) && wp_verify_nonce(sanitize_key($_GET['grw_rev_nonce']), 'grw_rev_notice') ? $_GET['grw_rev_notice'] : '';
         if ($rev_notice == 'later') {
             update_option('grw_rev_notice_hide', 'later:' . time());
         } else if ($rev_notice == 'never') {
@@ -46,7 +50,7 @@ class Admin_Rev {
             if ($rev_notice_hide != 'never' && !$snoozed && $activation_time < (time() - 86400*3)) {
                 update_option('rplg_rev_notice_show', 'grw');
                 $class = 'notice notice-info is-dismissible';
-                $url = remove_query_arg(array('taction', 'tid', 'sortby', 'sortdir', 'opt'));
+                $url = add_query_arg('grw_rev_nonce', wp_create_nonce('grw_rev_notice'), remove_query_arg(array('taction', 'tid', 'sortby', 'sortdir', 'opt')));
                 $url_later = esc_url(add_query_arg('grw_rev_notice', 'later', $url));
                 $url_never = esc_url(add_query_arg('grw_rev_notice', 'never', $url));
 
