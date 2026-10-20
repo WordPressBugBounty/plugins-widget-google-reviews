@@ -2,7 +2,9 @@
 
 namespace WP_Rplg_Google_Reviews\Includes;
 
+use WP_Rplg_Google_Reviews\Includes\Core\Core;
 use WP_Rplg_Google_Reviews\Includes\Core\Google_Dao;
+use WP_Rplg_Google_Reviews\Includes\Core\Place_Settings;
 
 class Plugin_Places {
 
@@ -14,36 +16,32 @@ class Plugin_Places {
 
     public function register() {
         add_action('grw_admin_page_grw-places', array($this, 'render'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_media'));
         add_action('wp_ajax_grw_delete_place', array($this, 'delete_place'));
+        add_action('wp_ajax_grw_place_settings', array($this, 'save_settings'));
         add_filter('wp_insert_post_data', array($this, 'drop_missing_places'), 10, 2);
     }
 
-    // One language per update to keep it to a single Google request: the site language when the place
-    // has reviews in it, otherwise the language it was fetched in last. Other languages are left to the cron.
+    // The photo picker of the settings form
+    public function enqueue_media() {
+        global $plugin_page;
+        if ($plugin_page === 'grw-places') {
+            wp_enqueue_media();
+        }
+    }
+
     public function fetch_pairs($place) {
-        $langs = $this->dao->get_place_langs($place->id);
-        $site_lang = substr(get_locale(), 0, 2);
-        $lang = (empty($langs) || in_array($site_lang, $langs, true)) ? $site_lang : $langs[0];
-        $local_img = $this->dao->has_local_images($place->id);
-        return array(array('lang' => $lang, 'local_img' => $local_img));
+        $local_img = Place_Settings::local_img($place, function() use ($place) { return $this->dao->has_local_images($place->id); });
+        return array(array('lang' => $this->dao->place_lang($place), 'local_img' => $local_img));
     }
 
     public function connection($place) {
-        $pair = $this->fetch_pairs($place)[0];
-        $conn = array(
-            'id'        => $place->place_id,
-            'lang'      => $pair['lang'],
-            'name'      => $place->name,
-            'photo'     => $place->photo,
-            'refresh'   => true,
-            'local_img' => $pair['local_img'],
-            'platform'  => 'google',
-            'props'     => array('default_photo' => $place->photo),
+        return array(
+            'id'       => $place->place_id,
+            'lang'     => $this->dao->place_lang($place),
+            'name'     => $place->name,
+            'platform' => 'google',
         );
-        if (!empty($place->map_url)) {
-            $conn['props']['map_url'] = $place->map_url;
-        }
-        return $conn;
     }
 
     public function drop_missing_places($data, $postarr) {
@@ -79,7 +77,8 @@ class Plugin_Places {
         }
 
         $api_key = get_option('grw_google_api_key');
-        $builder_url = admin_url('admin.php?page=grw-builder');
+        $widget_url = admin_url('admin.php?page=grw-widget');
+        $widgets = Core::place_connections();
         wp_nonce_field('grw_wpnonce', 'grw_nonce');
         ?>
         <div class="grw-page-title">
@@ -107,12 +106,17 @@ class Plugin_Places {
                 </thead>
                 <tbody>
                 <?php foreach ($places as $place) {
-                    $photo = empty($place->photo) ? GRW_GOOGLE_BIZ : $place->photo;
+                    $photo = Place_Settings::photo($place);
+                    $google_photo = Place_Settings::google_photo($place);
                     $updated = (int) ($place->updated / 1000);
                     $rating = $place->rating > 0 ? number_format((float) $place->rating, 1, '.', '') : '';
-                    $create_url = add_query_arg('grw_place_id', rawurlencode($place->place_id), $builder_url);
+                    $create_url = add_query_arg('grw_place_id', rawurlencode($place->place_id), $widget_url);
+                    // The form opens on what the place does today, so its first Save changes nothing by itself.
+                    $refresh = Place_Settings::refresh($place, isset($widgets[$place->place_id]) ? $widgets[$place->place_id]['conns'] : array());
+                    $pair = $this->fetch_pairs($place)[0];
+                    $custom_photo = empty($place->custom_photo) ? '' : $place->custom_photo;
                     ?>
-                    <tr data-id="<?php echo esc_attr($place->id); ?>" data-pid="<?php echo esc_attr($place->place_id); ?>" data-url="<?php echo esc_attr((string) $place->map_url); ?>" data-conns="<?php echo esc_attr(wp_json_encode($this->fetch_pairs($place))); ?>" data-name="<?php echo esc_attr($place->name); ?>" data-reviews="<?php echo esc_attr(number_format_i18n((int) $place->db_review_count)); ?>">
+                    <tr data-id="<?php echo esc_attr($place->id); ?>" data-pid="<?php echo esc_attr($place->place_id); ?>" data-url="<?php echo esc_attr((string) $place->map_url); ?>" data-conns="<?php echo esc_attr(wp_json_encode(array($pair))); ?>" data-name="<?php echo esc_attr($place->name); ?>" data-reviews="<?php echo esc_attr(number_format_i18n((int) $place->db_review_count)); ?>">
                         <td class="column-primary grw-col-place" data-colname="Place">
                             <div class="grw-place">
                                 <img src="<?php echo esc_url($photo); ?>" alt="" width="40" height="40" loading="lazy" onerror="if(this.src!='<?php echo esc_url(GRW_GOOGLE_BIZ); ?>')this.src='<?php echo esc_url(GRW_GOOGLE_BIZ); ?>';">
@@ -136,9 +140,20 @@ class Plugin_Places {
                             <?php echo $updated ? esc_html(human_time_diff($updated) . ' ago') : '&mdash;'; ?>
                         </td>
                         <td class="grw-col-actions" data-colname="Actions">
+                            <a href="#" class="grw-place-btn grw-place-settings" title="Settings" aria-label="Settings" aria-haspopup="dialog"><span class="dashicons dashicons-admin-generic"></span></a>
                             <a href="#" class="grw-place-btn grw-place-update" title="Update reviews" aria-label="Update reviews"><span class="dashicons dashicons-update"></span></a>
                             <a href="<?php echo esc_url($create_url); ?>" class="grw-place-btn" title="Create widget" aria-label="Create widget"><span class="dashicons dashicons-welcome-add-page"></span></a>
                             <a href="#" class="grw-place-btn grw-place-delete" title="Delete place" aria-label="Delete place"><span class="dashicons dashicons-trash"></span></a>
+                            <form class="grw-place-fields" hidden>
+                                <div class="grw-place-photo-field">
+                                    <img src="<?php echo esc_url($photo); ?>" alt="" width="64" height="64" data-google="<?php echo esc_url($google_photo); ?>">
+                                    <input type="hidden" name="photo" value="<?php echo esc_attr($custom_photo); ?>">
+                                    <button type="button" class="button grw-place-photo-pick">Change photo</button>
+                                    <button type="button" class="button-link grw-place-photo-google"<?php echo $custom_photo === '' ? ' hidden' : ''; ?>>Use Google's photo</button>
+                                </div>
+                                <label class="grw-place-option"><input type="checkbox" name="refresh"<?php checked($refresh); ?>><span><b>Auto-update reviews</b><small>Fetched from Google on the schedule in Settings; needs your API key.</small></span></label>
+                                <label class="grw-place-option"><input type="checkbox" name="local_img"<?php checked($pair['local_img']); ?>><span><b>Store images on this site</b><small>Reviewer photos and review pictures are copied to your media library.</small></span></label>
+                            </form>
                         </td>
                     </tr>
                 <?php } ?>
@@ -146,6 +161,49 @@ class Plugin_Places {
             </table>
         </div>
         <?php
+    }
+
+    public function save_settings() {
+        if (!current_user_can('manage_options')) {
+            $this->fail('Permission denied.');
+        }
+        check_admin_referer('grw_wpnonce', 'grw_nonce');
+
+        $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+        $place = $id ? $this->dao->get_place_by_id($id) : null;
+        if (!$place) {
+            $this->fail('Place not found.');
+        }
+
+        $raw_photo = isset($_POST['photo']) ? trim((string) wp_unslash($_POST['photo'])) : '';
+        $photo = esc_url_raw($raw_photo, array('http', 'https'));
+        if ($raw_photo !== '' && ($photo === '' || strlen($photo) > 255 || !preg_match('#^https?://#i', $raw_photo))) {
+            $this->fail('The photo must be an http(s) link of up to 255 characters.');
+        }
+
+        // The place's own value exists only where the admin's choice differs from what its widgets say; else it keeps following them.
+        $refresh = $this->flag('refresh');
+        $conns = Core::place_connections()[$place->place_id]['conns'] ?? array();
+        $saved = $this->dao->save_place_settings($id, array(
+            'refresh'      => $refresh === (int) Place_Settings::by_widgets($conns) ? null : $refresh,
+            'local_img'    => $this->flag('local_img'),
+            'custom_photo' => $photo === '' ? null : $photo,
+        ));
+        if (!$saved) {
+            $this->fail('Could not save the settings.');
+        }
+        Core::clear_feed_cache();
+
+        $place = $this->dao->get_place_by_id($id);
+        wp_send_json(array('status' => 'success', 'result' => array('photo' => Place_Settings::photo($place))));
+    }
+
+    private function flag($name) {
+        return isset($_POST[$name]) && filter_var(wp_unslash($_POST[$name]), FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+    }
+
+    private function fail($message) {
+        wp_send_json(array('status' => 'failed', 'result' => array('error_message' => $message)));
     }
 
     public function delete_place() {

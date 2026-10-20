@@ -56,20 +56,12 @@ class Themes {
         return null;
     }
 
-    // The first design of a layout in the file: what a widget made outside the gallery starts with.
-    public static function first($mode) {
-        foreach (self::all() as $theme) {
-            if ($theme['opts']['view_mode'] === $mode) return $theme;
-        }
-        return null;
-    }
-
     // What a design puts into a widget: its options and its variables as style_vars.
     public static function options($theme) {
         return $theme['opts'] + array('style_vars' => self::declarations($theme['vars']));
     }
 
-    // The card variables the card controls set; the save checks their values, every other variable is kept as the builder has always kept it.
+    // The card variables the card controls set; the save checks their values and keeps every other variable as it is.
     const CARD_VARS = array('--card-bg', '--card-tail', '--card-br', '--card-br-color', '--card-shadow', '--card-radius', '--card-band-bg', '--card-sep-color',
                             '--card-star-color', '--card-star-size', '--name-color', '--card-color', '--time-color', '--card-img-size', '--img-filter', '--card-text-lines');
 
@@ -116,7 +108,7 @@ class Themes {
     }
 
     // The CSS variables field as kept for the page: only "--name: value" declarations with plain values, the rest of the text ignored.
-    // !important wins over the settings, and keeps the builder from reading these back into style_vars.
+    // !important: the field wins over the settings' style_vars.
     public static function css_vars($text) {
         if (!is_string($text) || $text === '') return '';
         $css = '';
@@ -137,7 +129,7 @@ class Themes {
                 if ($name === '--card-tail') $tail = true;
             }
         }
-        // As with the builder's background control, the speech bubble's tail takes the background unless the field sets it.
+        // The speech bubble's tail takes the background unless the field sets it.
         return $bg !== null && !$tail ? $css . '--card-tail:' . $bg . '!important;' : $css;
     }
 
@@ -151,7 +143,7 @@ class Themes {
         return $depth === 0;
     }
 
-    // Colours keep the alphabet the builder has always saved (#hex, names); the rest are the values of the card controls.
+    // Colours are #hex or names; the rest are the values of the card controls.
     private static function valid($name, $v) {
         $px = function($min, $max) use ($v) {
             return preg_match('/^(\d+)px$/', $v, $m) && $m[1] >= $min && $m[1] <= $max;

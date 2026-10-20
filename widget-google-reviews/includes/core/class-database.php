@@ -30,6 +30,9 @@ class Database {
                "website VARCHAR(255),".
                "review_count INTEGER,".
                "updated BIGINT(20),".
+               "refresh TINYINT(1),".
+               "local_img TINYINT(1),".
+               "custom_photo VARCHAR(255),".
                "PRIMARY KEY (`id`),".
                "UNIQUE INDEX grp_place_id (`place_id`)".
                ") " . $charset_collate . ";";

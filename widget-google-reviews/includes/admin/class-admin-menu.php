@@ -18,10 +18,11 @@ class Admin_Menu {
     }
 
     public function add_page() {
+        // Editors see the menu for the Widgets list (its own capability); the pages are for administrators.
         add_menu_page(
             'Google Reviews Plugin',
             'Google Reviews',
-            'edit_posts',
+            'edit_others_posts',
             'grw',
             '',
             GRW_ASSETS_URL . 'img/menu_icon.png',
@@ -32,7 +33,7 @@ class Admin_Menu {
             'grw',
             'Overview',
             'Overview',
-            'edit_posts',
+            'manage_options',
             'grw'
         );
         $overview_page->add_page();
@@ -71,11 +72,12 @@ class Admin_Menu {
     }
 
     public function add_subpages() {
+        // Registered so that Plugin_Theme::redirect can run: WordPress denies an unregistered page before admin_init.
         $builder_page = new Admin_Page(
             'grw',
             'Reviews Builder',
             'Builder',
-            'edit_posts',
+            'manage_options',
             'grw-builder'
         );
         $builder_page->add_page();
@@ -114,6 +116,10 @@ class Admin_Menu {
 
         foreach ($hidden_pages as $page) {
             remove_submenu_page('grw', $page);
+        }
+        // For an Editor the first page under the menu is the Widgets list, so WordPress put a link to Overview before it; Overview is not theirs.
+        if (!current_user_can('manage_options')) {
+            remove_submenu_page('grw', 'grw');
         }
 
         return $submenu_file;

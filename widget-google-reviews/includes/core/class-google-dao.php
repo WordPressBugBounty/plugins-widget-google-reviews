@@ -234,6 +234,23 @@ class Google_Dao {
         );
     }
 
+    // Every place in id order, starting after $id and wrapping round: the cron's queue across runs.
+    public function places_from($id) {
+        global $wpdb;
+
+        return $wpdb->get_results(
+            $wpdb->prepare("SELECT * FROM " . $wpdb->prefix . Database::BUSINESS_TABLE . " ORDER BY id > %d DESC, id ASC", $id)
+        );
+    }
+
+    // One language per update to keep it to a single Google request: the site language when the place
+    // has reviews in it, otherwise the language it was fetched in last. Other languages are left to the cron.
+    public function place_lang($place) {
+        $langs = $this->get_place_langs($place->id);
+        $site_lang = substr(get_locale(), 0, 2);
+        return (empty($langs) || in_array($site_lang, $langs, true)) ? $site_lang : $langs[0];
+    }
+
     // Languages the reviews of a place were fetched in, most recent first. The review row only keeps
     // the language of the last fetch, so the per-language text table is the source; older rows without texts fall back.
     public function get_place_langs($db_place_id) {
@@ -278,6 +295,12 @@ class Google_Dao {
         return $wpdb->get_row(
             $wpdb->prepare("SELECT * FROM " . $wpdb->prefix . Database::BUSINESS_TABLE . " WHERE id = %d", $db_place_id)
         );
+    }
+
+    public function save_place_settings($db_place_id, $settings) {
+        global $wpdb;
+
+        return $wpdb->update($wpdb->prefix . Database::BUSINESS_TABLE, $settings, array('id' => $db_place_id)) !== false;
     }
 
     public function delete_place($db_place_id) {

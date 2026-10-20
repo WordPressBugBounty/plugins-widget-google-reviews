@@ -531,8 +531,11 @@ jQuery(document).ready(function($) {
                     if (last.user_ratings_total) {
                         $('.grw-place-count', $row).text(Number(last.user_ratings_total).toLocaleString());
                     }
+                    // The row shows the place's own photo when one is set; Google's goes to the form's "Google's photo".
                     if (last.photo) {
-                        $('.grw-place img', $row).attr('src', last.photo);
+                        var $form = $row.find('.grw-place-fields');
+                        $('img', $form).attr('data-google', last.photo);
+                        if (!$('[name=photo]', $form).val()) $('.grw-place img', $row).add($('img', $form)).attr('src', last.photo);
                     }
                 }
                 $('.grw-place-updated', $row).text('just now');
@@ -646,6 +649,25 @@ function grw_review(review) {
     return root;
 }
 
+function grw_review_hide_global($this) {
+    jQuery.post(ajaxurl, {
+
+        id          : $this.attr('data-id'),
+        grw_wpnonce : jQuery('#grw_nonce').val(),
+        action      : 'grw_hide_review'
+
+    }, function(res) {
+        var parent = $this.parent().parent();
+        if (res.hide) {
+            $this.text('show review');
+            parent.addClass('wp-review-hidden');
+        } else {
+            $this.text('hide review');
+            parent.removeClass('wp-review-hidden');
+        }
+    }, 'json');
+}
+
 function grw_safeUrl(url) {
     if (!url) return '#';
     url = String(url).trim();
@@ -675,3 +697,98 @@ const GRW_TOAST = rpi.Toast({timeout: 25});
 function grw_get_error(res) {
     return res?.result?.error_message?.message || res?.result?.error_message || null;
 }
+
+// Places page: a place's settings (photo, auto-update, local images) in a modal over the list. The script loads in the head.
+document.addEventListener('DOMContentLoaded', function() {
+    const table = document.getElementById('grw-places');
+    if (!table) return;
+    const nonce = document.getElementById('grw_nonce').value;
+    let frame = null;
+
+    // The photo field shows the place's own photo, else Google's; "Use Google's photo" only while an own one is set.
+    function show(form) {
+        const img = form.querySelector('img'), own = form.querySelector('[name=photo]').value;
+        img.src = own || img.dataset.google;
+        form.querySelector('.grw-place-photo-google').hidden = !own;
+    }
+
+    function pick(form) {
+        if (!(window.wp && wp.media)) return GRW_TOAST.show({msg: 'The media library is not available on this page.', type: 'error'});
+        frame = frame || wp.media({title: 'Business photo', library: {type: 'image'}, multiple: false, button: {text: 'Use this photo'}});
+        frame.off('select').on('select', () => {
+            const a = frame.state().get('selection').first().toJSON(), sizes = a.sizes || {};
+            form.querySelector('[name=photo]').value = (sizes.medium || sizes.thumbnail || {}).url || a.url;
+            show(form);
+        });
+        frame.open();
+    }
+
+    function save(row, form, done) {
+        const field = name => form.querySelector('[name=' + name + ']');
+        const body = new URLSearchParams({action: 'grw_place_settings', grw_nonce: nonce, id: row.dataset.id,
+            refresh: field('refresh').checked ? 1 : 0, local_img: field('local_img').checked ? 1 : 0, photo: field('photo').value});
+        // Stored reviews keep their image links until the place is fetched again, so a change runs the row's Update.
+        const refetch = field('local_img').checked !== field('local_img').defaultChecked;
+        fetch(ajaxurl, {method: 'POST', credentials: 'same-origin', body}).then(r => r.json()).then(res => {
+            if (!res || res.status !== 'success') return done(grw_get_error(res) || 'Could not save the settings.');
+            row.querySelector('.grw-place img').src = res.result.photo;
+            // What is saved becomes the form's defaults: Cancel and the next open start from them.
+            form.querySelectorAll('input[type=checkbox]').forEach(i => { i.defaultChecked = i.checked; });
+            field('photo').defaultValue = field('photo').value;
+            done();
+            GRW_TOAST.show({msg: 'Settings saved.', type: 'success'});
+            if (refetch) row.querySelector('.grw-place-update').click();
+        }).catch(() => done('Request failed, please try again.'));
+    }
+
+    // The row's form moves into a modal in the metrics of the widget page's picker and back when it closes. The page behind is
+    // inert meanwhile; the media library opens above the modal (its z-index is lower); the gear gets the focus back.
+    function open(row, gear) {
+        const form = row.querySelector('.grw-place-fields');
+        const modal = document.createElement('div');
+        modal.className = 'grw-badge-modal grw-place-modal';
+        modal.innerHTML = '<div class="grw-badge-modal-box" role="dialog" aria-modal="true" aria-labelledby="grw-place-title" tabindex="-1">' +
+            '<div class="grw-badge-modal-head"><h2 id="grw-place-title"></h2><button type="button" class="grw-badge-modal-x" aria-label="Close"><span class="dashicons dashicons-no-alt"></span></button></div>' +
+            '<div class="grw-badge-modal-body"></div>' +
+            '<div class="grw-badge-modal-foot"><button type="button" class="button grw-place-cancel">Cancel</button><button type="button" class="button button-primary grw-place-save">Save</button></div></div>';
+        modal.querySelector('h2').textContent = row.dataset.name;
+        const box = modal.firstElementChild;
+        modal.querySelector('.grw-badge-modal-body').append(form);
+        form.hidden = false;
+        const close = () => {
+            form.hidden = true;
+            row.querySelector('.grw-col-actions').append(form);
+            modal.remove();
+            document.getElementById('wpwrap').inert = false;
+            document.body.classList.remove('grw-badge-modal-open');
+            gear.focus();
+        };
+        const cancel = () => { form.reset(); show(form); close(); };
+        modal.addEventListener('click', e => {
+            if (box.classList.contains('grw-place-busy')) return;
+            const btn = e.target.closest('button');
+            if (e.target === modal || btn && btn.matches('.grw-badge-modal-x, .grw-place-cancel')) return cancel();
+            if (!btn) return;
+            if (btn.classList.contains('grw-place-photo-pick')) pick(form);
+            else if (btn.classList.contains('grw-place-photo-google')) { form.querySelector('[name=photo]').value = ''; show(form); }
+            else if (btn.classList.contains('grw-place-save')) {
+                box.classList.add('grw-place-busy');
+                save(row, form, err => { box.classList.remove('grw-place-busy'); if (err) GRW_TOAST.show({msg: err, type: 'error'}); else close(); });
+            }
+        });
+        modal.addEventListener('keydown', e => { if (e.key === 'Escape' && !box.classList.contains('grw-place-busy')) cancel(); });
+        form.addEventListener('submit', e => e.preventDefault());
+        document.body.append(modal);
+        document.body.classList.add('grw-badge-modal-open');
+        document.getElementById('wpwrap').inert = true;
+        box.focus();
+    }
+
+    table.addEventListener('click', e => {
+        const gear = e.target.closest('.grw-place-settings');
+        if (!gear) return;
+        e.preventDefault();
+        // An Update in flight writes Google's photo into the form when it answers: the form stays in the row until then.
+        if (!gear.closest('tr').classList.contains('grw-place-busy')) open(gear.closest('tr'), gear);
+    });
+});

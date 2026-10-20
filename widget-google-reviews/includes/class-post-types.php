@@ -8,10 +8,19 @@ class Post_Types {
 
     public function register() {
         add_action('init', array($this, 'register_post_types'));
+        add_filter('map_meta_cap', array($this, 'map_meta_cap'), 10, 4);
 
         add_action('trash_' . self::FEED_POST_TYPE, array($this, 'trash'), 10, 2);
         add_action('publish_' . self::FEED_POST_TYPE, array($this, 'publish'), 10, 2);
         add_filter('wp_untrash_post_status', array($this, 'untrash_status'), 10, 3);
+    }
+
+    // WordPress lets the author of an unpublished post edit it with edit_posts alone; a widget is changed with manage_options whoever made it.
+    public function map_meta_cap($caps, $cap, $user_id, $args) {
+        if (($cap === 'edit_post' || $cap === 'delete_post') && !empty($args[0]) && get_post_type($args[0]) === self::FEED_POST_TYPE) {
+            return array('manage_options');
+        }
+        return $caps;
     }
 
     public function untrash_status($new_status, $post_id, $previous_status) {
@@ -69,7 +78,20 @@ class Post_Types {
             'has_archive'         => false,
             'exclude_from_search' => true,
             'publicly_queryable'  => false,
-            'capabilities'        => array('create_posts' => 'do_not_allow'),
+            // Editors (edit_others_posts) open the list to read it; a widget is made, changed, published or trashed with manage_options only.
+            'capabilities'        => array(
+                'edit_posts'             => 'edit_others_posts',
+                'edit_others_posts'      => 'manage_options',
+                'edit_published_posts'   => 'manage_options',
+                'edit_private_posts'     => 'manage_options',
+                'publish_posts'          => 'manage_options',
+                'read_private_posts'     => 'manage_options',
+                'delete_posts'           => 'manage_options',
+                'delete_others_posts'    => 'manage_options',
+                'delete_published_posts' => 'manage_options',
+                'delete_private_posts'   => 'manage_options',
+                'create_posts'           => 'do_not_allow',
+            ),
             'map_meta_cap'        => true,
         );
 

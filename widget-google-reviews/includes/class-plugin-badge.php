@@ -93,7 +93,7 @@ class Plugin_Badge extends Plugin_Step_Page {
     }
 
     private static function keys() {
-        return array_merge(Core::badge_option_keys(), array('rating_layout', 'style_vars', 'anonym_avatar'));
+        return array_merge(Core::badge_option_keys(), array('rating_layout', 'style_vars', 'anonym_avatar', 'theme'));
     }
 
     // What the badge tiles and the badge editor need beside the plugin's renders: the businesses for the "Top rated" gate, the popup.
@@ -101,7 +101,7 @@ class Plugin_Badge extends Plugin_Step_Page {
         if (empty($pids)) {
             return self::sample();
         }
-        $data = $this->core->get_data($this->badge_content($pids, array(), $this->existing($post_id, array('badge')), $this->langs()), false);
+        $data = $this->core->get_data($this->badge_content($pids, array(), $this->existing($post_id, Plugin_Theme::MODES), $this->langs()), false);
         $bizs = array();
         foreach ($data['businesses'] as $b) {
             $bizs[] = array(
@@ -164,8 +164,13 @@ class Plugin_Badge extends Plugin_Step_Page {
         );
     }
 
+    // A widget saved as a slider, grid, list or rating drops that design's keys when it becomes a badge.
     private function badge_content($pids, $options, $old = null, $langs = array()) {
-        return $this->content($pids, $options, $old, $langs, array_merge(self::keys(), array('view_mode')), array('view_mode' => 'badge'));
+        $own = array_merge(self::keys(), array('view_mode'));
+        if ($old && ($old['options']['view_mode'] ?? '') !== 'badge') {
+            $own = array_merge($own, array_diff(Plugin_Theme::KEYS, Plugin_Theme::SETTINGS));
+        }
+        return $this->content($pids, $options, $old, $langs, $own, array('view_mode' => 'badge'));
     }
 
     public function save() {
@@ -178,8 +183,8 @@ class Plugin_Badge extends Plugin_Step_Page {
 
         $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
         $title = isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : '';
-        $old = $this->existing($post_id, array('badge'));
-        // The Create Widget page keeps the id of what it published last; a badge picked after a slider is a widget of its own.
+        // A saved slider, grid, list or rating stays the same widget when it picks a badge design; not on the site until its switch says so.
+        $old = $this->existing($post_id, Plugin_Theme::MODES);
         if (!$old) {
             $post_id = 0;
             $title = '';
@@ -188,20 +193,27 @@ class Plugin_Badge extends Plugin_Step_Page {
         $content = $this->badge_content($pids, $this->posted_options(self::keys()), $old, $this->langs());
         $post_id = $this->save_feed($post_id, $title, $content, 'badge');
 
-        $global = !empty($_POST['global']) && $_POST['global'] !== 'false' && $_POST['global'] !== '0';
-        // An embed badge belongs in the page content, and a new badge goes on the site only by its step 3 switch, after this save.
-        $global = $global && $old && ($content->options->badge_pos ?? '') !== 'embed';
         $current = (int) get_option(self::GLOBAL_OPTION);
-        if ($global) {
-            update_option(self::GLOBAL_OPTION, $post_id);
-        } else if ($current === $post_id) {
-            delete_option(self::GLOBAL_OPTION);
+        if (($content->options->badge_pos ?? '') === 'embed') {
+            // An embed badge belongs in the page content.
+            if ($current === $post_id) {
+                delete_option(self::GLOBAL_OPTION);
+            }
+        } else if ($old && isset($_POST['global'])) {
+            // Only the Publish switch posts global, so a save from a stale tab leaves the site badge alone; a new badge gets there by its switch, after this save.
+            if (!empty($_POST['global']) && $_POST['global'] !== 'false' && $_POST['global'] !== '0') {
+                update_option(self::GLOBAL_OPTION, $post_id);
+            } else if ($current === $post_id) {
+                delete_option(self::GLOBAL_OPTION);
+            }
         }
+        $global = (int) get_option(self::GLOBAL_OPTION) === $post_id;
 
         wp_send_json(array('status' => 'success', 'result' => array(
             'id'        => $post_id,
             'title'     => get_post_field('post_title', $post_id, 'raw'),
             'shortcode' => '[grw id=' . $post_id . ']',
+            'page'      => self::page_of($post_id),
             'global'    => $global,
             'replaced'  => $global && $current && $current !== $post_id ? $current : 0,
         )));

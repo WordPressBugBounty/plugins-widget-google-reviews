@@ -86,6 +86,33 @@ class Core {
         );
     }
 
+    // A place's data changed: it can stand in any widget, the site-wide badge among them.
+    public static function clear_feed_cache($feed_id = null) {
+        $ids = explode(',', (string) get_option('grw_feed_ids'));
+        array_push($ids, $feed_id);
+        foreach (array_filter($ids) as $id) {
+            delete_transient('grw_feed_' . GRW_VERSION . '_' . $id . '_reviews');
+        }
+    }
+
+    // Every published widget's connections by place id: [pid => ['feeds' => widget ids, 'conns' => connection objects]].
+    // grw_feed_ids keeps a widget an old Quick Edit turned into a draft; it shows nothing and counts for nothing.
+    public static function place_connections() {
+        $by_pid = array();
+        foreach (array_filter(explode(',', (string) get_option('grw_feed_ids'))) as $id) {
+            $post = get_post((int) $id);
+            if (!$post || $post->post_status !== 'publish') continue;
+            $json = json_decode((string) $post->post_content);
+            if (empty($json->connections) || !is_array($json->connections)) continue;
+            foreach ($json->connections as $conn) {
+                if (empty($conn->id)) continue;
+                $by_pid[$conn->id]['feeds'][] = (int) $id;
+                $by_pid[$conn->id]['conns'][] = $conn;
+            }
+        }
+        return $by_pid;
+    }
+
     public function get_reviews($feed, $is_admin = false) {
         $connection = json_decode($feed->post_content);
 
@@ -166,6 +193,8 @@ class Core {
 
         $biz = array();
         $reviews = array();
+        $places = array();
+        $seen = array();
 
         if (isset($connection->connections) && is_array($connection->connections)) {
             foreach ($connection->connections as $conn) {
@@ -176,11 +205,18 @@ class Core {
                     default:
                         $result = $this->get_db_reviews($conn, $options, $is_admin);
                         // Null when the connected place is not in the database yet.
-                        if (!$options->header_hide_social && $result['business']) {
+                        if (!$options->header_hide_social && $result['business'] && !isset($places[$result['business']->id])) {
+                            $places[$result['business']->id] = true;
                             array_push($biz, $result['business']);
                         }
                         if (!$options->hide_reviews) {
-                            $reviews = array_merge($reviews, $result['reviews']);
+                            // One place in two languages: a review keeps a copy per language version, so the key is the text, not the id alone.
+                            foreach ($result['reviews'] as $review) {
+                                $key = $review->id . '|' . $review->text;
+                                if (isset($seen[$key])) continue;
+                                $seen[$key] = true;
+                                array_push($reviews, $review);
+                            }
                         }
                 }
             }
@@ -221,15 +257,11 @@ class Core {
             $reviews = $this->fetch_reviews([$place->id], $options, $lang, $all_langs, 0, $is_admin);
 
             // Setup photo
-            $place_photo = empty($biz->photo) ? (empty($place->photo) ? GRW_GOOGLE_BIZ : $place->photo) : $biz->photo;
-            // Photo URLs stored by 7.1 and older may carry the Google API key
-            if (strpos($place_photo, 'key=') !== false) {
-                $place_photo = GRW_GOOGLE_BIZ;
-            }
+            $place_photo = Place_Settings::photo($place, $biz);
 
             // Calculate reviews count
             if (isset($place->review_count) && $place->review_count > 0) {
-                $review_count = $place->review_count;
+                $review_count = (int) $place->review_count;
             } else {
                 $review_count = $wpdb->get_var(
                     $wpdb->prepare(

@@ -93,8 +93,9 @@ class View {
 
     private function render_slider($businesses, $reviews, $options, $is_admin = false, $card = null) {
         $pos = count($businesses) < 1 ? '' : (in_array($options->slider_head_pos, array('1', '3')) ? $options->slider_head_pos : '2');
-        $header = function() use ($businesses, $reviews, $options, $pos) {
-            $this->grw_place($businesses[0]->rating, $businesses[0], $businesses[0]->photo, $reviews, $options, true, $pos != '2');
+        $biz = self::header_place($businesses);
+        $header = function() use ($biz, $reviews, $options, $pos) {
+            if ($biz) $this->grw_place($biz->rating, $biz, $biz->photo, $reviews, $options, true, $pos != '2');
         };
         if ($pos == '1') $header();
         ?><div class="grw-row grw-row-m" data-options='<?php
@@ -139,10 +140,9 @@ class View {
         $hr = false;
         // Below only on a card preset grid: an older grid may still carry "below" from its slider days, when grids ignored it.
         $below = $card && $options->slider_head_pos == '3';
-        $header = function() use ($businesses, $reviews, $options) {
-            if (count($businesses) > 0) {
-                $this->grw_place($businesses[0]->rating, $businesses[0], $businesses[0]->photo, $reviews, $options, true, true);
-            }
+        $biz = self::header_place($businesses);
+        $header = function() use ($biz, $reviews, $options) {
+            if ($biz) $this->grw_place($biz->rating, $biz, $biz->photo, $reviews, $options, true, true);
         };
         if (!$below) $header();
         ?><div class="grw-row grw-row-m" data-options='<?php
@@ -180,16 +180,9 @@ class View {
     }
 
     private function render_list($businesses, $reviews, $options, $is_admin = false) {
+        $biz = self::header_place($businesses);
         ?><div class="wp-google-list"><?php
-            foreach ($businesses as $business) {
-                $this->grw_place(
-                    $business->rating,
-                    $business,
-                    $business->photo,
-                    $reviews,
-                    $options
-                );
-            }
+            if ($biz) $this->grw_place($biz->rating, $biz, $biz->photo, $reviews, $options);
             if (!$options->hide_reviews) {
                 $this->grw_place_reviews($reviews, $options, $is_admin);
             }
@@ -198,16 +191,9 @@ class View {
 
     private function render_rating($businesses, $reviews, $options, $is_admin = false) {
         $popup = $options->rating_popup && !$options->hide_reviews && count($reviews) > 0;
+        $biz = self::header_place($businesses);
         ?><div class="wp-google-list<?php if ($popup) { echo ' grw-rating'; } ?>"><?php
-            foreach ($businesses as $business) {
-                $this->grw_place(
-                    $business->rating,
-                    $business,
-                    $business->photo,
-                    $reviews,
-                    $options
-                );
-            }
+            if ($biz) $this->grw_place($biz->rating, $biz, $biz->photo, $reviews, $options);
             if ($popup) {
                 $this->render_popup($reviews, $options, $is_admin);
             }
@@ -307,6 +293,7 @@ class View {
         $cls = function($o, $base = '') { return trim($base . ' ' . $o['cls']); };
         $attr = function($o, $name) { return isset($o['attrs'][$name]) ? $o['attrs'][$name] : null; };
         $provider = $place->provider === 'summary' ? 'google' : $place->provider;
+        $pid = self::place_id($place);
         $count = number_format_i18n((int) $place->review_count);
         $top = !empty($options->preview_toprated)
             || (float) $rating >= Badge_Live::TOP_RATED_MIN_RATING && (int) $place->review_count >= Badge_Live::TOP_RATED_MIN_TOTAL;
@@ -372,13 +359,12 @@ class View {
                 foreach (array_slice($reviews, 0, $n) as $review) $html .= $this->capture('review_photo', $review, $options);
                 return '<span class="' . $cls($o, 'grw-avatars') . '">' . $html . '</span>';
             },
-            'write' => function($d, $o) use ($place, $options, $cls) {
-                $id = $place->provider === 'summary' && !empty($place->wr) ? substr($place->wr, strlen('google:')) : $place->id;
-                return '<div class="' . $cls($o, 'wp-google-wr') . '">' . $this->capture('grw_anchor', 'https://search.google.com/local/writereview?placeid=' . $id, '', __('review us on', 'widget-google-reviews'),
+            'write' => function($d, $o) use ($pid, $options, $cls) {
+                return '<div class="' . $cls($o, 'wp-google-wr') . '">' . $this->capture('grw_anchor', 'https://search.google.com/local/writereview?placeid=' . $pid, '', __('review us on', 'widget-google-reviews'),
                     $options, __('review us on Google', 'widget-google-reviews'), 'return rplg_leave_review_window.call(this)', $this->logo('google')) . '</div>';
             },
-            'seeall' => function($d, $o) use ($place, $options, $cls) {
-                $url = $options->google_def_rev_link && !empty($place->url) ? $place->url : 'https://search.google.com/local/reviews?placeid=' . $place->id;
+            'seeall' => function($d, $o) use ($place, $pid, $options, $cls) {
+                $url = $options->google_def_rev_link && !empty($place->url) ? $place->url : 'https://search.google.com/local/reviews?placeid=' . $pid;
                 return $this->capture('grw_anchor', $url, $cls($o, 'wp-google-url'), __('See All Reviews', 'widget-google-reviews'), $options, __('All reviews', 'widget-google-reviews'));
             },
         );
@@ -462,6 +448,17 @@ class View {
             : str_replace('%1', $count, esc_html__('%1 reviews', 'widget-google-reviews'));
     }
 
+    // The one place a header shows, as the badge draws it: the summary of several places (the rating weighted by the counts, the
+    // total count, the first place's name, photo and link), the place itself when there is one, null when there is none.
+    private static function header_place($businesses) {
+        return Badge_Live::summary($businesses);
+    }
+
+    // The Google place id behind a header's links: a summary links to its first place.
+    private static function place_id($place) {
+        return $place->provider === 'summary' && !empty($place->wr) ? substr($place->wr, strlen('google:')) : $place->id;
+    }
+
     function grw_place($rating, $place, $place_img, $reviews, $options, $show_powered = true, $wide = false) {
         if ($this->rating($rating, $place, $place_img, $reviews, $options, $wide)) return;
         $style = $options->header_center ? 'style="--dir:column;--align:center;--star-align-self:center"' : '';
@@ -469,7 +466,7 @@ class View {
             if ($options->hide_writereview) return;
             ?><div class="wp-google-wr"><?php
                 echo $this->grw_anchor(
-                    'https://search.google.com/local/writereview?placeid=' . $place->id,
+                    'https://search.google.com/local/writereview?placeid=' . self::place_id($place),
                     '',
                     __('review us on', 'widget-google-reviews'),
                     $options,
@@ -617,7 +614,8 @@ class View {
     }
 
     function grw_place_review($review, $hr, $options, $is_admin = false) {
-        ?><div class="wp-google-review<?php if ($hr) { echo ' wp-google-hide'; } if ($is_admin && $review->hide != '') { echo ' wp-review-hidden'; } ?>"><?php
+        ?><div class="wp-google-review<?php if ($hr) { echo ' wp-google-hide'; } if ($is_admin && $this->hidden_in($review, $options)) { echo ' wp-review-hidden'; } ?>"<?php if ($is_admin) echo $this->hide_attrs($review, $options); ?>><?php
+            if ($is_admin) echo $this->hide_button($review, $options);
             ?><div class="rpi-flx rpi-row12"><?php
                 $author_name = empty($review->author_name) ? __('Google User', 'widget-google-reviews') : $review->author_name;
                 if (!$options->hide_avatar) {
@@ -634,28 +632,26 @@ class View {
                     ?><div class="wp-google-feedback">
                         <span class="rpi-stars"<?php echo $this->grw_rating_label($options, $review->rating); ?> style="--rating:<?php echo $review->rating; ?>"></span><?php
                         if (!empty($review->text)) { ?><span class="wp-google-text"><?php echo $this->text($review->text); ?></span><?php }
-                    ?></div><?php
-                    if ($is_admin) {
-                        echo '<a href="#" class="wp-review-hide" data-id=' . $review->id . '>' . ($review->hide == '' ? 'Hide' : 'Show') . ' review</a>';
-                    }
-                ?></div>
+                    ?></div>
+                </div>
             </div><?php
         ?></div><?php
     }
 
     function grw_slider_review($review, $hr, $options, $is_admin = false, $card = null) {
         $cls = $hr ? ' grw-hide' : '';
-        $cls .= $is_admin && ($review->hide != '' || (isset($options->hidden) && $this->is_hidden($review->id, $options->hidden))) ? ' wp-review-hidden' : '';
+        $cls .= $is_admin && $this->hidden_in($review, $options) ? ' wp-review-hidden' : '';
         $inr_cls = $options->hide_backgnd ? "" : " grw-backgnd";
         $inr_cls .= $options->show_round ? " grw-round" : "";
         $inr_cls .= $options->show_shadow ? " grw-shadow" : "";
         if ($card) {
             $card['product']['slot'] = 'rpi-slide grw-review' . $cls;
             $card['product']['frame'] = 'grw-review-inner' . $inr_cls;
+            if ($is_admin) $card['product']['slot_attrs'] = function($review) use ($options) { return $this->hide_attrs($review, $options); };
             echo Card_Engine::render($review, $card['model'], $card['product']);
             return;
         }
-        ?><div class="rpi-slide grw-review<?php echo $cls; ?>">
+        ?><div class="rpi-slide grw-review<?php echo $cls; ?>"<?php if ($is_admin) echo $this->hide_attrs($review, $options); ?>>
             <div class="rpi-flx rpi-col12 grw-review-inner<?php echo $inr_cls; ?>">
                 <div class="rpi-flx rpi-row12-center"><?php
                     $this->review_photo($review, $options);
@@ -670,7 +666,7 @@ class View {
                 ?></div><?php
                 $this->review_reply($review, $options);
                 if ($is_admin) {
-                    echo $this->hide_link($review);
+                    echo $this->hide_button($review, $options);
                 }
                 echo $this->logo($review->provider);
             ?></div>
@@ -707,10 +703,10 @@ class View {
                 $stars = '<span class="' . trim('rpi-stars ' . ($o['logo'] ? '' : $o['cls'])) . '"' . $this->grw_rating_label($options, $review->rating) . ' style="--rating:' . $review->rating . '"></span>';
                 return $o['logo'] ? '<span class="' . trim('rpi-logo rpi-logo-' . esc_attr($review->provider) . ' ' . $o['cls']) . '">' . $stars . '</span>' : $stars;
             },
-            // The admin's hide link sits in the text block: as the frame's last child it would break the band's corners.
+            // The admin's hide control rides in the text block: the engine has no slot of its own for it.
             'text'  => function($review, $o) use ($options, $is_admin) {
                 return '<div class="' . trim('rpi-flx rpi-col4 ' . $o['cls']) . '">' . $this->capture('review_body', $review, $options, true) .
-                    $this->capture('review_reply', $review, $options) . ($is_admin ? $this->hide_link($review) : '') . '</div>';
+                    $this->capture('review_reply', $review, $options) . ($is_admin ? $this->hide_button($review, $options) : '') . '</div>';
             },
             'logo'  => function($review, $o) {
                 return $this->logo($review->provider, '', $o['cls']);
@@ -797,8 +793,18 @@ class View {
         }
     }
 
-    private function hide_link($review) {
-        return '<a href="#" class="wp-review-hide" data-id=' . $review->id . '>' . ($review->hide == '' ? 'hide' : 'show') . ' review</a>';
+    // The scopes a review is hidden in: on the site (its own flag) or in this widget (the hidden option).
+    private function hidden_in($review, $options) {
+        return array_keys(array_filter(array('site' => $review->hide != '', 'widget' => isset($options->hidden) && $this->is_hidden($review->id, $options->hidden))));
+    }
+
+    private function hide_attrs($review, $options) {
+        return ' data-id="' . (int) $review->id . '" data-hidden="' . implode(' ', $this->hidden_in($review, $options)) . '"';
+    }
+
+    private function hide_button($review, $options) {
+        $hidden = $this->hidden_in($review, $options);
+        return '<button type="button" class="grw-rv-hide" data-id="' . (int) $review->id . '" aria-label="' . ($hidden ? 'Show this review again' : 'Hide this review') . '">' . ($hidden ? 'Show' : 'Hide') . '</button>';
     }
 
     // render() strips raw newlines from the whole output, so the text carries them as entities.

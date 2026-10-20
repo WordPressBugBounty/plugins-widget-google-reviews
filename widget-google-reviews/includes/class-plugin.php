@@ -78,9 +78,6 @@ final class Plugin {
 
         $plugin_places = new Plugin_Places($google_dao);
 
-        $builder_page = new Builder_Page($feed_deserializer, $core, $view, $google_dao, $plugin_places);
-        $builder_page->register();
-
         $feed_page = new Feed_Page();
         $feed_page->register();
 
@@ -111,7 +108,7 @@ final class Plugin {
         $google_api_new = new Google_Api_New($google_dao, $connect_helper);
         $google_utils = new Google_Utils($google_api_old, $google_api_new, $google_dao);
 
-        $reviews_cron = new Reviews_Cron($google_utils, $feed_deserializer);
+        $reviews_cron = new Reviews_Cron($google_utils, $google_dao);
         $reviews_cron->register();
 
         $this->deactivator = new Deactivator($reviews_cron);
@@ -120,7 +117,6 @@ final class Plugin {
             $google_connect = new Google_Connect($google_api_old, $google_utils);
 
             $feed_serializer = new Feed_Serializer();
-            $feed_ajax = new Feed_Ajax($feed_serializer, $feed_deserializer, $core, $view);
 
             $admin_notice = new Admin_Notice();
             $admin_notice->register();

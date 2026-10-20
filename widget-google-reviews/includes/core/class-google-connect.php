@@ -20,7 +20,7 @@ class Google_Connect {
     public function hide_review() {
         global $wpdb;
 
-        if (current_user_can('editor') || current_user_can('administrator')) {
+        if (current_user_can('manage_options')) {
             if (isset($_POST['grw_wpnonce']) === false) {
                 $error = __('Unable to call request. Make sure you are accessing this page from the Wordpress dashboard.', 'widget-google-reviews');
                 $response = compact('error');
@@ -45,7 +45,7 @@ class Google_Connect {
                 $hide = $review->hide == '' ? 'y' : '';
                 $wpdb->update($wpdb->prefix . Database::REVIEW_TABLE, array('hide' => $hide), array('id' => $review_id));
 
-                $this->clear_feed_cache(isset($_POST['feed_id']) ? $_POST['feed_id'] : null);
+                Core::clear_feed_cache(isset($_POST['feed_id']) ? $_POST['feed_id'] : null);
 
                 $response = array('hide' => $hide);
             }
@@ -74,17 +74,16 @@ class Google_Connect {
                 }
 
                 $lang = empty($_POST['lang']) ? null : sanitize_text_field(wp_unslash($_POST['lang']));
-                $local_img = isset($_POST['local_img']) ? filter_var(wp_unslash($_POST['local_img']), FILTER_VALIDATE_BOOLEAN) : true;
+                $pid = isset($_POST['id']) ? sanitize_text_field(wp_unslash($_POST['id'])) : '';
+                $local_img = $this->utils->local_img($pid, isset($_POST['local_img']) ? filter_var(wp_unslash($_POST['local_img']), FILTER_VALIDATE_BOOLEAN) : true);
                 $key = get_option('grw_google_api_key');
 
                 if ($key && strlen($key) > 0) {
 
-                    $pid = isset($_POST['id']) ? sanitize_text_field(wp_unslash($_POST['id'])) : '';
                     $response = $this->utils->call('connect', $pid, $lang, $key, $local_img);
 
                 } else {
 
-                    $pid = isset($_POST['id']) ? sanitize_text_field(wp_unslash($_POST['id'])) : '';
                     $token = empty($_POST['token']) ? null : sanitize_text_field(wp_unslash($_POST['token']));
 
                     if (!empty($token)) {
@@ -109,21 +108,12 @@ class Google_Connect {
                     }
                 }
 
-                $this->clear_feed_cache(isset($_POST['feed_id']) ? $_POST['feed_id'] : null);
+                Core::clear_feed_cache(isset($_POST['feed_id']) ? $_POST['feed_id'] : null);
             }
 
             header('Content-type: text/javascript');
             echo json_encode($response);
             die();
-        }
-    }
-
-    private function clear_feed_cache($feed_id) {
-        // The place can stand in other feeds too, the site-wide badge among them
-        $ids = explode(',', (string) get_option('grw_feed_ids'));
-        array_push($ids, $feed_id);
-        foreach (array_filter($ids) as $id) {
-            delete_transient('grw_feed_' . GRW_VERSION . '_' . $id . '_reviews', false);
         }
     }
 

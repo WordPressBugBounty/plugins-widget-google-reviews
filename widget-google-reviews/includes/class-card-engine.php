@@ -342,7 +342,7 @@ class Card_Engine {
         }
         if (!self::visible($n)) return '';
         $html = '';
-        foreach (self::lines($n['items']) as $l) $html .= $this->node($l[0], $l[1] ? 'rpi-push' : '');
+        foreach (self::lines($n['items']) as $l) $html .= ($l[1] ? self::FILL : '') . $this->node($l[0], $l[1] ? 'rpi-push' : '');
         return '<div class="' . self::join($n['dir'] === 'row' ? 'rpi-row12-center' : 'rpi-col6', $cls, self::own($a)) . '"' . self::gap($n) . '>' . $html . '</div>';
     }
 
@@ -356,17 +356,21 @@ class Card_Engine {
         $bottom = !$this->bubble && $this->anchor_at >= 0 && $k === $this->anchor_at + 1 ? 'rpi-push' : '';
         $html = '';
         if (count($ls) > 1 && ($k !== $this->anchor_at || $band || isset($a['gap']))) {
-            foreach ($ls as $l) $html .= $this->node($l[0], self::join($center, $l[1] ? 'rpi-push' : ''));
-            return '<div class="' . self::join('rpi-col8', $center, $band, $sep, $bottom) . '"' . self::gap($c) . '>' . $html . '</div>';
+            foreach ($ls as $l) $html .= ($l[1] ? self::FILL : '') . $this->node($l[0], self::join($center, $l[1] ? 'rpi-push' : ''));
+            return ($bottom ? self::FILL : '') . '<div class="' . self::join('rpi-col8', $center, $band, $sep, $bottom) . '"' . self::gap($c) . '>' . $html . '</div>';
         }
         foreach ($ls as $j => $l) {
             $n = isset($l[0]['el']) && ($band || $outside || $j === 0 && $sep) ? array('dir' => 'row', 'items' => array($l[0])) : $l[0];
-            $html .= $this->node($n, self::join($center, $j === 0 ? $band : '', $j === 0 ? $sep : '', ($j === 0 && $bottom) || $l[1] ? 'rpi-push' : ''));
+            $push = ($j === 0 && $bottom) || $l[1];
+            $html .= ($push ? self::FILL : '') . $this->node($n, self::join($center, $j === 0 ? $band : '', $j === 0 ? $sep : '', $push ? 'rpi-push' : ''));
         }
         return $html;
     }
 
-    // "~" hands rpi-push to the next visible item.
+    // "~" is a flexible gap before the next visible item, which is marked rpi-push: at the far end of its row when the row holds it,
+    // at the start of the next line when it does not; at the bottom of a column.
+    const FILL = '<i class="rpi-fill"></i>';
+
     private static function lines($items) {
         $out = array();
         $push = false;

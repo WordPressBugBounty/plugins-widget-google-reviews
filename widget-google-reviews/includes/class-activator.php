@@ -3,6 +3,7 @@
 namespace WP_Rplg_Google_Reviews\Includes;
 
 use WP_Rplg_Google_Reviews\Includes\Core\Database;
+use WP_Rplg_Google_Reviews\Includes\Core\Place_Settings;
 
 class Activator {
 
@@ -31,6 +32,7 @@ class Activator {
             'grw_revupd_cron',
             'grw_revupd_cron_timeout',
             'grw_revupd_cron_log',
+            'grw_revupd_cron_last',
             'grw_save_log',
             'grw_debug_refresh',
             'grw_notice_msg',
@@ -127,7 +129,7 @@ class Activator {
         $this->add_columns($biz, $biz_colms, array(
             'review_count' => 'INTEGER',
             'map_url'      => 'VARCHAR(512)'
-        ));
+        ) + Place_Settings::COLUMNS);
         $this->add_columns($rev, $rev_colms, array(
             'hide'       => "VARCHAR(1) DEFAULT '' NOT NULL",
             'images'     => 'TEXT',

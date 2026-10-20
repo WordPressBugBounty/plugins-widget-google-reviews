@@ -15,20 +15,17 @@ class Google_Utils {
         $this->dao = $dao;
     }
 
-    public function refresh($args) {
-        $pid = $args[0];
-        $lang = $args[1];
-        $local_img = isset($args[2]) ? $args[2] : 'false';
-
-        // A place deleted on the Places page must not be re-created by a widget that still refers to it.
-        if (!$this->dao->get_place($pid)) {
-            return;
-        }
-
+    // The cron's refresh of one place in one language ($local_img: a value or a closure, read when the place has none); null without an API key.
+    public function refresh($place, $lang, $local_img) {
         $key = get_option('grw_google_api_key');
-        if ($key && strlen($key) > 0) {
-            return $this->call('refresh', $pid, $lang, $key, $local_img);
+        if (!$key || strlen($key) === 0) {
+            return null;
         }
+        return $this->call('refresh', $place->place_id, $lang, $key, Place_Settings::local_img($place, $local_img));
+    }
+
+    public function local_img($pid, $default) {
+        return Place_Settings::local_img($this->dao->get_place($pid), $default);
     }
 
     // Only the legacy API sorts reviews by newest, and Google projects created after March 2025 cannot enable it

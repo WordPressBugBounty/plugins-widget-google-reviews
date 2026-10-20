@@ -28,7 +28,6 @@ class Assets {
     private static $js_assets = array(
         'grw-admin-main-js'       => 'js/admin-main',
         'grw-admin-model-js'      => 'js/admin-model',
-        'grw-admin-builder-js'    => 'js/admin-builder',
         'grw-admin-steps-js'      => 'js/admin-steps',
         'grw-admin-badge-js'      => 'js/admin-badge',
         'grw-admin-themes-js'     => 'js/admin-themes',
@@ -42,7 +41,6 @@ class Assets {
         'rpi-lightbox-js'         => 'https://cdn.reviewsplugin.com/assets/js/lightbox.js',
         'rpi-toast-js'            => 'https://cdn.reviewsplugin.com/assets/js/toast.js',
         'rpi-langs-js'            => 'https://cdn.reviewsplugin.com/assets/js/langs.js',
-        'rpi-order-js'            => 'https://cdn.reviewsplugin.com/assets/js/order.js',
         'rpi-media-js'            => 'https://cdn.reviewsplugin.com/assets/js/media.js',
         'rpi-slider-js'           => 'https://cdn.reviewsplugin.com/assets/js/slider.js',
         'rpi-badge-js'            => 'https://cdn.reviewsplugin.com/assets/js/badge.js',
@@ -86,9 +84,8 @@ class Assets {
 
     function script_async($tag, $handle) {
         $js_assets = array(
-            'grw-admin-main-js'    => 'js/admin-main',
-            'grw-admin-builder-js' => 'js/admin-builder',
-            'grw-public-main-js'   => 'js/public-main',
+            'grw-admin-main-js'  => 'js/admin-main',
+            'grw-public-main-js' => 'js/public-main',
         );
         if (isset($handle) && array_key_exists($handle, $js_assets)) {
             return str_replace(' src', ' defer="defer" src', $tag);
@@ -156,7 +153,6 @@ class Assets {
         $scripts = array('grw-admin-main-js', 'grw-public-main-js', 'grw-admin-apexcharts-js');
         if ($this->debug) {
             array_push($scripts, 'grw-admin-model-js');
-            array_push($scripts, 'grw-admin-builder-js');
             array_push($scripts, 'grw-admin-steps-js');
             array_push($scripts, 'grw-admin-badge-js');
             array_push($scripts, 'grw-admin-themes-js');
@@ -167,7 +163,6 @@ class Assets {
             array_push($scripts, 'rpi-lightbox-js');
             array_push($scripts, 'rpi-toast-js');
             array_push($scripts, 'rpi-langs-js');
-            array_push($scripts, 'rpi-order-js');
             array_push($scripts, 'rpi-media-js');
             array_push($scripts, 'rpi-slider-js');
             array_push($scripts, 'rpi-badge-js');
@@ -190,31 +185,19 @@ class Assets {
     public function enqueue_admin_scripts() {
         wp_enqueue_script('jquery');
         wp_enqueue_script('jquery-ui-core');
-        wp_enqueue_script('jquery-ui-draggable');
-        wp_enqueue_script('jquery-ui-sortable');
         wp_enqueue_script('jquery-ui-dialog');
-
-        $vars = array(
-            'lang'       => get_locale(),
-            'builderUrl' => admin_url('admin.php?page=grw-builder')
-        );
 
         if ($this->debug) {
             wp_enqueue_script('rpi-toast-js');
-            wp_enqueue_script('rpi-lightbox-js');
             wp_enqueue_script('rpi-langs-js');
-            wp_enqueue_script('rpi-order-js');
             wp_enqueue_script('rpi-card-js');
             wp_enqueue_script('rpi-card-editor-js');
-            wp_localize_script('grw-admin-builder-js', 'GRW_VARS', $vars);
             wp_enqueue_script('grw-admin-model-js');
-            wp_enqueue_script('grw-admin-builder-js');
             wp_enqueue_script('grw-admin-steps-js');
             wp_enqueue_script('grw-admin-badge-js');
             wp_enqueue_script('grw-admin-themes-js');
-        } else {
-            wp_localize_script('grw-admin-main-js', 'GRW_VARS', $vars);
         }
+        wp_localize_script('grw-admin-main-js', 'GRW_VARS', array('lang' => get_locale()));
         wp_enqueue_script('grw-admin-main-js');
 
         $this->enqueue_public_scripts();

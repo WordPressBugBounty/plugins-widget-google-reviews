@@ -3,7 +3,7 @@
 function grw_badge_kit(W, data, cfg) {
     const state = W.state, h = W.h, esc = W.esc, M = GRW_MODEL;
 
-    const DEFAULTS = {badge_pos: 'right', badge_tone: 'light', badge_click: 'sidebar'};
+    const DEFAULTS = cfg.badge;
     const TOP_RATED_NOTE = 'Top rated appears from a 4.5 rating and 10 reviews';
     const PRESETS = cfg.themes.filter(t => t.opts.view_mode === 'badge');
     const STICKER = t => /^badge:sticker-/.test(t.id);
@@ -47,7 +47,7 @@ function grw_badge_kit(W, data, cfg) {
     // shared: the gallery sets star color, dark and anonymized photos for all tiles at once, so the tiles have no controls of their own.
     function renderPresets(host, head, shared, group) {
         const wrap = h('div', {class: 'grw-badge-design'});
-        const note = h('p', {class: 'description'}, '<span class="dashicons dashicons-info-outline grw-badge-note-ico"></span><b>Sample data.</b> <a href="#" class="grw-badge-find">Find your place</a> above to see the badges with your real rating and reviews.');
+        const note = W.sampleNote('above to see the badges with your real rating and reviews.');
         const noteText = () => { note.hidden = !data().sample; };
         noteText();
         // The gallery shows one note for all its sections and passes no head.
@@ -66,24 +66,24 @@ function grw_badge_kit(W, data, cfg) {
             const dark = h('label', {class: 'grw-badge-switch', title: 'Dark tone'});
             const cb = h('input', {type: 'checkbox'});
             dark.append(cb, h('i'), document.createTextNode('Dark'));
-            const color = h('input', {type: 'color', class: 'grw-badge-color', title: 'Star color', value: '#fbbc04', list: 'grw-badge-colors'});
+            const color = h('input', {type: 'color', class: 'grw-badge-color', title: 'Star color', value: W.STAR, list: 'grw-badge-colors'});
             const toneOf = () => cb.checked ? (preset.opts.badge_tone === 'glass' ? 'glass-dark' : 'dark') : (preset.opts.badge_tone || 'light');
-            const starColor = () => color.value.toLowerCase() === '#fbbc04' ? '' : color.value;
+            const starColor = () => color.value.toLowerCase() === W.STAR ? '' : color.value;
             // The design copied into a widget, with the tile's tone and star colour.
             const options = () => {
-                const o = Object.assign({}, DEFAULTS, M.applyTheme({}, preset), {badge_tone: toneOf()});
+                const o = Object.assign({}, DEFAULTS, M.applyTheme({}, preset), {theme: preset.id, badge_tone: toneOf()});
                 if (starColor()) W.setStyleVar('--badge-star-color', starColor(), o);
                 if (shared && shared.anonym) o.anonym_avatar = true;
                 return o;
             };
             const chosen = () => state.presetName === preset.name && !!state.options;
-            const memo = state.cards[preset.name] || (state.cards[preset.name] = {dark: false, color: '#fbbc04'});
+            const memo = state.cards[preset.name] || (state.cards[preset.name] = {dark: false, color: W.STAR});
             if (chosen()) {
                 memo.dark = /dark/.test(state.options.badge_tone || '');
-                memo.color = W.styleVar('--badge-star-color') || '#fbbc04';
+                memo.color = W.styleVar('--badge-star-color') || W.STAR;
             }
             cb.checked = shared ? shared.dark : memo.dark;
-            color.value = shared ? shared.color || '#fbbc04' : memo.color;
+            color.value = shared ? shared.color || W.STAR : memo.color;
             const changed = () => {
                 memo.dark = cb.checked;
                 memo.color = color.value;
@@ -112,13 +112,13 @@ function grw_badge_kit(W, data, cfg) {
             gate();
             // A redraw follows the controls above the gallery but leaves the chosen badge's options alone: step 2 may have changed them.
             cards.push(() => {
-                if (shared) { cb.checked = memo.dark = shared.dark; color.value = memo.color = shared.color || '#fbbc04'; }
+                if (shared) { cb.checked = memo.dark = shared.dark; color.value = memo.color = shared.color || W.STAR; }
                 draw();
                 gate();
             });
             btn.onclick = () => {
                 if (!chosen()) {
-                    // When the saved widget is not a badge the badge is saved as a widget of its own (Plugin_Badge::save): not on the site yet.
+                    // A badge picked for a widget saved as a slider, grid, list or rating is not on the site: its switch is on the Publish step.
                     const saved = W.savedOptions();
                     if (saved && /^(slider|grid|list|rating)$/.test(saved.view_mode || '')) state.global = false;
                     state.options = options();
@@ -141,7 +141,6 @@ function grw_badge_kit(W, data, cfg) {
 
     // The badge on a stage that stands for the page: in its corner or in the content, as the site shows it. Drawn by the plugin
     // from the options as they are; a change of look paints at once, a change of content asks for a new render.
-    let drawSeq = 0, drawTimer = 0;
     function preview(stage) {
         // A place that finishes connecting reloads the data; the next draw follows it.
         if (!data()) return;
@@ -149,109 +148,31 @@ function grw_badge_kit(W, data, cfg) {
         stage.classList.toggle('grw-badge-stage-float', !embed);
         stage.classList.toggle('grw-badge-stage-edge', embed && !!state.options.badge_bar);
         stage.classList.toggle('grw-badge-stage-glass', /^glass/.test(state.options.badge_tone || ''));
-        clearTimeout(drawTimer);
-        drawTimer = setTimeout(() => {
-            const mine = ++drawSeq;
-            W.post('grw_theme_preview', {pids: state.selected, langs: W.langs(), post_id: state.feedId || '', options: JSON.stringify(state.options)}, res => {
-                if (mine !== drawSeq || !stage.isConnected) return;
-                if (res.status !== 'success') return W.toast(W.errorOf(res) || 'Could not load the preview.', 'error');
-                // The lightbox moves the popup out of the root on the first open, so it is captured once here.
-                const popup = (state.options.anonym_avatar ? data().popup_anonym : data().popup) || '';
-                let popupEl = null;
-                const root = show(stage, res.result.html, !embed, popup ? () => grw_popup_open(root, popupEl) : null);
-                if (!root) return;
-                root.insertAdjacentHTML('beforeend', popup);
-                popupEl = root.querySelector('.grw-popup');
-            });
-        }, 250);
+        W.preview(stage, state.options, html => {
+            // The lightbox moves the popup out of the root on the first open, so it is captured once here.
+            const popup = (state.options.anonym_avatar ? data().popup_anonym : data().popup) || '';
+            let popupEl = null;
+            const root = show(stage, html, !embed, popup ? () => grw_popup_open(root, popupEl) : null);
+            if (!root) return;
+            root.insertAdjacentHTML('beforeend', popup);
+            popupEl = root.querySelector('.grw-popup');
+        });
     }
-
-    // A look variable on the drawn badge, with no new render.
-    const paint = (stage, name, value) => {
-        const r = stage.querySelector('.wp-gr');
-        if (r) value ? r.style.setProperty(name, value) : r.style.removeProperty(name);
-    };
 
     function renderEditor(ctx) {
         const o = state.options, ui = ctx.ui, stage = ctx.stage;
         const drawLive = () => preview(stage);
         const layout = () => o.rating_layout || '';
-        const after = [];
-        const set = str => { o.rating_layout = str; drawLive(); after.forEach(f => f()); };
+        // Every change of the layout is followed by the kit's redraw: the controls read it again and the badge is drawn anew.
+        const set = str => { o.rating_layout = str; };
         const attr = (el, name) => !!M.attr(layout(), KIND, el, name);
+        // A look variable on the drawn badge, with no new render.
+        const paint = (name, value) => W.paint(stage, {[name]: value});
+        let sync = () => {};
 
         const POS_PILL = [['right', '↘ Bottom right'], ['left', '↙ Bottom left'], ['top-right', '↗ Top right'], ['top-left', '↖ Top left'], ['embed', '▭ Embed']];
         const POS_BAR = [['top', '▔ Top'], ['bottom', '▁ Bottom'], ['embed', '▬ Embed']];
 
-        /* ---- 1. Position ---- */
-        const b1 = ui.card('Position', true);
-        const posRows = h('div', {class: 'grw-pl-pos'});
-        const posButtons = [];
-        const posRow = (title, items, bar) => {
-            const g = h('div', {class: 'grw-pl-seg grw-pl-seg-grid'});
-            items.forEach(([v, t]) => {
-                const b = h('button', {type: 'button'}, esc(t));
-                b.onclick = () => {
-                    o.badge_pos = v;
-                    if (!!o.badge_bar !== bar) {
-                        // A bar keeps its rating as one group beside the phrase; a pill puts the phrase under it.
-                        o.rating_layout = design(bar) || M.badgeLayout(flags(bar));
-                        // A pill's width is its plate, a bar's is its phrase column: each form keeps its own (and the slider's number under Fit) while the other is shown.
-                        const to = widths[bar ? 'bar' : 'pill'];
-                        widths[bar ? 'pill' : 'bar'] = {width: o.badge_width, num: widthSlider.querySelector('input').value};
-                        o.badge_width = to ? to.width : '';
-                        syncWidth(to ? to.num : 320);
-                    }
-                    o.badge_bar = bar;
-                    posButtons.forEach(x => x.el.classList.toggle('grw-pl-on', x.bar === bar && x.v === v));
-                    syncContent();
-                    syncLook();
-                    drawLive();
-                };
-                posButtons.push({el: b, v, bar});
-                g.append(b);
-            });
-            posRows.append(h('div', {class: 'grw-pl-sub'}, title), g);
-        };
-        posRow(isSticker() ? 'Sticker' : 'Badge', POS_PILL, false);
-        posRow('Bar', POS_BAR, true);
-        // A bar in a corner is drawn at that edge, so its button lights up the edge it collapses to.
-        const curBar = !!o.badge_bar, curPos = o.badge_pos || 'right';
-        const curV = curBar && curPos !== 'embed' ? (/^top/.test(curPos) ? 'top' : 'bottom') : curPos;
-        posButtons.forEach(x => x.el.classList.toggle('grw-pl-on', x.bar === curBar && x.v === curV));
-        b1.append(posRows);
-        b1.append(ui.toggle('hide_float_badge', 'Hide on mobile'));
-
-        /* ---- 2. Look ---- */
-        const b2 = ui.card('Look', true);
-        b2.append(...ui.row('Tone', ui.seg('badge_tone', [['light', 'Light'], ['dark', 'Dark'], ['glass', 'Glass'], ['glass-dark', 'Glass dark']])));
-        b2.append(...ui.row('Star color', ui.color(W.styleVar('--badge-star-color') || '#fbbc04', 'Star color', v => { const c = v.toLowerCase() === '#fbbc04' ? '' : v; W.setStyleVar('--badge-star-color', c); paint(stage, '--badge-star-color', c); })));
-        // A plate shaped by its radius (a circle, a pill, a pennant's top corners) has no corners the slider could hold.
-        const radius = /^(\d+)px$/.exec(W.styleVar('--badge-radius') || '14px');
-        // A bar runs edge to edge and has no corners: the row goes when the position makes one, and comes back with a pill.
-        const corners = radius && +radius[1] <= 30 ? ui.slider('Corners', 0, 30, 1, +radius[1], 'px', v => { const c = v == 14 ? '' : v + 'px'; W.setStyleVar('--badge-radius', c); paint(stage, '--badge-radius', c); }) : null;
-        if (corners) b2.append(corners);
-        const syncLook = () => { if (corners) corners.hidden = !!o.badge_bar; };
-        syncLook();
-        b2.append(ui.slider('Opacity', 40, 100, 5, Math.round((parseFloat(W.styleVar('--badge-opacity')) || 1) * 100), '%', v => { const c = v == 100 ? '' : String(v / 100); W.setStyleVar('--badge-opacity', c); paint(stage, '--badge-opacity', c); }));
-
-        /* ---- 3. Size ---- */
-        const b3 = ui.card('Size', false);
-        b3.append(ui.slider('Text size', 11, 20, 0.5, o.badge_size || 13, 'px', v => { o.badge_size = +v; drawLive(); }));
-        // Stickers go down to 86px. Fit off brings back the width the widget had: the slider still holds it.
-        const width = v => v == 320 ? '' : +v;
-        const widthSlider = ui.slider('Width', 80, 480, 1, o.badge_width && o.badge_width !== 'auto' ? o.badge_width : 320, 'px', v => { o.badge_width = width(v); drawLive(); });
-        const fit = ui.toggle('badge_width', 'Fit the first line', {get: () => o.badge_width === 'auto', set: v => { o.badge_width = v ? 'auto' : width(widthSlider.querySelector('input').value); widthSlider.hidden = v; }});
-        const widths = {};
-        const syncWidth = num => {
-            fit.querySelector('input').checked = o.badge_width === 'auto';
-            widthSlider.hidden = o.badge_width === 'auto';
-            widthSlider.set(o.badge_width && o.badge_width !== 'auto' ? o.badge_width : num);
-        };
-        syncWidth(320);
-        b3.append(fit, widthSlider);
-
-        /* ---- 4. Content: the toggles read and write the rating layout ---- */
         // The layout as flags, for the one case that rewrites it whole: a bar made a pill or a pill made a bar.
         const flagsOf = (s, bar) => {
             const a = (el, name) => !!M.attr(s, KIND, el, name), has = el => M.has(s, KIND, el);
@@ -268,46 +189,50 @@ function grw_badge_kit(W, data, cfg) {
             && bare(theme.opts.rating_layout, el) === bare(cur, el) ? theme.opts.rating_layout : null;
         // The layout on screen is still the other form's, so the design is compared as it would be in that form.
         const design = bar => theme && !!theme.opts.badge_bar === bar && M.badgeLayout(flagsOf(theme.opts.rating_layout, !bar)) === rpi.Card.serialize(rpi.Card.parse(layout(), KIND)) ? theme.opts.rating_layout : null;
-        const b4 = ui.card('Content', false);
-        const content = [];
-        const toggle = (label, get, put) => {
-            const t = ui.toggle('', label, {get, set: v => set(put(v))});
-            content.push(() => { t.querySelector('input').checked = get(); });
-            return t;
-        };
-        // A bar always has the logo on the rating line; a wordmark (powered) on the line already is the brand, so the stars get no icon beside it.
-        // Off: the logo where the design had it, else a circle takes it in the corner (on the arc), anything else in front.
-        const compact = toggle('Logo on the rating line', () => attr('stars', 'logo') || !M.has(layout(), KIND, 'logo') && !/;logo$/.test(layout()),
-            v => {
-                if (v) return M.has(layout(), KIND, 'powered') ? bare(layout(), 'logo') : M.attr(bare(layout(), 'logo'), KIND, 'stars', 'logo', true);
-                const off = M.attr(layout(), KIND, 'stars', 'logo', false);
-                return restore(off, 'logo') || (W.styleVar('--badge-radius') === '50%' ? off + ';logo' : M.lead(off, KIND, 'logo'));
-            });
-        b4.append(compact);
-        b4.append(toggle('One star instead of five', () => attr('stars', 'one'), v => M.attr(layout(), KIND, 'stars', 'one', v)));
-        b4.append(toggle('Stars before the rating', () => attr('stars', 'first'), v => M.attr(layout(), KIND, 'stars', 'first', v)));
-        b4.append(toggle('Count after a dot, not in brackets', () => attr('count', 'dot'), v => M.attr(layout(), KIND, 'count', 'dot', v)));
-        b4.append(toggle('Hide review authors', () => attr('phrase', 'noauthor'), v => M.attr(layout(), KIND, 'phrase', 'noauthor', v)));
-        b4.append(ui.toggle('anonym_avatar', 'Anonymize profile photos'));
-        const eligible = rpi.Badge.Live.topRated(rpi.Badge.Live.biz({data: data()}), {badge_toprated: true});
-        const icon = ui.select('', [['', 'None'], ['medal', 'Medal'], ['check', 'Check'], ['award', 'Award'], ['rosette', 'Rosette']], () => set(M.attr(layout(), KIND, 'label', 'icon', icon.value || false)));
-        // Shown off below the threshold but left as saved: the badge draws the label by itself once the place qualifies.
-        const top = ui.toggle('', 'Top rated label', {disabled: !eligible, title: eligible ? '' : TOP_RATED_NOTE, get: () => eligible && M.has(layout(), KIND, 'label'),
-            set: v => {
-                const on = restore(layout(), 'label') || M.attr(M.after(layout(), KIND, 'label', M.has(layout(), KIND, 'count') ? 'count' : 'stars'), KIND, 'label', 'dot', true);
-                set(v ? M.attr(on, KIND, 'label', 'icon', icon.value || false) : M.drop(layout(), KIND, 'label'));
-            }});
-        content.push(() => { top.querySelector('input').checked = eligible && M.has(layout(), KIND, 'label'); });
-        b4.append(top);
-        if (!eligible) b4.append(h('div', {class: 'grw-pl-hint'}, TOP_RATED_NOTE + '.'));
-        icon.value = M.attr(layout(), KIND, 'label', 'icon') || (M.has(layout(), KIND, 'label') ? '' : 'medal');
-        content.push(() => { const v = M.attr(layout(), KIND, 'label', 'icon'); if (M.has(layout(), KIND, 'label')) icon.value = v || ''; });
-        b4.append(...ui.row('Label icon', icon));
-        const syncContent = () => { compact.querySelector('input').disabled = !!o.badge_bar; content.forEach(f => f()); };
-        syncContent();
 
-        /* ---- 5. Elements: size (a share of the text size) and colour of what the layout shows ---- */
-        const b5 = ui.card('Elements', false);
+        // A pill's width is its plate, a bar's is its phrase column: each form keeps its own (and the slider's number under Fit)
+        // while the other is shown. Stickers go down to 86px; Fit off brings back the width the slider still holds.
+        const width = v => v == 320 ? '' : +v;
+        let widthNum = o.badge_width && o.badge_width !== 'auto' ? o.badge_width : 320;
+        const widths = {};
+        // A bar in a corner is drawn at that edge, so its button lights up the edge it collapses to.
+        const posOf = () => { const bar = !!o.badge_bar, pos = o.badge_pos || 'right'; return {bar, v: bar && pos !== 'embed' ? (/^top/.test(pos) ? 'top' : 'bottom') : pos}; };
+        const posGroups = [];
+        const posRow = (rows, title, items, bar) => {
+            const g = h('div', {class: 'grw-pl-seg grw-pl-seg-grid'});
+            items.forEach(([v, t]) => {
+                const b = h('button', {type: 'button'}, esc(t));
+                b.onclick = () => {
+                    o.badge_pos = v;
+                    if (!!o.badge_bar !== bar) {
+                        // A bar keeps its rating as one group beside the phrase; a pill puts the phrase under it.
+                        o.rating_layout = design(bar) || M.badgeLayout(flags(bar));
+                        const to = widths[bar ? 'bar' : 'pill'];
+                        widths[bar ? 'pill' : 'bar'] = {width: o.badge_width, num: widthNum};
+                        o.badge_width = to ? to.width : '';
+                        widthNum = to ? to.num : 320;
+                    }
+                    o.badge_bar = bar;
+                    sync();
+                    drawLive();
+                };
+                g.append(b);
+            });
+            posGroups.push({g, items, bar});
+            rows.append(h('div', {class: 'grw-pl-sub'}, title), g);
+        };
+
+        // A plate shaped by its radius (a circle, a pill, a pennant's top corners) has no corners the slider could hold.
+        const radiusOf = () => /^(\d+)px$/.exec(W.styleVar('--badge-radius') || '14px');
+        const radius = radiusOf();
+
+        // The toggles of the content read and write the rating layout.
+        const content = (label, get, put) => ({type: 'toggle', label, get, set: v => set(put(v))});
+        const eligible = rpi.Badge.Live.topRated(rpi.Badge.Live.biz({data: data()}), {badge_toprated: true});
+        // The icon the label gets when it is switched on: the one shown, or the one chosen while the label was off.
+        let iconPick = M.attr(layout(), KIND, 'label', 'icon') || (M.has(layout(), KIND, 'label') ? '' : 'medal');
+
+        // Elements: size (a share of the text size) and colour of what the layout shows.
         const TONE_FG = {light: ['#202124', '#5f6368'], dark: ['#ffffff', '#bdc1c6'], glass: ['#202124', '#5f6368'], 'glass-dark': ['#ffffff', '#cfd3d8']};
         const corner = () => /;logo$/.test(layout());
         // element, label, size variable, its css default in em, colour variable, which tone colour the element takes (0 text, 1 muted)
@@ -320,37 +245,98 @@ function grw_badge_kit(W, data, cfg) {
             ['logo', 'Logo', () => corner() ? '--badge-corner-size' : '--badge-logo-size', () => corner() ? 1.7 : 2.3],
             ['powered', 'Wordmark', '--badge-wordmark-h', 1.3],
         ];
-        const shown = ELEMENTS.filter(e => M.has(layout(), KIND, e[0]) || e[0] === 'logo' && corner());
-        const rows = shown.filter((e, i) => shown.findIndex(x => x[2] === e[2]) === i).map(([name, label, sizeVar, def, colorVar, tone]) => {
+        const shownEl = ELEMENTS.filter(e => M.has(layout(), KIND, e[0]) || e[0] === 'logo' && corner());
+        const elementRows = shownEl.filter((e, i) => shownEl.findIndex(x => x[2] === e[2]) === i).map(([name, label, sizeVar, def, colorVar, toneAt]) => {
             const v = typeof sizeVar === 'function' ? sizeVar() : sizeVar, d = typeof def === 'function' ? def() : def, base = o.badge_size || 13;
             const was = W.styleVar(v), px = /px$/.test(was), pct = Math.round((px ? parseFloat(was) / base : parseFloat(was) || d) * 100);
-            const box = h('div');
-            box.append(ui.slider(label + ' size', 50, 300, 1, pct, '%', n => { const c = n == pct ? was : px ? Math.round(n / 100 * base) + 'px' : n / 100 + 'em'; W.setStyleVar(v, c); paint(stage, v, c); }));
-            if (colorVar) {
-                const had = W.styleVar(colorVar), init = had || (TONE_FG[o.badge_tone] || TONE_FG.light)[tone];
-                box.append(...ui.row(label + ' color', ui.color(init, label + ' color', c => { const w = c.toLowerCase() === init.toLowerCase() ? had : c; W.setStyleVar(colorVar, w); paint(stage, colorVar, w); })));
-            }
-            b5.append(box);
-            return [box, ELEMENTS.filter(e => e[2] === sizeVar).map(e => e[0])];
+            const names = ELEMENTS.filter(e => e[2] === sizeVar).map(e => e[0]);
+            return {type: 'custom', if: () => names.some(n => M.has(layout(), KIND, n) || n === 'logo' && corner()), render: () => {
+                const box = h('div');
+                box.append(ui.slider(label + ' size', 50, 300, 1, pct, '%', n => { const c = n == pct ? was : px ? Math.round(n / 100 * base) + 'px' : n / 100 + 'em'; W.setStyleVar(v, c); paint(v, c); }));
+                if (colorVar) {
+                    const had = W.styleVar(colorVar), init = had || (TONE_FG[o.badge_tone] || TONE_FG.light)[toneAt];
+                    box.append(...ui.row(label + ' color', ui.color(init, label + ' color', c => { const w = c.toLowerCase() === init.toLowerCase() ? had : c; W.setStyleVar(colorVar, w); paint(colorVar, w); })));
+                }
+                return box;
+            }};
         });
-        const syncElements = () => rows.forEach(([box, names]) => { box.hidden = !names.some(n => M.has(layout(), KIND, n) || n === 'logo' && corner()); });
-        after.push(syncElements);
-        if (!rows.length) b5.append(h('div', {class: 'grw-pl-hint'}, 'This design has no elements to size.'));
 
-        /* ---- 6. Behaviour ---- */
-        const b6 = ui.card('Behaviour', false);
-        b6.append(ui.slider('Phrase change', 3, 15, 1, o.badge_interval || 6, 's', v => { o.badge_interval = v == 6 ? '' : v; drawLive(); }));
-        b6.append(ui.toggle('badge_close', 'Close button'));
+        // "In the page" picked on the badge that is displayed on the site: the save takes it off every page.
+        const offSite = h('div', {class: 'notice notice-warning inline grw-pl-notice'}, '<p>This takes the ' + noun() + ' off every page. Place it with its shortcode or block.</p>');
 
-        return drawLive;
+        sync = ui.table([
+            {title: 'Layout', open: true, rows: cfg.designRows()},
+            {title: 'Position', open: true, rows: [
+                {type: 'custom', render: () => {
+                    const rows = h('div', {class: 'grw-pl-pos'});
+                    posRow(rows, isSticker() ? 'Sticker' : 'Badge', POS_PILL, false);
+                    posRow(rows, 'Bar', POS_BAR, true);
+                    rows.append(offSite);
+                    return rows;
+                }, read: () => {
+                    const cur = posOf();
+                    posGroups.forEach(({g, items, bar}) => W.press(g, bar === cur.bar ? g.children[items.findIndex(([v]) => v === cur.v)] : null));
+                    offSite.hidden = !(state.global && o.badge_pos === 'embed');
+                }},
+                {type: 'toggle', key: 'hide_float_badge', label: 'Hide on mobile'}
+            ]},
+            {title: 'Look', open: true, rows: [
+                {type: 'seg', key: 'badge_tone', label: 'Tone', items: [['light', 'Light'], ['dark', 'Dark'], ['glass', 'Glass'], ['glass-dark', 'Glass dark']]},
+                {type: 'color', label: 'Star color', get: () => W.styleVar('--badge-star-color') || W.STAR, set: v => { const c = v.toLowerCase() === W.STAR ? '' : v; W.setStyleVar('--badge-star-color', c); paint('--badge-star-color', c); }},
+                // A bar runs edge to edge and has no corners: the row goes when the position makes one, and comes back with a pill.
+                radius && +radius[1] <= 30 && {type: 'slider', label: 'Corners', min: 0, max: 30, step: 1, unit: 'px', get: () => +(radiusOf() || radius)[1], set: v => { const c = v == 14 ? '' : v + 'px'; W.setStyleVar('--badge-radius', c); paint('--badge-radius', c); }, if: () => !o.badge_bar},
+                {type: 'slider', label: 'Opacity', min: 40, max: 100, step: 5, unit: '%', get: () => Math.round((parseFloat(W.styleVar('--badge-opacity')) || 1) * 100), set: v => { const c = v == 100 ? '' : String(v / 100); W.setStyleVar('--badge-opacity', c); paint('--badge-opacity', c); }}
+            ]},
+            {title: 'Size', open: false, rows: [
+                {type: 'slider', label: 'Text size', min: 11, max: 20, step: 0.5, unit: 'px', get: () => o.badge_size || 13, set: v => { o.badge_size = +v; drawLive(); }},
+                {type: 'toggle', key: 'badge_width', label: 'Fit the first line', get: () => o.badge_width === 'auto', set: v => { o.badge_width = v ? 'auto' : width(widthNum); }},
+                {type: 'slider', label: 'Width', min: 80, max: 480, step: 1, unit: 'px', get: () => o.badge_width && o.badge_width !== 'auto' ? o.badge_width : widthNum, set: v => { widthNum = +v; o.badge_width = width(v); drawLive(); }, if: () => o.badge_width !== 'auto'}
+            ]},
+            {title: 'Content', open: false, rows: [
+                // A bar always has the logo on the rating line; a wordmark (powered) on the line already is the brand, so the stars get no icon beside it.
+                // Off: the logo where the design had it, else a circle takes it in the corner (on the arc), anything else in front.
+                Object.assign(content('Logo on the rating line', () => attr('stars', 'logo') || !M.has(layout(), KIND, 'logo') && !/;logo$/.test(layout()),
+                    v => {
+                        if (v) return M.has(layout(), KIND, 'powered') ? bare(layout(), 'logo') : M.attr(bare(layout(), 'logo'), KIND, 'stars', 'logo', true);
+                        const off = M.attr(layout(), KIND, 'stars', 'logo', false);
+                        return restore(off, 'logo') || (W.styleVar('--badge-radius') === '50%' ? off + ';logo' : M.lead(off, KIND, 'logo'));
+                    }), {disabled: () => !!o.badge_bar}),
+                content('One star instead of five', () => attr('stars', 'one'), v => M.attr(layout(), KIND, 'stars', 'one', v)),
+                content('Stars before the rating', () => attr('stars', 'first'), v => M.attr(layout(), KIND, 'stars', 'first', v)),
+                content('Count after a dot, not in brackets', () => attr('count', 'dot'), v => M.attr(layout(), KIND, 'count', 'dot', v)),
+                content('Hide review authors', () => attr('phrase', 'noauthor'), v => M.attr(layout(), KIND, 'phrase', 'noauthor', v)),
+                {type: 'toggle', key: 'anonym_avatar', label: 'Anonymize profile photos'},
+                // Shown off below the threshold but left as saved: the badge draws the label by itself once the place qualifies.
+                {type: 'toggle', label: 'Top rated label', disabled: !eligible, title: eligible ? '' : TOP_RATED_NOTE, get: () => eligible && M.has(layout(), KIND, 'label'), set: v => {
+                    const on = restore(layout(), 'label') || M.attr(M.after(layout(), KIND, 'label', M.has(layout(), KIND, 'count') ? 'count' : 'stars'), KIND, 'label', 'dot', true);
+                    set(v ? M.attr(on, KIND, 'label', 'icon', iconPick || false) : M.drop(layout(), KIND, 'label'));
+                }},
+                !eligible && {type: 'custom', render: () => h('div', {class: 'grw-pl-hint'}, TOP_RATED_NOTE + '.')},
+                {type: 'select', label: 'Label icon', items: [['', 'None'], ['medal', 'Medal'], ['check', 'Check'], ['award', 'Award'], ['rosette', 'Rosette']],
+                    get: () => M.has(layout(), KIND, 'label') ? M.attr(layout(), KIND, 'label', 'icon') || '' : iconPick,
+                    set: v => { iconPick = v; set(M.attr(layout(), KIND, 'label', 'icon', v || false)); }}
+            ]},
+            {title: 'Elements', open: false, rows: elementRows.length ? elementRows : [{type: 'custom', render: () => h('div', {class: 'grw-pl-hint'}, 'This design has no elements to size.')}]},
+            {title: 'Behaviour', open: false, rows: [
+                {type: 'slider', label: 'Phrase change', min: 3, max: 15, step: 1, unit: 's', get: () => o.badge_interval || 6, set: v => { o.badge_interval = v == 6 ? '' : v; drawLive(); }},
+                {type: 'toggle', key: 'badge_close', label: 'Close button'}
+            ]}
+        ]);
+        W.sync = () => sync();
+
+        return () => { sync(); drawLive(); };
     }
 
     /* ------------------------------------------------------------ step 3: publish */
 
     function renderPublish(row) {
         const embed = (state.options || {}).badge_pos === 'embed';
-        if (!embed) {
-            const label = on => on ? 'Displayed on the site' : 'Display on the site';
+        const label = on => on ? 'Displayed on the site' : 'Display on the site';
+        if (embed) {
+            // The switch is shown off, so the user learns why this badge cannot go on every page.
+            const btn = h('button', {type: 'button', class: 'button button-primary button-hero', disabled: true}, label(false));
+            row.append(btn, h('p', {class: 'description'}, 'This ' + noun() + ' sits in the page content. Pick a corner or bar position in Set up to show it on every page.'));
+        } else {
             const btn = h('button', {type: 'button', class: 'button button-primary button-hero'}, label(state.global));
             btn.disabled = state.global || state.saving;
             const remove = h('a', {href: '#', class: 'grw-badge-uninstall'}, 'Remove from the site');
@@ -382,6 +368,15 @@ function grw_badge_kit(W, data, cfg) {
         return embed ? 'Place the ' + noun() + ' in the page content with the shortcode ' : 'Need it on one page only? Put it there with the shortcode ';
     }
 
+    // The design as its card picks it, with its own tone and star colour (the reset of step 2); keep: the widget's own values that stay.
+    function pick(preset, keep) {
+        const kept = {};
+        Object.keys(keep || {}).forEach(k => { if (keep[k] !== undefined) kept[k] = keep[k]; });
+        state.options = Object.assign({}, DEFAULTS, M.applyTheme({}, preset), {theme: preset.id}, kept);
+        state.preset = Object.assign({}, state.options);
+        state.presetName = preset.name;
+    }
+
     function init() {
         state.global = state.feedId ? !!W.V.global : false;
         if (state.options) {
@@ -393,11 +388,11 @@ function grw_badge_kit(W, data, cfg) {
     }
 
     return {
-        DEFAULTS,
         init,
-        payload: () => ({global: state.global ? '1' : '0'}),
+        pick,
         presets: renderPresets,
         sticker: isSticker,
+        stickerOf: STICKER,
         noun,
         editor: renderEditor,
         preview,

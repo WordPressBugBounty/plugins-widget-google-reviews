@@ -5,6 +5,26 @@
         Button        = components.Button,
         __            = i18n.__;
 
+    // The widgets as the page loaded them, re-read when a select is focused or the tab comes back: a widget made in another tab is offered.
+    var feeds = grwBlockData.feeds, listeners = [], loading = null;
+    function reload() {
+        if (loading || !listeners.length) return;
+        var fd = new FormData();
+        fd.append('action', 'grw_feeds');
+        fd.append('grw_nonce', grwBlockData.nonce);
+        loading = fetch(grwBlockData.ajax, {method: 'POST', credentials: 'same-origin', body: fd})
+            .then(function(r) { return r.json(); })
+            .then(function(res) {
+                if (res && res.status === 'success') {
+                    feeds = res.result;
+                    listeners.forEach(function(f) { f(feeds); });
+                }
+            })
+            .catch(function() {})
+            .then(function() { loading = null; });
+    }
+    document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'visible') reload(); });
+
     blocks.registerBlockType('widget-google-reviews/reviews', {
         apiVersion: 3,
         title: __('Google Reviews Block', 'widget-google-reviews'),
@@ -17,14 +37,17 @@
 
             var attributes = props.attributes;
             var blockProps = blockEditor.useBlockProps();
+            var state = element.useState(feeds), list = state[0], setList = state[1];
+            element.useEffect(function() {
+                listeners.push(setList);
+                return function() { var i = listeners.indexOf(setList); if (i >= 0) listeners.splice(i, 1); };
+            }, []);
 
-            let feeds = grwBlockData.feeds,
-                options = [{label: __('Select reviews widget', 'widget-google-reviews'), value: ''}];
-
-            for (let i = 0; i < feeds.length; i++) {
-                options.push({label: feeds[i].name, value: String(feeds[i].id)});
+            var options = [{label: __('Select reviews widget', 'widget-google-reviews'), value: ''}];
+            for (var i = 0; i < list.length; i++) {
+                options.push({label: list[i].name, value: String(list[i].id)});
             }
-            var chosen = feeds.some(function(feed) { return String(feed.id) === attributes.id; });
+            var chosen = list.some(function(feed) { return String(feed.id) === attributes.id; });
 
             return el(
                 'div',
@@ -38,14 +61,15 @@
                         options: options,
                         onChange: function(newval) {
                             props.setAttributes({id: newval});
-                        }
+                        },
+                        onFocus: reload
                     }
                 ),
                 grwBlockData.manage && el(
                     Button,
                     {
                         text: __('Edit reviews widget', 'widget-google-reviews'),
-                        href: grwBlockData.builderUrl + '&grw_feed_id=' + attributes.id,
+                        href: grwBlockData.createUrl + '&grw_feed_id=' + attributes.id,
                         disabled: !chosen,
                         target: '_blank'
                     }

@@ -703,8 +703,23 @@
     width: auto!important;
 }
 
+/* The list and the rating take the header plate of the design (the same variables as a slider); without one the header is bare. */
 .wp-gr .wp-google-list .grw-header-inner {
-    padding: 0 0 16px 0!important;
+    padding: 16px!important;
+    border-radius: var(--slider-head-card-radius)!important;
+    background: var(--slider-head-card-bg, transparent)!important;
+    box-shadow: var(--slider-head-card-shadow, none)!important;
+}
+
+@container style(--slider-head-card-bg: transparent) and style(--slider-head-card-shadow: none) {
+    .wp-gr .wp-google-list .grw-header-inner {
+        padding: 0!important;
+    }
+}
+
+/* The space between the header and the reviews belongs to the list: a rating alone ends with its header. */
+.wp-gr .wp-google-list .grw-header + .rpi-col16 {
+    margin-top: 16px;
 }
 
 .wp-gr .grw-review-inner.grw-round {
@@ -1136,15 +1151,6 @@
     box-shadow: 0 0 0 2px #ffffff;
 }
 
-/* grw's names carry margin: 0!important, which a push must still override. */
-.wp-gr.rpi .rpi-card .rpi-row12-center > .wp-google-name.rpi-push {
-    margin-inline-start: auto!important;
-}
-
-.wp-gr.rpi .rpi-card :is(.rpi-col12, .rpi-col8, .rpi-col6) > .wp-google-name.rpi-push {
-    margin-top: auto!important;
-}
-
 /* Positioned rather than a flex item, so a long name still ends in an ellipsis. */
 .wp-gr :is(.rpi-card, .rpi-rate) .wp-google-name.rpi-logo_after {
     position: relative;
@@ -1176,15 +1182,6 @@
 
 .wp-gr .grw-header.rpi-rate .rpi-row12-center > .wp-google-wr.rpi-push {
     align-self: center!important;
-}
-
-/* grw's header elements carry margin: 0!important, which a push must still override. */
-.wp-gr.rpi .rpi-rate .rpi-row12-center > .rpi-push {
-    margin-inline-start: auto!important;
-}
-
-.wp-gr.rpi .rpi-rate :is(.rpi-col12, .rpi-col8, .rpi-col6) > .rpi-push {
-    margin-top: auto!important;
 }
 
 .wp-gr .grw-header.rpi-rate .wp-google-name {

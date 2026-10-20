@@ -3,7 +3,7 @@ Contributors: widgetpack
 Tags: google reviews, reviews, review slider, review widget, reviews plugin
 Requires PHP: 7.2
 Tested up to: 7.1
-Stable tag: 7.1.7
+Stable tag: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -118,11 +118,24 @@ Email support in English is also available on weekdays: support@richplugins.com
 
 == Roadmap ==
 
-* New feature: minimal rating layout (rating, stars and total reviews)
-* Improve: adapt review connection modal for mobile devices
-* Improve: New option Style Options / Review photos max lines
+* Under discussion.
 
 == Changelog ==
+
+= 7.2 =
+* New: one editor for every widget: Set up holds the design gallery, the business header and the review card lines, with the live preview.
+* New: a place connected in two languages shows the reviews of each language.
+* New: hide a review from the widget preview, in this widget or on all widgets.
+* New: Places page settings per place: auto-update, stored images and photo.
+* New: six Rating designs: the business header alone, in one line, in a card, with big stars or without the name.
+* Change: the editor opens the gallery on the widget's own design.
+* Change: Editors see the widgets list only; widgets are edited by administrators.
+* Change: a widget with several places shows one header with their overall rating and total review count.
+* Improved: the Publish step names the page the widget is on and offers a draft page only when there is none.
+* Improved: the block's widget list refreshes when you return to the editor.
+* Fixed: a review without text showed once per language when one place was connected in two languages.
+* Fixed: a place connected in two languages doubled the review count on a badge.
+* Fixed: wordmark, compact, trust and partner badges stretched to the full screen width on phones.
 
 = 7.1.7 =
 * New: sticker designs for the site badge: round stamps and seals, a Google ring, a pennant, a trust strip with reviewer photos, partner cards.

@@ -24,6 +24,16 @@ class Feed_Block {
         add_action('enqueue_block_editor_assets', [$this, 'enqueue_assets']);
         add_action('init', [$this, 'register_block'], 999);
         add_action('block_categories_all', [$this, 'register_category']);
+        add_action('wp_ajax_grw_feeds', [$this, 'feeds']);
+    }
+
+    // The block's select re-reads the widgets (one made in another tab); for everyone who edits posts, as the block is.
+    public function feeds() {
+        check_ajax_referer('grw_block', 'grw_nonce');
+        if (!current_user_can('edit_posts')) {
+            wp_send_json(array('status' => 'failed'));
+        }
+        wp_send_json(array('status' => 'success', 'result' => $this->feed_deserializer->get_all_feeds_short()));
     }
 
     public function enqueue_assets() {
@@ -43,9 +53,10 @@ class Feed_Block {
             'grwBlockData',
             array(
                 'feeds' => $this->feed_deserializer->get_all_feeds_short(),
-                'builderUrl' => admin_url('admin.php?page=grw-builder'),
                 'createUrl' => admin_url('admin.php?page=grw-widget'),
-                'manage' => current_user_can('manage_options')
+                'manage' => current_user_can('manage_options'),
+                'ajax' => admin_url('admin-ajax.php', 'relative'),
+                'nonce' => wp_create_nonce('grw_block')
             )
         );
 
