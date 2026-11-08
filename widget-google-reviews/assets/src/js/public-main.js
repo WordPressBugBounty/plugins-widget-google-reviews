@@ -39,7 +39,7 @@ function rplg_leave_review_window() {
     return false;
 }
 
-function grw_popup_open(rootEl, popupEl) {
+function grw_popup_open(rootEl, popupEl, phrase) {
     popupEl.classList.add('grw-popup-on');
     rpi.Lightbox(popupEl).show(true);
     // A wheel over the backdrop would scroll the page under the popup and leave it elsewhere on close.
@@ -49,7 +49,7 @@ function grw_popup_open(rootEl, popupEl) {
         wrap.addEventListener('wheel', function(e) { if (!e.target.closest('.grw-popup')) e.preventDefault(); }, {passive: false});
         ['wheel', 'pointerdown', 'keydown'].forEach(ev => wrap.addEventListener(ev, function() { wrap.grwFollow = false; }, {passive: true}));
     }
-    grw_popup_focus(rootEl, popupEl);
+    grw_popup_focus(rootEl, popupEl, phrase);
     return false;
 }
 
@@ -65,12 +65,15 @@ function grw_badge_phrase(rootEl) {
 // Scrolls to the review the badge phrase (or its author fact) came from; without one the list stays where it was left.
 function grw_popup_focus(rootEl, popupEl, phrase) {
     const clean = grw_clean, wrap = popupEl.closest('.rpi-lightbox-wrap');
-    const {text, name} = phrase || grw_badge_phrase(rootEl);
+    const {text, name, id} = phrase || grw_badge_phrase(rootEl);
     const reviews = popupEl.querySelectorAll('.grw-review, .wp-google-review');
-    const hit = Array.prototype.find.call(reviews, r => text ? clean(r.textContent).indexOf(text) > -1 : name && clean((r.querySelector('.wp-google-name') || r).textContent).indexOf(name) === 0);
+    const hit = id ? popupEl.querySelector('.wp-google-review[data-id="' + id + '"]') : Array.prototype.find.call(reviews, r => text ? clean(r.textContent).indexOf(text) > -1 : name && clean((r.querySelector('.wp-google-name') || r).textContent).indexOf(name) === 0);
     popupEl.querySelectorAll('mark.grw-review-mark').forEach(function(m) { m.outerHTML = m.innerHTML; });
     if (hit) {
         if (text) grw_popup_mark(hit.querySelector('.wp-google-text') || hit, text);
+        // A popup printed with the page cuts its texts by the character limit like a list: the review clicked on a card opens whole before the scroll measures it.
+        const more = id && hit.querySelector('.wp-more-toggle');
+        if (more) more.click();
         const go = function() { popupEl.scrollTo({top: popupEl.scrollTop + hit.getBoundingClientRect().top - popupEl.getBoundingClientRect().top - 16, behavior: 'smooth'}); };
         // Glides from where it was closed after a beat, so the move to the review reads as a move.
         wrap.grwFollow = true;
@@ -100,17 +103,17 @@ function grw_popup_mark(el, text) {
     }
 }
 
-// The badge popup is fetched on the first click: the lightbox opens at once on a skeleton, the reviews take its place.
-function grw_badge_popup(rootEl, src, common) {
+// The popup list is fetched on the first click: the lightbox opens at once on a skeleton, the reviews take its place.
+function grw_ajax_popup(rootEl, src, common) {
     let popupEl = null, phrase;
     // Another lightbox opened meanwhile takes the node out of the wrap; it must be left alone then.
     const onScreen = el => {
         const wrap = el.closest('.rpi-lightbox-wrap');
         return wrap && wrap.style.display !== 'none';
     };
-    return function() {
-        // The badge rotates its phrases, so the one clicked is gone by the time the reviews arrive.
-        phrase = grw_badge_phrase(rootEl);
+    // The phrase is taken at the click: the badge rotates its phrases, so the one clicked is gone by the time the reviews arrive.
+    return function(p) {
+        phrase = p;
         if (!popupEl) {
             const el = popupEl = document.createElement('div');
             el.className = rootEl.className + ' grw-popup';
@@ -131,13 +134,13 @@ function grw_badge_popup(rootEl, src, common) {
                     popupEl = null;
                 });
         }
-        return grw_popup_open(rootEl, popupEl);
+        return grw_popup_open(rootEl, popupEl, phrase);
     };
 }
 
 // A card theme cuts the text at a whole line in CSS. A text longer than the theme's lines shows one line less and "read more" takes the
 // last line, so every card keeps the same height; once opened, the whole text scrolls in that same height.
-function grw_more(fb, options) {
+function grw_more(fb, options, onmore) {
     const open = () => {
         fb.classList.add('grw-open');
         // Inline: "remove unused CSS" optimizers drop the rules of a class the page only gets on a click.
@@ -148,6 +151,7 @@ function grw_more(fb, options) {
         const s = getComputedStyle(fb), lines = s.getPropertyValue('--card-text-lines').trim() || '5';
         if (/^\d+$/.test(lines)) fb.style.maxHeight = lines * (parseFloat(s.lineHeight) || parseFloat(s.fontSize) * 1.2) + 'px';
         fb.style.setProperty('overflow-y', 'auto', 'important');
+        if (onmore) fb.querySelectorAll('.wp-more-toggle').forEach(more => { more.onclick = onmore; });
         return open();
     }
     // Without ResizeObserver a text shown later ("More reviews", a tab) would stay cut with no link.
@@ -155,7 +159,7 @@ function grw_more(fb, options) {
     const links = grw_more.links || grw_more_watch();
     const more = rpi.el({tag: 'span', cl: 'wp-more-toggle grw-more', text: rpi.Utils.__('read more', options.trans)});
     rpi.btn(more);
-    more.onclick = () => {
+    more.onclick = onmore || (() => {
         const byKeys = rpi.keyFocus() === more;
         links.delete(fb);
         grw_more.ro.unobserve(fb);
@@ -164,7 +168,7 @@ function grw_more(fb, options) {
         more.remove();
         open();
         if (byKeys) rpi.focusOnce(fb);
-    };
+    });
     links.set(fb, more);
     grw_more.ro.observe(fb);
     grw_more.mo.observe(fb, {childList: true, characterData: true, subtree: true});
@@ -219,7 +223,11 @@ function grw_init(el, layout) {
         readmore : 'wp-more-toggle'
     });
     common.init();
-    rootEl.querySelectorAll('.rpi-card .wp-google-feedback').forEach(fb => grw_more(fb, options));
+    const src = rootEl.dataset.reviews, inline = rootEl.querySelector('.grw-popup');
+    const popup = src && rpi.Lightbox ? grw_ajax_popup(rootEl, src, common) : inline && rpi.Lightbox && layout != 'rating' ? p => grw_popup_open(rootEl, inline, p) : null;
+    // With the option on, a card's "read more" opens the popup on its review instead of the text in the card.
+    const onmore = popup && layout != 'badge' ? function() { popup({id: this.closest('.grw-review').dataset.id}); return false; } : null;
+    rootEl.querySelectorAll('.rpi-card .wp-google-feedback').forEach(fb => grw_more(fb, options, onmore));
 
     const media = rpi.Media(rootEl, {}, {
         root : 'wp-gr',
@@ -227,15 +235,14 @@ function grw_init(el, layout) {
     }).init();
 
     if (layout == 'badge' && rpi.Badge) {
-        const src = rootEl.dataset.reviews;
-        rpi.Badge(rootEl, {onclick: src && rpi.Lightbox && rootEl.querySelector('.rpi-badge-clickable') ? grw_badge_popup(rootEl, src, common) : null});
+        rpi.Badge(rootEl, {onclick: popup && rootEl.querySelector('.rpi-badge-clickable') ? () => popup(grw_badge_phrase(rootEl)) : null});
         return;
     }
 
     const popupEl = rootEl.querySelector('.grw-popup');
     const open = () => grw_popup_open(rootEl, popupEl);
 
-    if (popupEl && rpi.Lightbox) {
+    if (layout == 'rating' && popupEl && rpi.Lightbox) {
 
         const headerEls = rootEl.getElementsByClassName('grw-header-inner');
         for (let i = 0; i < headerEls.length; i++) {

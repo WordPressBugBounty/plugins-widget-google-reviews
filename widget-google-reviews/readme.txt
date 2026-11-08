@@ -3,7 +3,7 @@ Contributors: widgetpack
 Tags: google reviews, reviews, review slider, review widget, reviews plugin
 Requires PHP: 7.2
 Tested up to: 7.1
-Stable tag: 7.2
+Stable tag: 7.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -121,6 +121,19 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Under discussion.
 
 == Changelog ==
+
+= 7.2.1 =
+* New: Slider and Grid option "Read more opens the reviews in a popup": the popup lists all reviews, scrolled to the clicked one with its text open.
+* Change: a place connected in several languages shows each review once, in the site language when the place is connected in it, otherwise in the first connection's language; the dates follow the same language.
+* Improved: reviewers without a photo get a letter avatar, a place without one a storefront icon.
+* Improved: Places page: a place with reviews in several languages asks which one to update; the row shows the new counts and time at once.
+* Improved: a note shows while a place connects on the first step.
+* Improved: the Trust strip sticker wraps on phones instead of cutting its text.
+* Fixed: the rating popup follows the widget's author name and stars colours; author names are readable on the dark theme, in the popup and in the list.
+* Fixed: on phones the business header with the Review us button squeezed its text into a narrow column.
+* Fixed: the Places page and business picker dialogs shifted the page by the scrollbar width.
+* Fixed: a widget set to All languages showed no text for reviews stored in another language.
+* Fixed: the bundled translations are used where the WordPress language pack misses a widget text.
 
 = 7.2 =
 * New: one editor for every widget: Set up holds the design gallery, the business header and the review card lines, with the live preview.

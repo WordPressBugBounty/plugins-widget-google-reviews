@@ -94,3 +94,12 @@ msgstr "Apmierinoši"
 
 msgid "Poor"
 msgstr "Vāji"
+
+msgid "Google Rating"
+msgstr "Google vērtējums"
+
+msgid "Previous"
+msgstr "Iepriekšējais"
+
+msgid "Next"
+msgstr "Nākamais"

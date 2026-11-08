@@ -94,3 +94,12 @@ msgstr "ພໍໃຊ້"
 
 msgid "Poor"
 msgstr "ບໍ່ດີ"
+
+msgid "Google Rating"
+msgstr "ຄະແນນ Google"
+
+msgid "Previous"
+msgstr "ກ່ອນໜ້າ"
+
+msgid "Next"
+msgstr "ຕໍ່ໄປ"

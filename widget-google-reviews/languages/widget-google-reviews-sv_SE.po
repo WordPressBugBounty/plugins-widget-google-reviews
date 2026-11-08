@@ -94,3 +94,12 @@ msgstr "Godtagbart"
 
 msgid "Poor"
 msgstr "Dåligt"
+
+msgid "Google Rating"
+msgstr "Google-betyg"
+
+msgid "Previous"
+msgstr "Föregående"
+
+msgid "Next"
+msgstr "Nästa"

@@ -1415,10 +1415,6 @@
 }
 
 /* ---- step 1: picker of the places the plugin already holds, in the metrics of the media modal ---- */
-.grw-badge-modal-open {
-    overflow: hidden;
-}
-
 .grw-badge-modal {
     position: fixed;
     inset: 0;

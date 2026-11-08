@@ -528,6 +528,7 @@ function grw_themes_page() {
             {title: 'Common', open: false, rows: [
                 perPage(),
                 {type: 'number', key: 'text_size', label: 'Characters before "read more"', placeholder: 'Default', min: 0, hint: 'Empty: a long review folds at the "Text lines" of the card, and "read more" opens the rest.', if: F.reviews},
+                tog('more_popup', '"Read more" opens the reviews in a popup', 'The card keeps its size; the popup lists all reviews, scrolled to the one you clicked, with its text open.', cards),
                 tog('short_last_name', 'Shorten last name (GDPR)', 'Only the first name and the first letter of the last name.', F.reviews),
                 tog('anonym_avatar', 'Anonymize profile photos', 'The first letter of the name on a colored circle instead of the photo, which never reaches your site.', F.reviews),
                 {type: 'toggle', label: 'Show reviews without text', if: F.reviews, get: () => !opt('min_letter'), set: v => { o.min_letter = !v; }},

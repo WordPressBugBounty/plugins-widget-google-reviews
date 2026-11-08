@@ -12,7 +12,7 @@ class Plugin_Theme extends Plugin_Step_Page {
     const MODES = array('slider', 'grid', 'list', 'rating', 'badge');
 
     const KEYS = array('view_mode', 'card_layout', 'rating_layout', 'style_vars', 'dark_theme', 'anonym_avatar', 'short_last_name', 'header_hide_social',
-                       'slider_head_pos', 'slider_autoplay', 'slider_speed', 'slider_mousestop', 'slider_hide_prevnext', 'slider_hide_dots', 'rating_popup',
+                       'slider_head_pos', 'slider_autoplay', 'slider_speed', 'slider_mousestop', 'slider_hide_prevnext', 'slider_hide_dots', 'rating_popup', 'more_popup',
                        'disable_biz_link', 'text_size', 'min_letter', 'slider_breakpoints', 'css_vars', 'reviewer_avatar_size', 'cache', 'reviews_limit',
                        'lazy_load_img', 'nofollow_link', 'open_link', 'aria_label', 'media', 'reply', 'google_def_rev_link', 'hidden', 'theme');
     // The KEYS a widget keeps when it changes its design family: what its reviews, links and names do, not how a design looks.

@@ -94,3 +94,12 @@ msgstr "Regular"
 
 msgid "Poor"
 msgstr "Malo"
+
+msgid "Google Rating"
+msgstr "Calificación de Google"
+
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Next"
+msgstr "Siguiente"

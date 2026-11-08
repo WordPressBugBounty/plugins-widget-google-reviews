@@ -94,3 +94,12 @@ msgstr "Aċċettabbli"
 
 msgid "Poor"
 msgstr "Ħażin"
+
+msgid "Google Rating"
+msgstr "Klassifikazzjoni ta' Google"
+
+msgid "Previous"
+msgstr "Ta' qabel"
+
+msgid "Next"
+msgstr "Li jmiss"

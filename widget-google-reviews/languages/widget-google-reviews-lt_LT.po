@@ -94,3 +94,12 @@ msgstr "Patenkinamai"
 
 msgid "Poor"
 msgstr "Silpnai"
+
+msgid "Google Rating"
+msgstr "Google įvertinimas"
+
+msgid "Previous"
+msgstr "Ankstesnis"
+
+msgid "Next"
+msgstr "Kitas"

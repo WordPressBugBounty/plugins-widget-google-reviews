@@ -94,3 +94,12 @@ msgstr "Orta"
 
 msgid "Poor"
 msgstr "Zayıf"
+
+msgid "Google Rating"
+msgstr "Google Puanı"
+
+msgid "Previous"
+msgstr "Önceki"
+
+msgid "Next"
+msgstr "Sonraki"

@@ -264,6 +264,7 @@
     /* Declared, not left to the var() fallbacks, so the page theme's own --text-color cannot reach a dark widget. */
     --text-color: #ececec;
     --head-name-color: #eeeeee;
+    --name-color: #eeeeee;
 }
 
 /* An engine card keeps its margin above and below; a browser without :has spaces it as an older card. */
@@ -274,6 +275,86 @@
 }
 
 /* Edges line up with the cards, and the header stands as far from them as they stand from each other. */
+/*-------------------------------- Flex presets of grw's own markup (class-view.php: the header, the list and slider reviews) --------------------------------*/
+.rpi-flx,
+.rpi-col16,
+.rpi-col12,
+.rpi-col8,
+.rpi-col6,
+.rpi-col4,
+.rpi-row12-center,
+.rpi-row12 {
+    display: var(--flx, flex)!important;
+    flex-direction: var(--dir, column)!important;
+    gap: var(--gap, 2px)!important;
+    align-items: var(--align, flex-start)!important;
+    flex-wrap: var(--wrap, nowrap)!important;
+    overflow: var(--overflow, visible)!important;
+    width: 100%!important;
+}
+
+.rpi-col16 {
+    --dir: column;
+    --gap: 16px;
+    --align: flex-start;
+    --overflow: hidden;
+}
+
+.rpi-col12 {
+    --dir: column;
+    --gap: 12px;
+    --align: flex-start;
+    --overflow: hidden;
+}
+
+.rpi-col6 {
+    --dir: column;
+    --gap: 6px;
+    --align: flex-start;
+    --overflow: hidden;
+}
+
+.rpi-col8 {
+    --dir: column;
+    --gap: 8px;
+    --align: flex-start;
+}
+
+.rpi-col4 {
+    --dir: column;
+    --gap: 4px;
+    --align: flex-start;
+}
+
+.rpi-row12-center {
+    --dir: row;
+    --gap: 12px;
+    --align: center;
+    --overflow: visible;
+}
+
+.rpi-row12 {
+    --dir: row;
+    --gap: 12px;
+    --align: flex-start;
+}
+
+.rpi-row12 > .rpi-push,
+.rpi-row12-center > .rpi-push {
+    --align: flex-end;
+    --star-align-self: flex-end;
+    margin-inline-start: auto!important;
+    text-align: end!important;
+}
+
+.rpi-col16 > .rpi-push,
+.rpi-col12 > .rpi-push,
+.rpi-col8 > .rpi-push,
+.rpi-col6 > .rpi-push,
+.rpi-col4 > .rpi-push {
+    margin-block-start: auto!important;
+}
+
 .wp-gr .grw-header.rpi-flx {
     padding: 0 calc(var(--slider-offset) + var(--slide-pad-x) + var(--card-margin)) calc(var(--grw-gap) - var(--frame-y))!important;
     box-sizing: border-box!important;
@@ -331,7 +412,8 @@
     align-self: center;
 }
 
-.wp-gr .grw-header .rpi-row12-center > .wp-google-name {
+.wp-gr .grw-header .rpi-row12-center > .wp-google-name,
+.wp-gr .grw-header .rpi-row > .wp-google-name {
     width: auto!important;
 }
 
@@ -534,10 +616,6 @@
     .grw-popup-skel b {
         animation: none;
     }
-}
-
-.wp-gr.wp-dark .wp-google-name {
-    color: #eee!important
 }
 
 .wp-gr.rpi.wp-dark .wp-google-name a,
@@ -973,7 +1051,7 @@
 }
 
 /* grw's rule for its own corner logo would take a logo line, or the stars' logo wrapper, out of the flow. */
-.wp-gr .rpi-card > .grw-review-inner.rpi-col12 > .rpi-logo {
+.wp-gr .rpi-card > .grw-review-inner.rpi-box > .rpi-logo {
     position: static!important;
     top: auto!important;
     right: auto!important;
@@ -1105,8 +1183,8 @@
 
 /* In a group within a line (beside the photo, or pushed to its end) the date keeps 5em, about two words: in a narrower space the
    group moves under the line instead of squeezing the name to a letter. */
-.wp-gr .rpi-card .rpi-row12-center > .rpi-col6 > .wp-google-time,
-.wp-gr .rpi-card .rpi-row12-center > .wp-google-time.rpi-push {
+.wp-gr .rpi-card .rpi-row > .rpi-col > .wp-google-time,
+.wp-gr .rpi-card .rpi-row > .wp-google-time.rpi-push {
     min-width: 5em;
 }
 
@@ -1171,17 +1249,20 @@
     --logo-size: 14px;
 }
 
-.wp-gr .grw-header.rpi-rate .rpi-col6 {
+.wp-gr .grw-header.rpi-rate .rpi-row > .rpi-col {
     --gap: 8px;
 }
 
 /* The photo stays at the top of its line, as it did beside the header column; a button pushed to the edge centres as before. */
-.wp-gr .grw-header.rpi-rate > .rpi-col12 > .rpi-row12-center:has(> .grw-img-wrap) {
+.wp-gr .grw-header.rpi-rate > .rpi-box > .rpi-row:has(> .grw-img-wrap),
+.wp-gr .grw-header.rpi-rate > .rpi-box.rpi-row:has(> .grw-img-wrap) {
     --align: flex-start;
 }
 
-.wp-gr .grw-header.rpi-rate .rpi-row12-center > .wp-google-wr.rpi-push {
+/* The push (~) before it: grw's own margin reset on the button would win over the engine's auto margin. */
+.wp-gr .grw-header.rpi-rate .rpi-row > .wp-google-wr.rpi-push {
     align-self: center!important;
+    margin-inline-start: auto!important;
 }
 
 .wp-gr .grw-header.rpi-rate .wp-google-name {

@@ -94,3 +94,12 @@ msgstr "Befriedigend"
 
 msgid "Poor"
 msgstr "Schlecht"
+
+msgid "Google Rating"
+msgstr "Google-Bewertung"
+
+msgid "Previous"
+msgstr "Zurück"
+
+msgid "Next"
+msgstr "Weiter"

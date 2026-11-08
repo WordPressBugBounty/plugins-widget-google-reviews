@@ -114,7 +114,7 @@ final class Plugin {
         $this->deactivator = new Deactivator($reviews_cron);
 
         if (is_admin()) {
-            $google_connect = new Google_Connect($google_api_old, $google_utils);
+            $google_connect = new Google_Connect($google_api_old, $google_utils, $google_dao);
 
             $feed_serializer = new Feed_Serializer();
 
@@ -164,7 +164,14 @@ final class Plugin {
     }
 
     public function init_language() {
-        load_plugin_textdomain('widget-google-reviews', false, basename(dirname(GRW_PLUGIN_FILE)) . '/languages');
+        $domain = 'widget-google-reviews';
+        $locale = determine_locale();
+        $dir = dirname(GRW_PLUGIN_FILE) . '/languages/' . $domain . '-';
+        $own = glob($dir . substr($locale, 0, 5) . '*.mo') ?: glob($dir . strtok($locale, '_') . '_*.mo');
+
+        // Loading our file stops WordPress from looking in wp-content/languages, so the file there is loaded here, first.
+        load_textdomain($domain, WP_LANG_DIR . '/plugins/' . $domain . '-' . $locale . '.mo', $locale);
+        if ($own) load_textdomain($domain, $own[0], $locale);
     }
 
     public function activate($network_wide = false) {

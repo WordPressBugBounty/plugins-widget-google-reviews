@@ -8,6 +8,7 @@ class Core {
         return array(
             'view_mode'                 => 'list',
             'rating_popup'              => null,
+            'more_popup'                => false,
             'pagination'                => '10',
             'text_size'                 => '',
             'min_letter'                => '',
@@ -193,11 +194,9 @@ class Core {
 
         $biz = array();
         $reviews = array();
-        $places = array();
-        $seen = array();
 
         if (isset($connection->connections) && is_array($connection->connections)) {
-            foreach ($connection->connections as $conn) {
+            foreach ($this->places($connection->connections) as $conn) {
                 switch ($conn->platform) {
                     case 'facebook':
                         // TODO
@@ -205,18 +204,11 @@ class Core {
                     default:
                         $result = $this->get_db_reviews($conn, $options, $is_admin);
                         // Null when the connected place is not in the database yet.
-                        if (!$options->header_hide_social && $result['business'] && !isset($places[$result['business']->id])) {
-                            $places[$result['business']->id] = true;
+                        if (!$options->header_hide_social && $result['business']) {
                             array_push($biz, $result['business']);
                         }
                         if (!$options->hide_reviews) {
-                            // One place in two languages: a review keeps a copy per language version, so the key is the text, not the id alone.
-                            foreach ($result['reviews'] as $review) {
-                                $key = $review->id . '|' . $review->text;
-                                if (isset($seen[$key])) continue;
-                                $seen[$key] = true;
-                                array_push($reviews, $review);
-                            }
+                            $reviews = array_merge($reviews, $result['reviews']);
                         }
                 }
             }
@@ -232,7 +224,32 @@ class Core {
         return array('businesses' => $biz, 'reviews' => $reviews, 'options' => $options);
     }
 
-    public function get_db_reviews($biz, $options, $is_admin = false) {
+    // A place connected in several languages is one place: its reviews come once, with the texts of the site language when it is
+    // among them, else of the first connection; the other languages fill the gaps. An empty language stands for all languages.
+    private function places($connections) {
+        $places = array();
+        foreach ($connections as $conn) {
+            $key = $conn->platform . '|' . $conn->id;
+            if (!isset($places[$key])) {
+                $places[$key] = clone $conn;
+                $places[$key]->langs = array();
+            }
+            $places[$key]->langs[] = empty($conn->lang) ? '' : $conn->lang;
+        }
+        $site = substr(get_locale(), 0, 2);
+        foreach ($places as $place) {
+            $place->all_langs = in_array('', $place->langs, true);
+            $langs = array_values(array_unique(array_map(function($l) use ($site) { return $l === '' ? $site : $l; }, $place->langs)));
+            $i = array_search($site, $langs, true);
+            if ($i > 0) array_unshift($langs, ...array_splice($langs, $i, 1));
+            $place->langs = $langs;
+            // Dates follow the preferred language; an all-languages place leaves them to the page's.
+            $place->lang = $place->all_langs ? '' : $langs[0];
+        }
+        return array_values($places);
+    }
+
+    private function get_db_reviews($biz, $options, $is_admin = false) {
         global $wpdb;
 
         $rating = 0;
@@ -252,9 +269,8 @@ class Core {
 
         if ($place) {
 
-            $lang = empty($biz->lang) ? substr(get_locale(), 0, 2) : $biz->lang;
-            $all_langs = isset($options->all_langs) ? (int)(bool)$options->all_langs : (empty($biz->lang) ? 1 : 0);
-            $reviews = $this->fetch_reviews([$place->id], $options, $lang, $all_langs, 0, $is_admin);
+            $all_langs = isset($options->all_langs) ? (int)(bool)$options->all_langs : (int) $biz->all_langs;
+            $reviews = $this->fetch_reviews([$place->id], $options, $biz->langs, $all_langs, 0, $is_admin);
 
             // Setup photo
             $place_photo = Place_Settings::photo($place, $biz);
@@ -327,7 +343,7 @@ class Core {
         return array('business' => $business, 'reviews' => $google_reviews);
     }
 
-    private function fetch_reviews($place_ids, $options, $lang, $all_langs, $limit, $is_admin) {
+    private function fetch_reviews($place_ids, $options, $langs, $all_langs, $limit, $is_admin) {
         global $wpdb;
 
         $where_r = $is_admin ? '' : " AND r.hide = ''";
@@ -346,17 +362,29 @@ class Core {
         }
         $place_ids_phs = implode(',', array_fill(0, count($place_ids), '%d'));
 
-        $lang_aliases = $this->get_lang_aliases($lang);
-        $lang_phs = implode(',', array_fill(0, count($lang_aliases), '%s'));
+        // One text join per language in order of preference: the first text found is shown, the review's own language last.
+        $joins = array();
+        $texts = array();
+        $aliases = array();
+        foreach (array_values($langs) as $i => $l) {
+            $a = $this->get_lang_aliases($l);
+            $joins[] = "LEFT JOIN {$wpdb->prefix}" . Database::TEXT_TABLE . " tl{$i} ON tl{$i}.review_id = r.review_id AND tl{$i}.lang IN (" . implode(',', array_fill(0, count($a), '%s')) . ")";
+            $texts[] = "tl{$i}.text";
+            $aliases = array_merge($aliases, $a);
+        }
+        $lang_phs = implode(',', array_fill(0, count($aliases), '%s'));
+        $has_text = implode(' OR ', array_map(function($t) { return $t . ' IS NOT NULL'; }, $texts));
 
-        $sql = "SELECT r.*, t.text AS lang_text
+        $sql = "SELECT r.*, COALESCE(" . implode(', ', $texts) . ", t0.text) AS lang_text
                 FROM {$wpdb->prefix}" . Database::REVIEW_TABLE . " r
                 JOIN {$wpdb->prefix}" . Database::BUSINESS_TABLE . " p ON p.id = r.google_place_id
-                LEFT JOIN {$wpdb->prefix}" . Database::TEXT_TABLE . " t
-                    ON t.review_id = r.review_id AND t.lang IN ({$lang_phs})
+                " . implode("
+                ", $joins) . "
+                LEFT JOIN {$wpdb->prefix}" . Database::TEXT_TABLE . " t0
+                    ON t0.review_id = r.review_id AND t0.lang = r.language
                 WHERE r.google_place_id IN ({$place_ids_phs}){$where_r}
                   AND r.author_url IS NOT NULL
-                  AND (%d = 1 OR t.text IS NOT NULL OR r.language IN ({$lang_phs}) OR r.language IS NULL OR r.language = '')
+                  AND (%d = 1 OR {$has_text} OR r.language IN ({$lang_phs}) OR r.language IS NULL OR r.language = '')
                   AND NOT EXISTS (
                       SELECT 1 FROM {$wpdb->prefix}" . Database::REVIEW_TABLE . " r2
                       WHERE r2.google_place_id = r.google_place_id AND r2.author_url = r.author_url
@@ -369,11 +397,11 @@ class Core {
         }
 
         $params = array_merge(
-            $lang_aliases,
+            $aliases,
             $place_ids,
             $hidden_ids,
             [$all_langs],
-            $lang_aliases
+            $aliases
         );
 
         return $wpdb->get_results($wpdb->prepare($sql, $params));
@@ -424,7 +452,7 @@ class Core {
         $google_reviews = array();
         $site_lang      = substr(get_locale(), 0, 2);
 
-        $reviews = $this->fetch_reviews($google_place_ids, null, $site_lang, 1, 100, true);
+        $reviews = $this->fetch_reviews($google_place_ids, null, array($site_lang), 1, 100, true);
 
         foreach ($reviews as $rev) {
             $text = empty($rev->lang_text) ? (empty($rev->text) ? null : $rev->text) : $rev->lang_text;

@@ -94,3 +94,12 @@ msgstr "Zadovoljavajuće"
 
 msgid "Poor"
 msgstr "Loše"
+
+msgid "Google Rating"
+msgstr "Google ocjena"
+
+msgid "Previous"
+msgstr "Prethodno"
+
+msgid "Next"
+msgstr "Sljedeće"

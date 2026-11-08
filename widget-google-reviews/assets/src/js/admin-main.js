@@ -510,70 +510,69 @@ jQuery(document).ready(function($) {
             });
         }
 
-        function updatePlace($row) {
-            var conns = $row.data('conns') || [],
-                i = 0, credits = -1, last = null, cached = false;
-
-            // The iframe answers one request at a time, so only one row may be in flight.
-            if ($('.grw-place-busy', $placesTable).length) return;
+        // One language per update: a single Google request, and a single attempt without a key.
+        function updatePlace($row, lang) {
             $row.addClass('grw-place-busy');
 
-            function finish(err) {
-                $row.removeClass('grw-place-busy');
-                if (err) {
-                    GRW_TOAST.show({msg: err, type: 'error'});
-                    return;
-                }
-                if (last) {
-                    if (last.rating) {
-                        $('.grw-col-rating', $row).html('<span class="rpi-stars" style="--rating:' + last.rating + '">' + last.rating + '</span>');
-                    }
-                    if (last.user_ratings_total) {
-                        $('.grw-place-count', $row).text(Number(last.user_ratings_total).toLocaleString());
-                    }
-                    // The row shows the place's own photo when one is set; Google's goes to the form's "Google's photo".
-                    if (last.photo) {
-                        var $form = $row.find('.grw-place-fields');
-                        $('img', $form).attr('data-google', last.photo);
-                        if (!$('[name=photo]', $form).val()) $('.grw-place img', $row).add($('img', $form)).attr('src', last.photo);
-                    }
-                }
-                $('.grw-place-updated', $row).text('just now');
-                GRW_TOAST.show({
-                    msg: cached ?
-                        'Reviews are up to date: without your API key they are refreshed from Google at most once every 3 days, so no attempt was used.' :
-                        'Reviews updated successfully. ' + (credits > -1 ? '<br><b>' + credits + ' attempts remaining (without your API key).</b>' : ''),
-                    type: 'success'
-                });
-            }
-
-            function next() {
-                if (i >= conns.length) return finish();
-                var c = conns[i++],
-                    params = {id: $row.data('pid'), url: $row.data('url'), lang: c.lang, local_img: c.local_img, event: 'refresh'};
-                if (hasKey) {
-                    connect(params, handle);
-                } else {
-                    iframeSend({params: params, action: 'connect'}, handle);
-                }
+            var params = {id: $row.data('pid'), url: $row.data('url'), lang: lang, local_img: $row.find('.grw-place-fields [name=local_img]').prop('checked'), event: 'refresh'};
+            if (hasKey) {
+                connect(params, handle);
+            } else {
+                iframeSend({params: params, action: 'connect'}, handle);
             }
 
             function handle(res) {
-                if (res && res.status == 'success') {
-                    last = res.result;
-                    if (res.result.credits > -1) credits = res.result.credits;
-                    if (res.result.cached) cached = true;
-                    next();
-                } else {
-                    finish(grw_get_error(res) || 'Update failed, please try again later.');
+                $row.removeClass('grw-place-busy');
+                if (!res || res.status != 'success') {
+                    GRW_TOAST.show({msg: grw_get_error(res) || 'Update failed, please try again later.', type: 'error'});
+                    return;
                 }
+                var r = res.result, p = r.place;
+                if (p) {
+                    $('.grw-col-rating', $row).html(p.rating ? '<span class="rpi-stars" style="--rating:' + p.rating + '">' + p.rating + '</span>' : '\u2014');
+                    $('.grw-place-count', $row).text(p.review_count);
+                    $('.grw-place-db-count', $row).text(p.db_review_count + ' in the plugin');
+                    $('.grw-place-updated', $row).text(p.updated).attr('title', p.updated_title);
+                    $row.attr('data-reviews', p.db_review_count);
+                }
+                // The row shows the place's own photo when one is set; Google's goes to the form's "Google's photo".
+                if (r.photo) {
+                    var $form = $row.find('.grw-place-fields');
+                    $('img', $form).attr('data-google', r.photo);
+                    if (!$('[name=photo]', $form).val()) $('.grw-place img', $row).add($('img', $form)).attr('src', r.photo);
+                }
+                GRW_TOAST.show({
+                    msg: r.cached ?
+                        'Reviews are up to date: without your API key they are refreshed from Google at most once every 3 days, so no attempt was used.' :
+                        'Reviews updated successfully. ' + (r.credits > -1 ? '<br><b>' + r.credits + ' attempts remaining (without your API key).</b>' : ''),
+                    type: 'success'
+                });
             }
-
-            next();
         }
 
         $placesTable.on('click', '.grw-place-update', function() {
-            updatePlace($(this).closest('tr'));
+            // The iframe answers one request at a time, so only one row may be in flight.
+            if ($('.grw-place-busy', $placesTable).length) return false;
+            var $row = $(this).closest('tr'), langs = JSON.parse($row.attr('data-langs') || '[]');
+            if (langs.length < 2) {
+                updatePlace($row, langs[0] || '');
+                return false;
+            }
+            // Reviews in several languages: the admin picks the one to update now.
+            var names = (rpi.Langs && rpi.Langs.google) || [],
+                body = document.createElement('div'),
+                select = document.createElement('select');
+            body.className = 'grw-place-fields';
+            body.innerHTML = '<p>Reviews of this place were fetched in ' + langs.length + ' languages. Each update fetches one of them.</p>';
+            langs.forEach(function(code) {
+                var name = names.filter(function(l) { return l.v === code; })[0];
+                select.append(new Option(name ? name.t + ' (' + code + ')' : code, code));
+            });
+            var label = document.createElement('label');
+            label.className = 'grw-place-option';
+            label.append('Language', select);
+            body.append(label);
+            grw_place_modal($row[0], this, body, 'Update reviews', {submit: function(done) { done(); updatePlace($row, select.value); }});
             return false;
         });
 
@@ -581,7 +580,7 @@ jQuery(document).ready(function($) {
         $placesTable.on('click', '.grw-place-delete', function() {
             var $row = $(this).closest('tr');
             if ($row.hasClass('grw-place-busy')) return false;
-            var word = prompt('Deleting ' + $row.data('name') + ' also deletes all of its ' + $row.data('reviews') + ' stored reviews.\nWidgets and badges that include this place will stop showing it.\n\nType delete to confirm');
+            var word = prompt('Deleting ' + $row.data('name') + ' also deletes all of its ' + $row.attr('data-reviews') + ' stored reviews.\nWidgets and badges that include this place will stop showing it.\n\nType delete to confirm');
             if (word === null || word.trim().toLowerCase() !== 'delete') return false;
             $row.addClass('grw-place-busy');
             $.post(ajaxurl, {id: $row.data('id'), action: 'grw_delete_place', grw_nonce: nonce}, function(res) {
@@ -694,6 +693,42 @@ function grw_s2dmy(s) {
 
 const GRW_TOAST = rpi.Toast({timeout: 25});
 
+// A modal over the Places list in the metrics of the widget page's picker: the page behind is inert, the trigger gets the focus
+// back. on.submit(done) runs the primary button, on.action(btn) the body's own buttons, on.cancel and on.close follow the body.
+function grw_place_modal(row, trigger, body, label, on) {
+    const modal = document.createElement('div');
+    modal.className = 'grw-badge-modal grw-place-modal';
+    modal.innerHTML = '<div class="grw-badge-modal-box" role="dialog" aria-modal="true" aria-labelledby="grw-place-title" tabindex="-1">' +
+        '<div class="grw-badge-modal-head"><h2 id="grw-place-title"></h2><button type="button" class="grw-badge-modal-x" aria-label="Close"><span class="dashicons dashicons-no-alt"></span></button></div>' +
+        '<div class="grw-badge-modal-body"></div>' +
+        '<div class="grw-badge-modal-foot"><button type="button" class="button grw-place-cancel">Cancel</button><button type="button" class="button button-primary grw-place-save"></button></div></div>';
+    modal.querySelector('h2').textContent = row.dataset.name;
+    modal.querySelector('.grw-place-save').textContent = label;
+    const box = modal.firstElementChild;
+    modal.querySelector('.grw-badge-modal-body').append(body);
+    const close = () => {
+        if (on.close) on.close();
+        modal.remove();
+        document.getElementById('wpwrap').inert = false;
+        trigger.focus();
+    };
+    const cancel = () => { if (on.cancel) on.cancel(); close(); };
+    modal.addEventListener('click', e => {
+        if (box.classList.contains('grw-place-busy')) return;
+        const btn = e.target.closest('button');
+        if (e.target === modal || btn && btn.matches('.grw-badge-modal-x, .grw-place-cancel')) return cancel();
+        if (!btn) return;
+        if (btn.classList.contains('grw-place-save')) {
+            box.classList.add('grw-place-busy');
+            on.submit(err => { box.classList.remove('grw-place-busy'); if (err) GRW_TOAST.show({msg: err, type: 'error'}); else close(); });
+        } else if (on.action) on.action(btn);
+    });
+    modal.addEventListener('keydown', e => { if (e.key === 'Escape' && !box.classList.contains('grw-place-busy')) cancel(); });
+    document.body.append(modal);
+    document.getElementById('wpwrap').inert = true;
+    box.focus();
+}
+
 function grw_get_error(res) {
     return res?.result?.error_message?.message || res?.result?.error_message || null;
 }
@@ -741,47 +776,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }).catch(() => done('Request failed, please try again.'));
     }
 
-    // The row's form moves into a modal in the metrics of the widget page's picker and back when it closes. The page behind is
-    // inert meanwhile; the media library opens above the modal (its z-index is lower); the gear gets the focus back.
+    // The row's form moves into the modal and back when it closes; the media library opens above the modal (its z-index is lower).
     function open(row, gear) {
         const form = row.querySelector('.grw-place-fields');
-        const modal = document.createElement('div');
-        modal.className = 'grw-badge-modal grw-place-modal';
-        modal.innerHTML = '<div class="grw-badge-modal-box" role="dialog" aria-modal="true" aria-labelledby="grw-place-title" tabindex="-1">' +
-            '<div class="grw-badge-modal-head"><h2 id="grw-place-title"></h2><button type="button" class="grw-badge-modal-x" aria-label="Close"><span class="dashicons dashicons-no-alt"></span></button></div>' +
-            '<div class="grw-badge-modal-body"></div>' +
-            '<div class="grw-badge-modal-foot"><button type="button" class="button grw-place-cancel">Cancel</button><button type="button" class="button button-primary grw-place-save">Save</button></div></div>';
-        modal.querySelector('h2').textContent = row.dataset.name;
-        const box = modal.firstElementChild;
-        modal.querySelector('.grw-badge-modal-body').append(form);
         form.hidden = false;
-        const close = () => {
-            form.hidden = true;
-            row.querySelector('.grw-col-actions').append(form);
-            modal.remove();
-            document.getElementById('wpwrap').inert = false;
-            document.body.classList.remove('grw-badge-modal-open');
-            gear.focus();
-        };
-        const cancel = () => { form.reset(); show(form); close(); };
-        modal.addEventListener('click', e => {
-            if (box.classList.contains('grw-place-busy')) return;
-            const btn = e.target.closest('button');
-            if (e.target === modal || btn && btn.matches('.grw-badge-modal-x, .grw-place-cancel')) return cancel();
-            if (!btn) return;
-            if (btn.classList.contains('grw-place-photo-pick')) pick(form);
-            else if (btn.classList.contains('grw-place-photo-google')) { form.querySelector('[name=photo]').value = ''; show(form); }
-            else if (btn.classList.contains('grw-place-save')) {
-                box.classList.add('grw-place-busy');
-                save(row, form, err => { box.classList.remove('grw-place-busy'); if (err) GRW_TOAST.show({msg: err, type: 'error'}); else close(); });
+        form.addEventListener('submit', e => e.preventDefault());
+        grw_place_modal(row, gear, form, 'Save', {
+            submit: done => save(row, form, done),
+            cancel: () => { form.reset(); show(form); },
+            close: () => { form.hidden = true; row.querySelector('.grw-col-actions').append(form); },
+            action: btn => {
+                if (btn.classList.contains('grw-place-photo-pick')) pick(form);
+                else if (btn.classList.contains('grw-place-photo-google')) { form.querySelector('[name=photo]').value = ''; show(form); }
             }
         });
-        modal.addEventListener('keydown', e => { if (e.key === 'Escape' && !box.classList.contains('grw-place-busy')) cancel(); });
-        form.addEventListener('submit', e => e.preventDefault());
-        document.body.append(modal);
-        document.body.classList.add('grw-badge-modal-open');
-        document.getElementById('wpwrap').inert = true;
-        box.focus();
     }
 
     table.addEventListener('click', e => {

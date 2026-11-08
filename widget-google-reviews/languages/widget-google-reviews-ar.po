@@ -94,3 +94,12 @@ msgstr "مقبول"
 
 msgid "Poor"
 msgstr "ضعيف"
+
+msgid "Google Rating"
+msgstr "تقييم Google"
+
+msgid "Previous"
+msgstr "السابق"
+
+msgid "Next"
+msgstr "التالي"

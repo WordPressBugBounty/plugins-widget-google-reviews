@@ -45,7 +45,7 @@ class View {
         $cls = $this->root_cls($options);
         self::$rendered[] = (string) $feed_id;
 
-        ?><div class="wp-gr rpi<?php echo $cls; ?>"<?php if ($style) { ?> style="<?php echo esc_attr($style); ?>"<?php } ?> data-id="<?php echo esc_attr($feed_id); ?>" data-layout="<?php echo esc_attr($options->view_mode); ?>" data-exec="false" data-options='<?php echo esc_attr($this->options($options)); ?>'<?php if ($this->badge_popup($reviews, $options)) { ?> data-reviews="<?php echo esc_url(admin_url('admin-ajax.php?action=grw_reviews&id=' . (int) $feed_id)); ?>"<?php } ?>><?php
+        ?><div class="wp-gr rpi<?php echo $cls; ?>"<?php if ($style) { ?> style="<?php echo esc_attr($style); ?>"<?php } ?> data-id="<?php echo esc_attr($feed_id); ?>" data-layout="<?php echo esc_attr($options->view_mode); ?>" data-exec="false" data-options='<?php echo esc_attr($this->options($options)); ?>'<?php if (!$is_admin && $this->ajax_popup($reviews, $options)) { ?> data-reviews="<?php echo esc_url(admin_url('admin-ajax.php?action=grw_reviews&id=' . (int) $feed_id)); ?>"<?php } ?>><?php
             $rows = false;
             switch ($options->view_mode) {
                 case 'slider':
@@ -67,6 +67,11 @@ class View {
                     break;
                 default:
                     $this->render_list($businesses, $reviews, $options, $is_admin);
+            }
+
+            // The editor's preview holds its popup as the rating does, so an unsaved option shows; the site fetches it on the first click.
+            if ($is_admin && $rows && $this->ajax_popup($reviews, $options)) {
+                $this->render_popup($reviews, $options, $is_admin);
             }
 
             if ($rows) {
@@ -217,6 +222,7 @@ class View {
         if ($options->badge_onestar)           $cls[] = 'rpi-badge-onestar';
         if ($options->badge_order === 'stars') $cls[] = 'rpi-badge-starsfirst';
         if ($options->badge_width === 'auto')  $cls[] = 'rpi-badge-fit';
+        elseif ($options->badge_width)         $cls[] = 'rpi-badge-sized';
         if ($bar)                              $cls[] = 'rpi-badge-bar';
 
         $style = array();
@@ -247,8 +253,8 @@ class View {
                     <div class="rpi-badge-main">
                         <div class="rpi-badge-head">
                             <?php echo ($compact && !$options->badge_logo_hide) ? $this->logo($provider, $stars) : $stars; ?>
-                            <?php if (!$options->badge_based_hide) { ?><span class="rpi-badge-count"><?php echo $options->badge_dot ? '· ' . $count : '(' . $count . ')'; ?></span><?php } ?>
-                            <?php if ($top_rated) { ?><span class="rpi-badge-label<?php if ($options->badge_icon) echo ' rpi-badge-ico-' . esc_attr($options->badge_icon); ?>">· <i><?php echo esc_html__('Top rated', 'widget-google-reviews'); ?></i></span><?php } ?>
+                            <?php if (!$options->badge_based_hide) { ?><span class="rpi-badge-count<?php if ($options->badge_dot) echo ' rpi-dotted'; ?>"><?php echo $options->badge_dot ? $count : '(' . $count . ')'; ?></span><?php } ?>
+                            <?php if ($top_rated) { ?><span class="rpi-badge-label rpi-dotted<?php if ($options->badge_icon) echo ' rpi-badge-ico-' . esc_attr($options->badge_icon); ?>"><i><?php echo esc_html__('Top rated', 'widget-google-reviews'); ?></i></span><?php } ?>
                         </div>
                         <div class="rpi-badge-feed"><span><?php echo $this->badge_first($biz, $live, $options->badge_author_hide); ?></span></div>
                     </div>
@@ -307,7 +313,7 @@ class View {
         return array(
             'photo' => function($d, $o) use ($place, $photo, $options, $cls, $logo) {
                 $alt = empty($options->aria_label) ? sprintf(__('%s place picture', 'widget-google-reviews'), $place->name) : '';
-                return $this->capture('grw_image', $photo, $alt, $options->lazy_load_img, 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', '', $cls($o) . $logo($o));
+                return $this->capture('grw_image', $photo, $alt, $options->lazy_load_img, $this->storefront($alt), '', $cls($o) . $logo($o));
             },
             'name' => function($d, $o) use ($place, $options, $cls, $logo) {
                 $inner = $options->disable_biz_link || empty($place->url)
@@ -333,11 +339,11 @@ class View {
             'based' => function($d, $o) use ($place, $options, $count, $cls, $attr) {
                 // The badge's '%1 reviews' is already translated into every plugin language.
                 $text = $attr($o, 'short') ? str_replace('%1', '%s', __('%1 reviews', 'widget-google-reviews')) : __('Based on %s reviews', 'widget-google-reviews');
-                return '<div class="' . $cls($o, 'wp-google-based') . '">' . ($attr($o, 'dot') ? '· ' : '') . $this->based($text, $count, $attr($o, 'bold')) . '</div>';
+                return '<div class="' . $cls($o, 'wp-google-based' . ($attr($o, 'dot') ? ' rpi-dotted' : '')) . '">' . $this->based($text, $count, $attr($o, 'bold')) . '</div>';
             },
             'count' => function($d, $o) use ($count, $cls, $attr) {
                 $n = $attr($o, 'bold') ? '<b>' . $count . '</b>' : $count;
-                return '<span class="' . $cls($o, 'rpi-badge-count') . '">' . ($attr($o, 'dot') ? '· ' . $n : '(' . $n . ')') . '</span>';
+                return '<span class="' . $cls($o, 'rpi-badge-count' . ($attr($o, 'dot') ? ' rpi-dotted' : '')) . '">' . ($attr($o, 'dot') ? $n : '(' . $n . ')') . '</span>';
             },
             'powered' => function($d, $o) use ($cls, $attr) {
                 return $this->capture('grw_powered', (bool) $attr($o, 'short'), $o['cls']);
@@ -348,7 +354,7 @@ class View {
             'label' => function($d, $o) use ($top, $cls, $attr) {
                 if (!$top) return '';
                 $icon = $attr($o, 'icon');
-                return '<span class="' . $cls($o, 'rpi-badge-label' . (is_string($icon) && $icon !== '' ? ' rpi-badge-ico-' . esc_attr($icon) : '')) . '">' . ($attr($o, 'dot') ? '· ' : '') . '<i>' . esc_html__('Top rated', 'widget-google-reviews') . '</i></span>';
+                return '<span class="' . $cls($o, 'rpi-badge-label' . (is_string($icon) && $icon !== '' ? ' rpi-badge-ico-' . esc_attr($icon) : '') . ($attr($o, 'dot') ? ' rpi-dotted' : '')) . '"><i>' . esc_html__('Top rated', 'widget-google-reviews') . '</i></span>';
             },
             'phrase' => function($d, $o) use ($place, $phrases, $cls, $attr) {
                 return '<div class="' . $cls($o, 'rpi-badge-feed') . '"><span>' . $this->badge_first($place, $phrases(), (bool) $attr($o, 'noauthor')) . '</span></div>';
@@ -385,14 +391,22 @@ class View {
     }
 
     public function badge_popup($reviews, $options) {
-        return $options->view_mode === 'badge' && $options->badge_click !== 'disable' && !$options->hide_reviews && count($reviews) > 0;
+        return $options->view_mode === 'badge' && $this->ajax_popup($reviews, $options);
+    }
+
+    // The badge and a card's "read more" fetch the review list on the first click.
+    public function ajax_popup($reviews, $options) {
+        $click = $options->view_mode === 'badge' ? $options->badge_click !== 'disable' : $options->more_popup && in_array($options->view_mode, array('slider', 'grid'), true);
+        return $click && !$options->hide_reviews && count($reviews) > 0;
     }
 
     public function render_popup($reviews, $options, $is_admin = false) {
         // The popup scrolls, so paging inside it would only hide reviews behind a click.
         $popup_options = clone $options;
         $popup_options->pagination = 0;
-        ?><div class="wp-gr rpi<?php echo $this->root_cls($options); ?> grw-popup"><?php
+        // The rating's name, stars and text colours are for its popup, a second root that inherits nothing from the widget's; a card's palette stays on the cards.
+        $style = $options->view_mode === 'rating' && is_string($options->style_vars) ? $options->style_vars . Themes::css_vars(isset($options->css_vars) ? $options->css_vars : '') : '';
+        ?><div class="wp-gr rpi<?php echo $this->root_cls($options); ?> grw-popup"<?php if ($style) { ?> style="<?php echo esc_attr($style); ?>"<?php } ?>><?php
             $this->grw_place_reviews($reviews, $popup_options, $is_admin);
         ?></div><?php
     }
@@ -481,7 +495,7 @@ class View {
                 if (!$options->header_hide_photo) {
                     $alt_val = sprintf(__('%s place picture', 'widget-google-reviews'), $place->name);
                     $alt = empty($options->aria_label) ? $alt_val : ($options->header_hide_name ? $alt_val : '');
-                    $this->grw_image($place_img, $alt, $options->lazy_load_img);
+                    $this->grw_image($place_img, $alt, $options->lazy_load_img, $this->storefront($alt));
                 }
                 ?><div class="rpi-flx rpi-col8"<?php echo $style; ?>><?php
                     $item = function($key) use ($rating, $place, $options, $show_powered) {
@@ -614,7 +628,7 @@ class View {
     }
 
     function grw_place_review($review, $hr, $options, $is_admin = false) {
-        ?><div class="wp-google-review<?php if ($hr) { echo ' wp-google-hide'; } if ($is_admin && $this->hidden_in($review, $options)) { echo ' wp-review-hidden'; } ?>"<?php if ($is_admin) echo $this->hide_attrs($review, $options); ?>><?php
+        ?><div class="wp-google-review<?php if ($hr) { echo ' wp-google-hide'; } if ($is_admin && $this->hidden_in($review, $options)) { echo ' wp-review-hidden'; } ?>"<?php echo $this->review_attrs($review, $options, $is_admin); ?>><?php
             if ($is_admin) echo $this->hide_button($review, $options);
             ?><div class="rpi-flx rpi-row12"><?php
                 $author_name = empty($review->author_name) ? __('Google User', 'widget-google-reviews') : $review->author_name;
@@ -647,11 +661,11 @@ class View {
         if ($card) {
             $card['product']['slot'] = 'rpi-slide grw-review' . $cls;
             $card['product']['frame'] = 'grw-review-inner' . $inr_cls;
-            if ($is_admin) $card['product']['slot_attrs'] = function($review) use ($options) { return $this->hide_attrs($review, $options); };
+            $card['product']['slot_attrs'] = function($review) use ($options, $is_admin) { return $this->review_attrs($review, $options, $is_admin); };
             echo Card_Engine::render($review, $card['model'], $card['product']);
             return;
         }
-        ?><div class="rpi-slide grw-review<?php echo $cls; ?>"<?php if ($is_admin) echo $this->hide_attrs($review, $options); ?>>
+        ?><div class="rpi-slide grw-review<?php echo $cls; ?>"<?php echo $this->review_attrs($review, $options, $is_admin); ?>>
             <div class="rpi-flx rpi-col12 grw-review-inner<?php echo $inr_cls; ?>">
                 <div class="rpi-flx rpi-row12-center"><?php
                     $this->review_photo($review, $options);
@@ -728,29 +742,28 @@ class View {
     }
 
     private function review_photo($review, $options, $cls = '') {
-        if (!empty($options->anonym_avatar)) {
-            $this->char_avatar($this->author_name($review), $cls);
+        $name = $this->author_name($review);
+        if (!empty($options->anonym_avatar) || empty($review->author_avatar)) {
+            ?><div class="grw-img-wrap<?php if ($cls) echo ' ' . $cls; ?>"><?php echo $this->char_avatar($name); ?></div><?php
             return;
         }
-        $default_avatar = GRW_ASSETS_URL . 'img/guest.png';
-        $author_avatar = empty($review->author_avatar) ? $default_avatar : $review->author_avatar;
+        $author_avatar = $review->author_avatar;
         if (isset($options->reviewer_avatar_size)) {
             $author_avatar = str_replace(self::G_AVA_SIZE, 's' . $options->reviewer_avatar_size, $author_avatar);
-            $default_avatar = str_replace(self::G_AVA_SIZE, 's' . $options->reviewer_avatar_size, $default_avatar);
         }
-        $alt = empty($options->aria_label) ? sprintf(__('%s profile picture', 'widget-google-reviews'), $this->author_name($review)) : '';
-        $this->grw_image($author_avatar, $alt, $options->lazy_load_img, $default_avatar, '', $cls);
+        $alt = empty($options->aria_label) ? sprintf(__('%s profile picture', 'widget-google-reviews'), $name) : '';
+        $this->grw_image($author_avatar, $alt, $options->lazy_load_img, $this->char_avatar($name), '', $cls);
     }
 
     // The palette and the rule are rpi.View.charAvatar's in the CDN view.js and brb's char_avatar(): one reviewer, one avatar in every product.
-    private function char_avatar($name, $cls) {
+    private function char_avatar($name) {
         $colors = array(array('#d93025', '#f28b82'), array('#e8710a', '#fcc934'), array('#f09300', '#fdd663'), array('#0b8043', '#57bb8a'), array('#00897b', '#4db6ac'),
                         array('#1a73e8', '#7baaf7'), array('#3949ab', '#7986cb'), array('#7b1fa2', '#ba68c8'), array('#c2185b', '#f06292'), array('#455a64', '#90a4ae'));
         $name = trim($name);
         $char = $name === '' ? '?' : mb_substr($name, 0, 1);
         $char = function_exists('mb_strtoupper') ? mb_strtoupper($char) : strtoupper($char);
         $color = $colors[(function_exists('mb_ord') ? mb_ord($char, 'UTF-8') : ord($char)) % count($colors)];
-        ?><div class="grw-img-wrap<?php if ($cls) echo ' ' . $cls; ?>"><span class="grw-img grw-img-char" style="background:linear-gradient(135deg, <?php echo $color[0] . ', ' . $color[1]; ?>)" aria-hidden="true"><?php echo esc_html($char); ?></span></div><?php
+        return '<span class="grw-img grw-img-char" style="background:linear-gradient(135deg, ' . $color[0] . ', ' . $color[1] . ')" aria-hidden="true">' . esc_html($char) . '</span>';
     }
 
     private function review_name($review, $options, $cls = 'wp-google-name') {
@@ -798,8 +811,9 @@ class View {
         return array_keys(array_filter(array('site' => $review->hide != '', 'widget' => isset($options->hidden) && $this->is_hidden($review->id, $options->hidden))));
     }
 
-    private function hide_attrs($review, $options) {
-        return ' data-id="' . (int) $review->id . '" data-hidden="' . implode(' ', $this->hidden_in($review, $options)) . '"';
+    // The editor reads the hidden scopes; the popup finds a card's review by its id.
+    private function review_attrs($review, $options, $is_admin) {
+        return ' data-id="' . (int) $review->id . '"' . ($is_admin ? ' data-hidden="' . implode(' ', $this->hidden_in($review, $options)) . '"' : '');
     }
 
     private function hide_button($review, $options) {
@@ -855,7 +869,13 @@ class View {
         return empty($options->aria_label) || empty($aria_label) ? '' : (empty($role) ? '' : ' role="' . $role . '"') . ' aria-label="' . $aria_label . '"';
     }
 
-    function grw_image($src, $alt, $lazy, $def_ava = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', $atts = '', $cls = '') {
-        ?><div class="grw-img-wrap<?php if ($cls) echo ' ' . $cls; ?>"><img class="grw-img" src="<?php echo esc_url($src); ?>"<?php if ($lazy) { ?> loading="lazy"<?php } ?> alt="<?php echo esc_attr($alt); ?>" width="50" height="50" onerror="if(this.src!='<?php echo $def_ava; ?>')this.src='<?php echo $def_ava; ?>';" <?php echo $atts; ?>></div><?php
+    // A photo that fails to load becomes $fallback by its own onerror: it works before the widget's scripts load.
+    function grw_image($src, $alt, $lazy, $fallback, $atts = '', $cls = '') {
+        ?><div class="grw-img-wrap<?php if ($cls) echo ' ' . $cls; ?>"><img class="grw-img" src="<?php echo esc_url($src); ?>"<?php if ($lazy) { ?> loading="lazy"<?php } ?> alt="<?php echo esc_attr($alt); ?>" width="50" height="50" data-fallback="<?php echo esc_attr($fallback); ?>" onerror="this.outerHTML=this.dataset.fallback" <?php echo $atts; ?>></div><?php
+    }
+
+    // A place with a broken photo shows the storefront, a person the letter avatar: the same in the CDN view.js and brb.
+    private function storefront($alt) {
+        return '<img class="grw-img" src="' . esc_url(GRW_GOOGLE_BIZ) . '" alt="' . esc_attr($alt) . '" width="50" height="50">';
     }
 }

@@ -30,9 +30,22 @@ class Plugin_Places {
         }
     }
 
-    public function fetch_pairs($place) {
-        $local_img = Place_Settings::local_img($place, function() use ($place) { return $this->dao->has_local_images($place->id); });
-        return array(array('lang' => $this->dao->place_lang($place), 'local_img' => $local_img));
+    // The languages a place's reviews were fetched in, the one an update takes by default first.
+    private function langs($place) {
+        $langs = $this->dao->get_place_langs($place->id);
+        return array_values(array_unique(array_merge(array($this->dao->place_lang($place, $langs)), $langs)));
+    }
+
+    // What the row shows for a place; the Update answer carries the same, so the row redraws without a reload.
+    public static function facts($place) {
+        $updated = (int) ($place->updated / 1000);
+        return array(
+            'rating'          => $place->rating > 0 ? number_format((float) $place->rating, 1, '.', '') : '',
+            'review_count'    => number_format_i18n((int) $place->review_count),
+            'db_review_count' => number_format_i18n((int) $place->db_review_count),
+            'updated'         => $updated ? human_time_diff($updated) . ' ago' : '—',
+            'updated_title'   => $updated ? wp_date(get_option('date_format') . ' ' . get_option('time_format'), $updated) : '',
+        );
     }
 
     public function connection($place) {
@@ -108,15 +121,14 @@ class Plugin_Places {
                 <?php foreach ($places as $place) {
                     $photo = Place_Settings::photo($place);
                     $google_photo = Place_Settings::google_photo($place);
-                    $updated = (int) ($place->updated / 1000);
-                    $rating = $place->rating > 0 ? number_format((float) $place->rating, 1, '.', '') : '';
+                    $facts = self::facts($place);
                     $create_url = add_query_arg('grw_place_id', rawurlencode($place->place_id), $widget_url);
                     // The form opens on what the place does today, so its first Save changes nothing by itself.
                     $refresh = Place_Settings::refresh($place, isset($widgets[$place->place_id]) ? $widgets[$place->place_id]['conns'] : array());
-                    $pair = $this->fetch_pairs($place)[0];
+                    $local_img = Place_Settings::local_img($place, function() use ($place) { return $this->dao->has_local_images($place->id); });
                     $custom_photo = empty($place->custom_photo) ? '' : $place->custom_photo;
                     ?>
-                    <tr data-id="<?php echo esc_attr($place->id); ?>" data-pid="<?php echo esc_attr($place->place_id); ?>" data-url="<?php echo esc_attr((string) $place->map_url); ?>" data-conns="<?php echo esc_attr(wp_json_encode(array($pair))); ?>" data-name="<?php echo esc_attr($place->name); ?>" data-reviews="<?php echo esc_attr(number_format_i18n((int) $place->db_review_count)); ?>">
+                    <tr data-id="<?php echo esc_attr($place->id); ?>" data-pid="<?php echo esc_attr($place->place_id); ?>" data-url="<?php echo esc_attr((string) $place->map_url); ?>" data-langs="<?php echo esc_attr(wp_json_encode($this->langs($place))); ?>" data-name="<?php echo esc_attr($place->name); ?>" data-reviews="<?php echo esc_attr($facts['db_review_count']); ?>">
                         <td class="column-primary grw-col-place" data-colname="Place">
                             <div class="grw-place">
                                 <img src="<?php echo esc_url($photo); ?>" alt="" width="40" height="40" loading="lazy" onerror="if(this.src!='<?php echo esc_url(GRW_GOOGLE_BIZ); ?>')this.src='<?php echo esc_url(GRW_GOOGLE_BIZ); ?>';">
@@ -128,16 +140,16 @@ class Plugin_Places {
                             <button type="button" class="toggle-row"><span class="screen-reader-text">Show more details</span></button>
                         </td>
                         <td class="grw-col-rating" data-colname="Rating">
-                            <?php if ($rating !== '') { ?>
-                            <span class="rpi-stars" style="--rating:<?php echo esc_attr($rating); ?>"><?php echo esc_html($rating); ?></span>
+                            <?php if ($facts['rating'] !== '') { ?>
+                            <span class="rpi-stars" style="--rating:<?php echo esc_attr($facts['rating']); ?>"><?php echo esc_html($facts['rating']); ?></span>
                             <?php } else { ?>&mdash;<?php } ?>
                         </td>
                         <td class="grw-col-reviews" data-colname="Reviews">
-                            <span class="grw-place-count"><?php echo number_format_i18n((int) $place->review_count); ?></span> on Google<br>
-                            <span class="description"><?php echo number_format_i18n((int) $place->db_review_count); ?> in the plugin</span>
+                            <span class="grw-place-count"><?php echo esc_html($facts['review_count']); ?></span> on Google<br>
+                            <span class="description grw-place-db-count"><?php echo esc_html($facts['db_review_count']); ?> in the plugin</span>
                         </td>
-                        <td class="grw-col-updated grw-place-updated" data-colname="Last updated" title="<?php echo $updated ? esc_attr(wp_date(get_option('date_format') . ' ' . get_option('time_format'), $updated)) : ''; ?>">
-                            <?php echo $updated ? esc_html(human_time_diff($updated) . ' ago') : '&mdash;'; ?>
+                        <td class="grw-col-updated grw-place-updated" data-colname="Last updated" title="<?php echo esc_attr($facts['updated_title']); ?>">
+                            <?php echo esc_html($facts['updated']); ?>
                         </td>
                         <td class="grw-col-actions" data-colname="Actions">
                             <a href="#" class="grw-place-btn grw-place-settings" title="Settings" aria-label="Settings" aria-haspopup="dialog"><span class="dashicons dashicons-admin-generic"></span></a>
@@ -152,7 +164,7 @@ class Plugin_Places {
                                     <button type="button" class="button-link grw-place-photo-google"<?php echo $custom_photo === '' ? ' hidden' : ''; ?>>Use Google's photo</button>
                                 </div>
                                 <label class="grw-place-option"><input type="checkbox" name="refresh"<?php checked($refresh); ?>><span><b>Auto-update reviews</b><small>Fetched from Google on the schedule in Settings; needs your API key.</small></span></label>
-                                <label class="grw-place-option"><input type="checkbox" name="local_img"<?php checked($pair['local_img']); ?>><span><b>Store images on this site</b><small>Reviewer photos and review pictures are copied to your media library.</small></span></label>
+                                <label class="grw-place-option"><input type="checkbox" name="local_img"<?php checked($local_img); ?>><span><b>Store images on this site</b><small>Reviewer photos and review pictures are copied to your media library.</small></span></label>
                             </form>
                         </td>
                     </tr>

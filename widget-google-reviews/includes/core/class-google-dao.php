@@ -220,18 +220,22 @@ class Google_Dao {
     public function get_places() {
         global $wpdb;
 
-        return $wpdb->get_results(
-            "SELECT p.*, (SELECT COUNT(DISTINCT COALESCE(r.author_url, r.review_id)) FROM " . $wpdb->prefix . Database::REVIEW_TABLE . " r WHERE r.google_place_id = p.id) AS db_review_count" .
-            " FROM " . $wpdb->prefix . Database::BUSINESS_TABLE . " p ORDER BY p.name ASC"
-        );
+        return $wpdb->get_results("SELECT " . $this->place_columns() . " FROM " . $wpdb->prefix . Database::BUSINESS_TABLE . " p ORDER BY p.name ASC");
     }
 
     public function get_place($place_id) {
         global $wpdb;
 
         return $wpdb->get_row(
-            $wpdb->prepare("SELECT * FROM " . $wpdb->prefix . Database::BUSINESS_TABLE . " WHERE place_id = %s", $place_id)
+            $wpdb->prepare("SELECT " . $this->place_columns() . " FROM " . $wpdb->prefix . Database::BUSINESS_TABLE . " p WHERE p.place_id = %s", $place_id)
         );
+    }
+
+    // A place with the number of distinct reviews the plugin holds for it.
+    private function place_columns() {
+        global $wpdb;
+
+        return "p.*, (SELECT COUNT(DISTINCT COALESCE(r.author_url, r.review_id)) FROM " . $wpdb->prefix . Database::REVIEW_TABLE . " r WHERE r.google_place_id = p.id) AS db_review_count";
     }
 
     // Every place in id order, starting after $id and wrapping round: the cron's queue across runs.
@@ -245,8 +249,8 @@ class Google_Dao {
 
     // One language per update to keep it to a single Google request: the site language when the place
     // has reviews in it, otherwise the language it was fetched in last. Other languages are left to the cron.
-    public function place_lang($place) {
-        $langs = $this->get_place_langs($place->id);
+    public function place_lang($place, $langs = null) {
+        if ($langs === null) $langs = $this->get_place_langs($place->id);
         $site_lang = substr(get_locale(), 0, 2);
         return (empty($langs) || in_array($site_lang, $langs, true)) ? $site_lang : $langs[0];
     }

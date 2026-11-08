@@ -94,3 +94,12 @@ msgstr "Acceptabil"
 
 msgid "Poor"
 msgstr "Slab"
+
+msgid "Google Rating"
+msgstr "Evaluare Google"
+
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Next"
+msgstr "Următor"

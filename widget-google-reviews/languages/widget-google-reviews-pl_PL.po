@@ -94,3 +94,12 @@ msgstr "Przeciętna"
 
 msgid "Poor"
 msgstr "Słaba"
+
+msgid "Google Rating"
+msgstr "Ocena Google"
+
+msgid "Previous"
+msgstr "Poprzedni"
+
+msgid "Next"
+msgstr "Następny"

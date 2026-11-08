@@ -94,3 +94,12 @@ msgstr "Kohtalainen"
 
 msgid "Poor"
 msgstr "Huono"
+
+msgid "Google Rating"
+msgstr "Google-arvosana"
+
+msgid "Previous"
+msgstr "Edellinen"
+
+msgid "Next"
+msgstr "Seuraava"

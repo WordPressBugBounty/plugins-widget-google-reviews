@@ -94,3 +94,12 @@ msgstr "Elfogadható"
 
 msgid "Poor"
 msgstr "Gyenge"
+
+msgid "Google Rating"
+msgstr "Google-értékelés"
+
+msgid "Previous"
+msgstr "Előző"
+
+msgid "Next"
+msgstr "Következő"

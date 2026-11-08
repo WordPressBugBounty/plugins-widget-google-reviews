@@ -94,3 +94,12 @@ msgstr "Priemerné"
 
 msgid "Poor"
 msgstr "Slabé"
+
+msgid "Google Rating"
+msgstr "Hodnotenie Google"
+
+msgid "Previous"
+msgstr "Predchádzajúci"
+
+msgid "Next"
+msgstr "Ďalší"

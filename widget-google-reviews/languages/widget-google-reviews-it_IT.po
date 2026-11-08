@@ -94,3 +94,12 @@ msgstr "Discreto"
 
 msgid "Poor"
 msgstr "Scarso"
+
+msgid "Google Rating"
+msgstr "Valutazione di Google"
+
+msgid "Previous"
+msgstr "Precedente"
+
+msgid "Next"
+msgstr "Successivo"

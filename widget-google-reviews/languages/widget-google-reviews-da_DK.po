@@ -94,3 +94,12 @@ msgstr "Rimelig"
 
 msgid "Poor"
 msgstr "Dårlig"
+
+msgid "Google Rating"
+msgstr "Google-bedømmelse"
+
+msgid "Previous"
+msgstr "Forrige"
+
+msgid "Next"
+msgstr "Næste"

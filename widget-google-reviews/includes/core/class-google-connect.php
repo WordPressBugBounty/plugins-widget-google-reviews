@@ -2,14 +2,18 @@
 
 namespace WP_Rplg_Google_Reviews\Includes\Core;
 
+use WP_Rplg_Google_Reviews\Includes\Plugin_Places;
+
 class Google_Connect {
 
     private $api_old;
     private $utils;
+    private $dao;
 
-    public function __construct(Google_Api_Old $api_old, Google_Utils $utils) {
+    public function __construct(Google_Api_Old $api_old, Google_Utils $utils, Google_Dao $dao) {
         $this->api_old = $api_old;
         $this->utils = $utils;
+        $this->dao = $dao;
 
         add_action('wp_ajax_grw_hide_review', array($this, 'hide_review'));
         add_action('wp_ajax_grw_connect_google', array($this, 'connect_google'));
@@ -108,6 +112,10 @@ class Google_Connect {
                     }
                 }
 
+                // The Places page redraws its row from what the plugin holds now, not from Google's answer.
+                if (!empty($response['status']) && $response['status'] === 'success' && ($place = $this->dao->get_place($pid))) {
+                    $response['result']['place'] = Plugin_Places::facts($place);
+                }
                 Core::clear_feed_cache(isset($_POST['feed_id']) ? $_POST['feed_id'] : null);
             }
 

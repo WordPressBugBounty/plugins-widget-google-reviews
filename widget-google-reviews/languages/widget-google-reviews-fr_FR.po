@@ -94,3 +94,12 @@ msgstr "Correct"
 
 msgid "Poor"
 msgstr "Mauvais"
+
+msgid "Google Rating"
+msgstr "Note Google"
+
+msgid "Previous"
+msgstr "Précédent"
+
+msgid "Next"
+msgstr "Suivant"

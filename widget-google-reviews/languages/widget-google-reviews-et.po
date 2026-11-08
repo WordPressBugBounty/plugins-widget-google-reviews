@@ -94,3 +94,12 @@ msgstr "Rahuldav"
 
 msgid "Poor"
 msgstr "Kehv"
+
+msgid "Google Rating"
+msgstr "Google'i hinnang"
+
+msgid "Previous"
+msgstr "Eelmine"
+
+msgid "Next"
+msgstr "Järgmine"

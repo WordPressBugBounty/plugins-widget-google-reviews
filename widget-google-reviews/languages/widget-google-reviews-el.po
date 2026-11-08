@@ -94,3 +94,12 @@ msgstr "Μέτριο"
 
 msgid "Poor"
 msgstr "Κακό"
+
+msgid "Google Rating"
+msgstr "Βαθμολογία Google"
+
+msgid "Previous"
+msgstr "Προηγούμενο"
+
+msgid "Next"
+msgstr "Επόμενο"

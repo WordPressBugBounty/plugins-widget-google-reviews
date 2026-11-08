@@ -395,7 +395,10 @@ function grw_steps(root, cfg) {
             if (state.tiles.some(t => key(t) === k)) return;
             addTile(place);
             redrawTiles();
+            // The tile's "Connecting…" sits in the list; the toast says it where the eye is.
+            const busy = GRW_TOAST.show({msg: 'Connecting <b>' + esc(place.name) + '</b>…', timeout: 60});
             const done = (err, result) => {
+                busy.remove();
                 if (!err) rememberPlace({id: place.id, name: result.name || place.name, address: place.address || '', photo: result.photo || '', rating: result.rating ? Number(result.rating).toFixed(1) : '', total: result.user_ratings_total || 0, lang: place.lang});
                 // A place removed while it connected stays removed.
                 if (!state.tiles.some(t => key(t) === k)) return;
@@ -461,7 +464,7 @@ function grw_steps(root, cfg) {
             '<img class="grw-badge-tile-photo" alt="" width="32" height="32" src="' + esc(p.photo || V.blank) + '" onerror="this.src=\'' + esc(V.blank) + '\'">' +
             '<span><b>' + esc(p.name) + '</b><small>' + esc(p.address) + '</small></span>'));
         const picked = () => places.filter((p, i) => rows[i].firstElementChild.checked && !rows[i].firstElementChild.disabled);
-        const close = () => { modal.remove(); document.body.classList.remove('grw-badge-modal-open'); };
+        const close = () => { modal.remove(); };
         list.onchange = () => {
             const n = picked().length;
             btn.disabled = !n;
@@ -483,7 +486,6 @@ function grw_steps(root, cfg) {
         box.append(head, search, list, foot);
         modal.append(box);
         document.body.append(modal);
-        document.body.classList.add('grw-badge-modal-open');
         if (touch()) { box.tabIndex = -1; box.focus(); } else input.focus();
     }
 

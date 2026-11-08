@@ -32,7 +32,7 @@ class Reviews_Ajax {
             wp_die('', '', 404);
         }
         $data = $this->core->get_reviews($feed);
-        if (!$this->view->badge_popup($data['reviews'], $data['options'])) {
+        if (!$this->view->ajax_popup($data['reviews'], $data['options'])) {
             wp_die('', '', 404);
         }
         $this->view->render_popup($data['reviews'], $data['options']);
