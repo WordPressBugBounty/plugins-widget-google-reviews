@@ -81,7 +81,8 @@ class Database {
     public function create_text_table() {
         global $wpdb;
 
-        $charset_collate = $wpdb->get_charset_collate();
+        $target = $this->review_charset_collation();
+        $charset_collate = $target ? "DEFAULT CHARACTER SET {$target[0]} COLLATE {$target[1]}" : $wpdb->get_charset_collate();
 
         $sql = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . self::TEXT_TABLE . " (".
                "id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,".
@@ -94,6 +95,75 @@ class Database {
                ") " . $charset_collate . ";";
 
         $this->execsql($sql);
+    }
+
+    public function collations($names = null) {
+        global $wpdb;
+
+        $collations = array();
+        foreach ($names ? $names : array(self::REVIEW_TABLE, self::BUSINESS_TABLE, self::TEXT_TABLE, self::STATS_TABLE) as $name) {
+            $table = $wpdb->prefix . $name;
+            $status = $wpdb->get_row($wpdb->prepare("SHOW TABLE STATUS LIKE %s", $wpdb->esc_like($table)));
+            if (!$status || empty($status->Collation)) continue;
+            $columns = wp_list_pluck((array) $wpdb->get_results("SHOW FULL COLUMNS FROM `{$table}`"), 'Collation', 'Field');
+            $collations[$name] = array('default' => $status->Collation, 'columns' => array_filter($columns));
+        }
+        return $collations;
+    }
+
+    // What the text table is joined on, review_id and language of the review table: array(charset, collation), null when they differ.
+    private function review_charset_collation() {
+        $review = $this->collations(array(self::REVIEW_TABLE));
+        if (empty($review)) return null;
+        $review = $review[self::REVIEW_TABLE];
+        $joined = array_unique(array_intersect_key($review['columns'], array('review_id' => 1, 'language' => 1)));
+        if (count($joined) > 1) return null;
+        $collation = $joined ? reset($joined) : $review['default'];
+        $charsets = $this->charsets(array($collation));
+        return isset($charsets[$collation]) ? array($charsets[$collation], $collation) : null;
+    }
+
+    // utf8 and utf8mb3 are one charset that MySQL 8.0.28–8.0.29 spell both ways across SHOW commands.
+    public static function mb3($name) {
+        return preg_replace('/^utf8(_|$)/', 'utf8mb3$1', $name);
+    }
+
+    private function charsets($collations) {
+        global $wpdb;
+
+        $alt = function($c) { return strpos($c, 'utf8mb3_') === 0 ? 'utf8_' . substr($c, 8) : self::mb3($c); };
+        $names = array_values(array_unique(array_merge($collations, array_map($alt, $collations))));
+        $rows = $wpdb->get_results($wpdb->prepare("SHOW COLLATION WHERE Collation IN (" . implode(',', array_fill(0, count($names), '%s')) . ")", $names));
+        $known = wp_list_pluck((array) $rows, 'Charset', 'Collation');
+        $charsets = array();
+        foreach ($collations as $c) {
+            if (isset($known[$c])) $charsets[$c] = $known[$c];
+            elseif (isset($known[$alt($c)])) $charsets[$c] = $known[$alt($c)];
+        }
+        return $charsets;
+    }
+
+    // MySQL refuses to compare columns of two collations, so the text table follows the review columns it is joined on.
+    public function align_collations() {
+        global $wpdb;
+
+        $target = $this->review_charset_collation();
+        $text = $this->collations(array(self::TEXT_TABLE));
+        if (!$target || empty($text)) return false;
+
+        list($charset, $collation) = $target;
+        $text = $text[self::TEXT_TABLE];
+        $set = array_values(array_unique(array_merge(array($text['default']), array_values($text['columns']))));
+        if (array_unique(array_map(array(__CLASS__, 'mb3'), $set)) === array(self::mb3($collation))) return false;
+        // Only a collation change within one charset or a widening to utf8mb4: any other charset change could lose characters.
+        if ($charset !== 'utf8mb4') {
+            $charsets = $this->charsets($set);
+            foreach ($set as $c) {
+                if (!isset($charsets[$c]) || self::mb3($charsets[$c]) !== self::mb3($charset)) return false;
+            }
+        }
+
+        return (bool) $wpdb->query("ALTER TABLE " . $wpdb->prefix . self::TEXT_TABLE . " CONVERT TO CHARACTER SET {$charset} COLLATE {$collation}");
     }
 
     public function migrate_review_texts() {

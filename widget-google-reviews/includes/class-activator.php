@@ -231,26 +231,12 @@ class Activator {
             $this->database->migrate_review_texts();
         }
 
-        if (version_compare($last_active_version, '6.9.8', '<')) {
-            $rev_col = $wpdb->get_row("SHOW FULL COLUMNS FROM {$rev} WHERE Field = 'review_id'");
-            $txt_col = $wpdb->get_row("SHOW FULL COLUMNS FROM {$text} WHERE Field = 'review_id'");
-
-            if ($rev_col && $txt_col && !empty($rev_col->Collation)) {
-                $collation = $rev_col->Collation;
-
-                if ($txt_col->Collation !== $collation) {
-                    $valid_collation = $wpdb->get_var($wpdb->prepare("SHOW COLLATION WHERE `Collation` = %s", $collation));
-                    if ($valid_collation) {
-                        $wpdb->query("ALTER TABLE {$text} MODIFY review_id VARCHAR(80) COLLATE {$collation} NOT NULL");
-                    }
-                }
-            }
-        }
-
         if (!$wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $text))) {
             $this->database->create_text_table();
             $this->database->migrate_review_texts();
         }
+
+        $this->database->align_collations();
 
         if (!empty($wpdb->last_error)) {
             update_option('grw_last_error', time() . ': ' . $wpdb->last_error);

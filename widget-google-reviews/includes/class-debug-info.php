@@ -101,6 +101,14 @@ $r_text_error  = $wpdb->last_error;
 $stats         = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . Database::STATS_TABLE);
 $stats_error   = $wpdb->last_error; ?>
 
+------------ Tables ------------
+
+<?php foreach ((new Database())->collations() as $name => $c) {
+    $cols = array();
+    foreach ($c["columns"] as $field => $collation) if (Database::mb3($collation) !== Database::mb3($c["default"])) $cols[] = $field . ": " . $collation;
+    echo $wpdb->prefix . $name . ": " . $c["default"] . ($cols ? " (" . implode(", ", $cols) . ")" : "") . "\n";
+} ?>
+
 ------------ Places ------------
 
 <?php if (!empty($places_error)) { echo 'DB Places error: ' . $places_error; } ?>

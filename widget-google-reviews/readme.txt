@@ -3,7 +3,7 @@ Contributors: widgetpack
 Tags: google reviews, reviews, review slider, review widget, reviews plugin
 Requires PHP: 7.2
 Tested up to: 7.1
-Stable tag: 7.2.1
+Stable tag: 7.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -121,6 +121,9 @@ Email support in English is also available on weekdays: support@richplugins.com
 * Under discussion.
 
 == Changelog ==
+
+= 7.2.2 =
+* Fixed: no reviews shown on sites where the plugin's review and text tables had different database collations; the update gives the text table the collation of the reviews table.
 
 = 7.2.1 =
 * New: Slider and Grid option "Read more opens the reviews in a popup": the popup lists all reviews, scrolled to the clicked one with its text open.

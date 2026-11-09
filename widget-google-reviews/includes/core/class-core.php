@@ -4,6 +4,9 @@ namespace WP_Rplg_Google_Reviews\Includes\Core;
 
 class Core {
 
+    // The next query resets $wpdb->last_error, so fetch_reviews() keeps its failure here.
+    private $failed = false;
+
     public static function get_default_options() {
         return array(
             'view_mode'                 => 'list',
@@ -156,8 +159,9 @@ class Core {
                 default:
                     $expiration = 3600 * 24;
             }
+            $this->failed = false;
             $data = $this->get_data($connection);
-            if ($cache_time) {
+            if ($cache_time && !$this->failed) {
                 set_transient($data_cache_key, $data, $expiration);
                 set_transient($connection_cache_key, $serialized_connection, $expiration);
             }
@@ -404,7 +408,9 @@ class Core {
             $aliases
         );
 
-        return $wpdb->get_results($wpdb->prepare($sql, $params));
+        $rows = $wpdb->get_results($wpdb->prepare($sql, $params));
+        if ($wpdb->last_error !== '') $this->failed = true;
+        return $rows;
     }
 
     public function get_overview($place_id = 0) {

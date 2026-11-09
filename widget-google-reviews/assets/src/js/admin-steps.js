@@ -396,7 +396,7 @@ function grw_steps(root, cfg) {
             addTile(place);
             redrawTiles();
             // The tile's "Connecting…" sits in the list; the toast says it where the eye is.
-            const busy = GRW_TOAST.show({msg: 'Connecting <b>' + esc(place.name) + '</b>…', timeout: 60});
+            const busy = toast('Connecting <b>' + esc(place.name) + '</b>…');
             const done = (err, result) => {
                 busy.remove();
                 if (!err) rememberPlace({id: place.id, name: result.name || place.name, address: place.address || '', photo: result.photo || '', rating: result.rating ? Number(result.rating).toFixed(1) : '', total: result.user_ratings_total || 0, lang: place.lang});

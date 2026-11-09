@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 7.2.2 =
+* Fixed: no reviews shown on sites where the plugin's review and text tables had different database collations; the update gives the text table the collation of the reviews table.
+
 = 7.2.1 =
 * New: Slider and Grid option "Read more opens the reviews in a popup": the popup lists all reviews, scrolled to the clicked one with its text open.
 * Change: a place connected in several languages shows each review once, in the site language when the place is connected in it, otherwise in the first connection's language; the dates follow the same language.
