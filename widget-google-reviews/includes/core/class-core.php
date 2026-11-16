@@ -28,6 +28,7 @@ class Core {
             'reply'                     => true,
 
             'slider_autoplay'           => true,
+            'slider_loop'               => false,
             'slider_hide_prevnext'      => false,
             'slider_hide_dots'          => false,
             'slider_text_height'        => '',
@@ -76,6 +77,7 @@ class Core {
             'card_style'                => '',
             'card_layout'               => '',
             'rating_layout'             => '',
+            'star_icon'                 => '',
 
             'open_link'                 => true,
             'nofollow_link'             => true,

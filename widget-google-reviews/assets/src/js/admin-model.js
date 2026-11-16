@@ -278,6 +278,76 @@ const GRW_MODEL = (function () {
         return out(model);
     }
 
+    /* ------------------------------------------------------------ a theme written by an AI chat */
+
+    const CODE_OPTS = {slider_head_pos: ['1', '2', '3'], header_hide_social: [true, false], slider_hide_dots: [true, false],
+        slider_hide_prevnext: [true, false], star_icon: ['star', 'tile', 'round'], dark_theme: [true, false]};
+    const hex = v => /^#[0-9a-f]{6}$/i.test(v);
+    const px = (min, max) => v => /^\d+px$/.test(v) && parseInt(v, 10) >= min && parseInt(v, 10) <= max;
+    // The card variables as the card controls can show them (Themes::valid on the server drops any other value), each with the words for the chat.
+    const CODE_VARS = {
+        '--card-bg': [v => hex(v) || v === 'transparent' || /^linear-gradient\(135deg, #[0-9a-f]{6}, #[0-9a-f]{6}\)$/i.test(v), '#rrggbb, transparent or linear-gradient(135deg, #rrggbb, #rrggbb)'],
+        '--card-br': [v => v === '1px solid' || v === 'none', '1px solid or none'],
+        '--card-radius': [px(0, 24), '0px to 24px'],
+        '--card-star-size': [px(12, 28), '12px to 28px'],
+        '--card-img-size': [px(32, 64), '32px to 64px'],
+        '--img-filter': [v => v === 'none' || v === 'grayscale(1)', 'none or grayscale(1)'],
+        '--card-text-lines': [v => /^([2-8]|none)$/.test(v), '2 to 8, or none']
+    };
+    ['--card-br-color', '--card-band-bg', '--card-sep-color', '--card-star-color', '--name-color', '--card-color', '--time-color'].forEach(n => { CODE_VARS[n] = [hex, '#rrggbb']; });
+
+    // As Themes::css_vars takes a value: an unclosed bracket or comment would swallow every declaration after it.
+    const plain = v => {
+        let depth = 0;
+        for (const c of v) if ((depth += c === '(' ? 1 : c === ')' ? -1 : 0) < 0) return false;
+        return !depth && /^[\w\s#%.,()/*+-]+$/.test(v) && !/url\(|expression\(|\/\*|,$/i.test(v);
+    };
+
+    // The theme {opts, vars} in a chat's answer, or {errors} in words the chat can act on; null when the text holds no theme code.
+    function readTheme(answer, shadows) {
+        const s = String(answer), starts = [...s.matchAll(/\{\s*"(opts|vars)"/g)].map(m => m.index);
+        let code = null;
+        // The last code in the text is the chat's latest; an answer pasted whole has braces in the words after the code too.
+        for (let i = starts.length - 1; i >= 0 && !code; i--) {
+            for (let end = s.lastIndexOf('}'); end > starts[i] && !code; end = s.lastIndexOf('}', end - 1)) {
+                try { code = JSON.parse(s.slice(starts[i], end + 1)); } catch (e) {}
+            }
+        }
+        if (!code || typeof code.opts !== 'object' || !code.opts) return null;
+        const errors = [], opts = {}, vars = {};
+        Object.keys(code.opts).forEach(k => { if (k !== 'card_layout' && k !== 'rating_layout' && !Object.keys(CODE_OPTS).includes(k)) errors.push(k + ' is not an option of the theme code.'); });
+        [['card_layout', 'card'], ['rating_layout', 'rating']].forEach(([key, kind]) => {
+            if (typeof code.opts[key] !== 'string' || !code.opts[key].trim()) return errors.push(key + ' is missing.');
+            try { opts[key] = rpi.Card.serialize(rpi.Card.parse(code.opts[key], kind, true)); } catch (e) { errors.push(key + ': ' + e.message + '.'); }
+        });
+        Object.keys(CODE_OPTS).forEach(k => {
+            const v = k === 'slider_head_pos' && code.opts[k] !== undefined ? String(code.opts[k]) : code.opts[k];
+            if (v === undefined) return;
+            if (!CODE_OPTS[k].includes(v)) errors.push(k + ': use ' + CODE_OPTS[k].map(x => JSON.stringify(x)).join(' or ') + '.');
+            else opts[k] = v;
+        });
+        const given = code.vars && typeof code.vars === 'object' ? code.vars : {};
+        Object.keys(given).forEach(n => {
+            let v = String(given[n]).replace(/\s*,\s*/g, ', ').trim();
+            if (n === '--card-shadow' && Object.keys(shadows).includes(v)) v = shadows[v];
+            const rule = n === '--card-shadow' ? [x => Object.values(shadows).includes(x), Object.keys(shadows).join(', ')] : CODE_VARS[n];
+            // The bubble's tail follows the card's background by itself (withCard).
+            if (n === '--card-tail') return;
+            if (!/^--[a-z][a-z0-9-]*$/.test(n)) errors.push(n + ' is not a variable name.');
+            else if (!(rule ? rule[0] : plain)(v)) errors.push(n + ': ' + v + ' is not allowed. Use ' + (rule ? rule[1] : 'a plain value: no quotes, no url()') + '.');
+            else vars[n] = v;
+        });
+        return errors.length ? {errors} : {opts, vars};
+    }
+
+    // A look option the theme leaves out is back at its default; dark_theme says what the site is and stays unless the theme names it.
+    function applyCode(options, theme, shadows) {
+        const o = Object.assign({}, options);
+        Object.keys(CODE_OPTS).concat('theme').forEach(k => { if (k !== 'dark_theme') delete o[k]; });
+        const sv = text(theme.vars);
+        return Object.assign(o, theme.opts, {style_vars: withCard(sv, skinOf(sv, shadows), shadows)});
+    }
+
     return {LEGACY_KEYS, LIGHT, CARD_VARS, pairs, text, cardVars, cardRead, skinOf, withCard, dark, applyTheme, hasTheme, defaultTheme,
-        headerLayout, badgeLayout, wideHeader, standardSkin, convert, isLegacy, attr, has, drop, lead, after};
+        headerLayout, badgeLayout, wideHeader, standardSkin, convert, isLegacy, attr, has, drop, lead, after, readTheme, applyCode};
 })();

@@ -231,8 +231,15 @@
     text-align: var(--align, start)!important;
 }
 
-.wp-gr .grw-header .rpi-stars {
+.wp-gr .grw-header .rpi-stars,
+.wp-gr .grw-header .rpi-stars-tile {
     --star-size: var(--head-star-size, var(--rpi-star-size, 18px));
+}
+
+/* stars.css aligns the plain stars by this variable and leaves the tiles to their parent. */
+.wp-gr .rpi-stars-tile {
+    --star-empty-color: rgba(128, 128, 128, .35);
+    align-self: var(--star-align-self, start)!important;
 }
 
 /* brb loads widget.css on the same pages, and it sets these variables on .rpi, which the widget root also has. */
@@ -444,7 +451,8 @@
     vertical-align: middle!important;
 }
 
-.wp-gr .rpi-stars + .wp-google-text {
+.wp-gr .rpi-stars + .wp-google-text,
+.wp-gr .rpi-stars-tile + .wp-google-text {
     padding-left: 4px!important
 }
 
@@ -1312,7 +1320,7 @@
 }
 
 /* A logo in front of the stack is its first disc: the avatars overlap it as they overlap each other. */
-.wp-gr .rpi-rate .rpi-logo:not(:has(> .rpi-stars)) + .grw-avatars {
+.wp-gr .rpi-rate .rpi-logo:not(:has(> :is(.rpi-stars, .rpi-stars-tile))) + .grw-avatars {
     margin-inline-start: calc(-8px - var(--gap, 0px))!important;
 }
 

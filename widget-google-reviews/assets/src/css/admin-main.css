@@ -2136,13 +2136,16 @@
     outline: none;
 }
 
-.grw-pl-next {
-    width: 100%;
+/* Two classes: core gives a button a bottom margin on phones. */
+.wp-core-ui .grw-pl-next {
+    flex: 1;
+    margin: 0;
     text-align: center;
 }
 
 .grw-pl-links {
     display: flex;
+    flex-basis: 100%;
     align-items: center;
     justify-content: center;
     gap: 4px;
@@ -2323,14 +2326,230 @@
 .grw-themes-page .grw-pl-foot {
     position: sticky;
     bottom: 0;
-    z-index: 2;
+    /* On a narrow screen the AI window lies over the preview: above the widget's own layers, which go up to 5. */
+    z-index: 6;
     display: flex;
-    flex-direction: column;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 12px 8px;
     margin: 0 -1px;
     padding: 12px 1px;
     background: #f0f0f1;
     box-shadow: 0 -1px 0 #dcdcde;
+}
+
+/* The AI window lies over the foot's top line, which would show as a stub beside each of its round corners. */
+.grw-themes-page .grw-pl-foot:has(> .grw-ai:not([hidden])) {
+    box-shadow: none;
+}
+
+/* Design with AI: the round button in the save button's row, its window over the foot. */
+.grw-ai-btn {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: linear-gradient(#3d3d3d, #272727);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 1px 2px rgba(0, 0, 0, .25), 0 2px 5px rgba(0, 0, 0, .15);
+    font: inherit;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    transition: transform .12s, box-shadow .12s;
+}
+
+.grw-ai-btn:hover {
+    background: linear-gradient(#464646, #2d2d2d);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 2px 4px rgba(0, 0, 0, .25), 0 5px 10px rgba(0, 0, 0, .2);
+    transform: translateY(-1px);
+}
+
+.grw-ai-btn:active {
+    background: #1f1f1f;
+    box-shadow: none;
+    transform: translateY(1px) scale(.96);
+}
+
+.grw-ai-btn svg:first-child {
+    color: #ffc24a;
+    transition: transform .2s;
+}
+
+.grw-ai-btn:hover svg:first-child {
+    transform: scale(1.08);
+}
+
+/* Only a face the user has just swapped comes in with a turn, not the one the page loads with. */
+.grw-ai-moved > * {
+    animation: grw-ai-face .16s;
+}
+
+@keyframes grw-ai-face {
+    from {
+        opacity: 0;
+        transform: scale(.6) rotate(-30deg);
+    }
+}
+
+.grw-ai-btn[aria-expanded="true"] > :not(:last-child),
+.grw-ai-btn[aria-expanded="false"] > :last-child {
+    display: none;
+}
+
+.grw-ai-btn:focus-visible {
+    outline: 2px solid var(--wp-admin-theme-color, #3858e9);
+    outline-offset: 2px;
+}
+
+.grw-ai {
+    position: absolute;
+    right: 1px;
+    bottom: calc(100% - 4px);
+    width: 320px;
+    max-width: calc(100% - 2px);
+    max-height: calc(100vh - 140px);
+    overflow: auto;
+    box-shadow: 0 0 0 1px #e6e6e7, 0 2px 6px rgba(0, 0, 0, .08), 0 10px 24px rgba(0, 0, 0, .14);
+}
+
+.grw-ai .grw-pl-head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    box-sizing: border-box;
+    background: #fff;
+    cursor: default;
+}
+
+.grw-ai-steps {
+    display: grid;
+    gap: 16px;
+    margin: 0;
+    list-style: none;
+    text-wrap: pretty;
+}
+
+.grw-ai-steps > li {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 8px;
+    margin: 0;
+}
+
+.grw-ai-steps > li::before {
+    content: attr(data-n);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ffc24a;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 20px;
+    text-align: center;
+}
+
+.grw-ai-steps > li > * {
+    grid-column: 2;
+}
+
+.grw-ai-note {
+    box-sizing: border-box;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #fff4d6;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.grw-ai-note a {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Core gives a button a bottom margin on phones. */
+.wp-core-ui .grw-ai .button {
+    margin: 0;
+}
+
+.grw-ai-pick {
+    display: flex;
+    gap: 8px;
+}
+
+.wp-core-ui .grw-ai-pick .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    min-height: 0;
+    padding: 0;
+    border-color: #e3e3e3;
+    border-radius: 50%;
+    background: #fff;
+}
+
+@media (hover: hover) {
+    .wp-core-ui .grw-ai-pick .button:hover {
+        border-color: #8a8a8a;
+    }
+}
+
+/* A tap leaves the focus on a button: only the keyboard's focus is drawn, and inside the circle, clear of the head above it. */
+.wp-core-ui .grw-ai-pick .button:focus {
+    box-shadow: none;
+}
+
+.wp-core-ui .grw-ai-pick .button:focus-visible {
+    border-color: var(--wp-admin-theme-color, #3858e9);
+    box-shadow: inset 0 0 0 1px var(--wp-admin-theme-color, #3858e9);
+}
+
+.grw-ai-errors {
+    display: grid;
+    justify-items: start;
+    gap: 8px;
+    line-height: 16px;
+    text-wrap: pretty;
+}
+
+.grw-ai-errors ul {
+    margin: 0 0 0 16px;
+    list-style: disc;
+}
+
+.grw-ai-errors li {
+    margin: 0;
+}
+
+.grw-ai-errors li + li {
+    margin-top: 4px;
+}
+
+/* Core sets 11px on .button-small: here it keeps the size of the text above it. */
+.wp-core-ui .grw-ai .button-small {
+    justify-self: start;
+    min-height: 28px;
+    margin: 0;
+    padding: 0 10px;
+    font-size: 12px;
+    line-height: 26px;
+}
+
+@media screen and (max-width: 782px) {
+    .wp-core-ui .grw-ai-pick .button {
+        width: 44px;
+        height: 44px;
+    }
+    .wp-core-ui .grw-ai .button-small {
+        min-height: 40px;
+        line-height: 38px;
+    }
 }
 
 /* Focused controls scroll clear of the sticky bar and footer; a scroll padding on the page would also scroll to the bars' own controls. */
@@ -2580,6 +2799,9 @@ input.grw-themes-sc[readonly] {
 @media screen and (max-width: 600px) {
     .grw-badge-stage-head {
         flex-wrap: wrap;
+    }
+    .grw-ai {
+        width: calc(100% - 2px);
     }
     /* On a phone the stage is already a phone's width. */
     .grw-badge-devices {

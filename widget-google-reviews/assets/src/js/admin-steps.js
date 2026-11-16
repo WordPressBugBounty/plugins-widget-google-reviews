@@ -37,7 +37,21 @@ function grw_steps(root, cfg) {
         autosave: pref.get()
     };
 
-    const toast = (msg, type, action) => GRW_TOAST.show({msg, type: type || 'success', action});
+    // A toast stands above the foot and what stands on it, not on the save button; they move with the scroll and the layout, so the toast follows while shown.
+    const toast = (msg, type, action) => {
+        const el = GRW_TOAST.show({msg, type: type || 'success', action}), box = el.parentNode;
+        if (action && action.undo) el.classList.add('grw-toast-undo');
+        (function follow() {
+            if (!el.isConnected) return box.querySelector('.rpi-toast-msg') || (box.style.bottom = '');
+            const foot = document.querySelector('.grw-pl-foot');
+            // An editor parked on another step is hidden, not gone: its foot still has a place on the page. A foot that ends above the toast's corner is not under it.
+            const under = foot && getComputedStyle(foot).visibility !== 'hidden' && foot.getBoundingClientRect().bottom > innerHeight - 20 - box.offsetHeight;
+            const tops = under ? [foot, ...foot.children].filter(e => e.offsetParent).map(e => e.getBoundingClientRect().top) : [];
+            box.style.bottom = tops.length ? Math.max(20, Math.min(innerHeight - Math.min(...tops) + 8, innerHeight - box.offsetHeight - 48)) + 'px' : '';
+            requestAnimationFrame(follow);
+        })();
+        return el;
+    };
     const esc = grw_esc;
     const h = (tag, atts, html) => {
         const e = document.createElement(tag);
@@ -69,7 +83,20 @@ function grw_steps(root, cfg) {
     // The note that the preview runs on sample data, with the link to step 1; tail says what the real data would show.
     const sampleNote = tail => h('p', {class: 'description'}, '<span class="dashicons dashicons-info-outline grw-badge-note-ico"></span><b>Sample data.</b> <a href="#" class="grw-badge-find">Find your place</a> ' + tail);
 
-    const W = {V, D, STAR, state, h, esc, post, toast, errorOf, press, sampleNote, go, publish, loadData, pids, langs, controls, styleVar, setStyleVar, paint, preview, sync: () => {}};
+    // Copied inside the click itself: the async clipboard may still be writing when a new tab takes the focus, and a site without https has none.
+    const copy = text => {
+        const from = document.activeElement, t = h('textarea', {class: 'screen-reader-text', style: 'position:fixed;top:0', readonly: ''});
+        t.value = text;
+        document.body.append(t);
+        t.focus({preventScroll: true});
+        t.select();
+        const done = document.execCommand('copy');
+        t.remove();
+        if (from) from.focus({preventScroll: true});
+        return done || !!(navigator.clipboard && (navigator.clipboard.writeText(text).catch(() => {}), true));
+    };
+
+    const W = {V, D, STAR, state, h, esc, post, toast, errorOf, press, sampleNote, copy, touch, go, publish, loadData, pids, langs, controls, styleVar, setStyleVar, paint, preview, sync: () => {}};
 
     /* ------------------------------------------------------------ steps */
 
@@ -128,8 +155,11 @@ function grw_steps(root, cfg) {
         loadData(() => { renderEditor(); editorMode(step); });
     }
     // The editor built anew for the options as they are now (a design picked or reset on step 2): a change of the user's.
-    W.rebuild = () => { state.editor = null; showEditor(2); commit(); };
+    // An Undo belongs to the editor as it stood when its toast came: it goes when the editor is built anew or left.
+    const untoast = () => document.querySelectorAll('.grw-toast-undo .rpi-toast__close').forEach(x => x.click());
+    W.rebuild = () => { untoast(); state.editor = null; showEditor(2); commit(); };
     function go(step, quiet) {
+        untoast();
         visit++;
         const from = state.step;
         if (step !== 1) state.toSearch = false;
@@ -871,9 +901,10 @@ function grw_steps(root, cfg) {
         state.stage = stage;
         main.append(stage);
 
-        // An editor may set W.sync to make its controls read the state again without a new render.
+        // An editor may set W.sync to make its controls read the state again without a new render; what it puts into the foot stands beside the save button.
         W.sync = () => {};
-        draw = cfg.editor({stage, side, ui: controls(side, state.options, k => { draw(k); W.changed(); })}, W);
+        const footEl = h('div', {class: 'grw-pl-foot'});
+        draw = cfg.editor({stage, side, foot: footEl, ui: controls(side, state.options, k => { draw(k); W.changed(); })}, W);
 
         // A saved widget is saved where the user is, by the button or the auto save; the Publish step stays a click away on the indicator.
         // A new one goes on to it.
@@ -896,8 +927,8 @@ function grw_steps(root, cfg) {
         };
         // Only navigates: steps 2 and 3 stay reachable from the indicator with these options.
         links.querySelector('.grw-badge-back').onclick = e => { e.preventDefault(); go(1); };
-        const footEl = h('div', {class: 'grw-pl-foot'});
-        footEl.append(next, links);
+        footEl.prepend(next);
+        footEl.append(links);
         side.append(footEl);
         foot();
 

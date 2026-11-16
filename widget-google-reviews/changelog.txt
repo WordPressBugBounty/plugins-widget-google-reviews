@@ -1,5 +1,12 @@
 == Changelog ==
 
+= 7.3 =
+* New: Slider option "Infinite loop": after the last review comes the first one, with no scroll back.
+* New: Slider autoplay has a Continuous mode: the reviews move without stopping, in an endless band.
+* New: Design with AI for Slider and Grid: your AI chat (ChatGPT, Gemini, Claude or DeepSeek) writes the look from your words or a screenshot.
+* New: Style option "Stars shape": outline stars, filled tiles or filled circles.
+* Fixed: on touch screens the slider autoplay stayed paused after a tap on the slider.
+
 = 7.2.2 =
 * Fixed: no reviews shown on sites where the plugin's review and text tables had different database collations; the update gives the text table the collation of the reviews table.
 

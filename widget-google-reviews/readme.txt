@@ -3,7 +3,7 @@ Contributors: widgetpack
 Tags: google reviews, reviews, review slider, review widget, reviews plugin
 Requires PHP: 7.2
 Tested up to: 7.1
-Stable tag: 7.2.2
+Stable tag: 7.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,6 +29,8 @@ Want to see how it works? Watch the short demo below to see how quickly you can 
 * Pagination for List and Grid layouts
 * Trim long reviews with a "read more" link
 * UI options to customize star, text, rating and review colors
+* Design with AI: describe the look or show a screenshot to your AI chat (ChatGPT, Gemini, Claude or DeepSeek) and apply the design it writes
+* Stars as outline stars, filled tiles or filled circles
 * Additional styling with your own CSS
 * Works with dark themes
 * Upload a custom business photo
@@ -94,13 +96,22 @@ No. Reviews are served from your own database, and the plugin loads one CSS and 
 
 == Screenshots ==
 
-1. Google reviews slider with the rating header
-2. Google reviews grid
-3. Google reviews list
-4. Rating layout: stars, score and number of reviews
-5. Slider on a dark background
-6. Widget builder with live preview and layout options
-7. Places page: connected places, update reviews, create a widget or delete a place
+1. Step 1: find your Google place and choose one of 80 ready-made designs
+2. Step 2: set up the widget with a live preview
+3. Style settings: stars shape and colors
+4. Step 3: publish with the shortcode, the block or a draft page
+5. Design with AI: your AI chat writes the look and you apply its code
+6. Google reviews slider: Classic design with the rating header
+7. Slider: speech bubble design with filled circle stars
+8. Slider: Centered design
+9. Slider on a dark background
+10. Google reviews grid: Classic design
+11. Grid: author below the review, filled tile stars
+12. Grid: speech bubble design with the author above
+13. Google reviews list
+14. Rating designs: stars, score and number of reviews
+15. Badge designs for the floating Google rating badge
+16. Sticker designs for the site badge
 
 == Support ==
 
@@ -116,11 +127,40 @@ Email support in English is also available on weekdays: support@richplugins.com
 1. Upload the plugin files to the '/wp-content/plugins/' directory, or install the plugin through the WordPress Plugins screen directly.
 2. Activate the plugin through the **Plugins** menu in the WordPress admin panel.
 
+== External services ==
+
+The widget on your site loads its scripts, styles and images from your own site. The plugin itself connects to these services, in the WordPress admin and in the background:
+
+= RichPlugins connect service =
+Used when you connect a Google place without your own Google API key: the search form on the Create Widget page and the first 10 reviews of the place come from app.richplugins.com. It receives the place you search for or its Place ID, the language of the reviews, your site URL and the plugin's connection code. The same server is asked once when you open the debug information on the Support page. [Terms of Service](https://richplugins.com/terms), [Privacy Policy](https://richplugins.com/privacy-policy).
+
+= Google Places API =
+Used when you add your own Google API key: to find a place, to connect it and to update its reviews every day. Google receives the Place ID or the search text, the language and your API key. When a place is connected or updated, the reviewers' photos and the business photo are downloaded from Google to your site. [Terms of Service](https://cloud.google.com/maps-platform/terms), [Privacy Policy](https://policies.google.com/privacy).
+
+= ip6.me =
+Used on the Settings page when a Google API key is set: [ip6.me](https://ip6.me/) answers the public IP address of your server, which you can use to restrict the key. Nothing but the request is sent.
+
+= YouTube, Facebook and X on the Support page =
+The Support page in the WordPress admin shows a video and follow buttons that your browser loads from YouTube, Facebook and X when you open that page. [YouTube Terms](https://www.youtube.com/t/terms), [Google Privacy Policy](https://policies.google.com/privacy), [Meta Privacy Policy](https://www.facebook.com/privacy/policy/), [X Privacy Policy](https://x.com/en/privacy).
+
+= AI chats (Design with AI) =
+The Design with AI window in the widget editor has buttons that open the AI chat you choose in a new browser tab: ChatGPT, Gemini, Claude or DeepSeek. The plugin does not connect to these services and sends them nothing by itself. Your browser opens the chat's site; for ChatGPT and Claude the address carries a short prompt: a link to the description of the theme format on cdn.reviewsplugin.com, which the chat reads, and whether the widget is a slider or a grid on a light or dark page. In the other chats you paste that description yourself, and you always paste the chat's answer into the plugin yourself. Nothing about your site is sent. OpenAI: [Terms](https://openai.com/policies/terms-of-use/), [Privacy](https://openai.com/policies/privacy-policy/). Google: [Terms](https://policies.google.com/terms), [Privacy](https://policies.google.com/privacy). Anthropic: [Terms](https://anthropic.com/terms), [Privacy](https://www.anthropic.com/legal/privacy). DeepSeek: [Terms](https://cdn.deepseek.com/policies/en-US/deepseek-terms-of-use.html), [Privacy](https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html).
+
+= RichPlugins CDN =
+Only when Debug mode is switched on in the Settings: the plugin's scripts and design files are loaded from cdn.reviewsplugin.com instead of the plugin's folder. Nothing about your site is sent. [Terms of Service](https://richplugins.com/terms), [Privacy Policy](https://richplugins.com/privacy-policy).
+
 == Roadmap ==
 
 * Under discussion.
 
 == Changelog ==
+
+= 7.3 =
+* New: Slider option "Infinite loop": after the last review comes the first one, with no scroll back.
+* New: Slider autoplay has a Continuous mode: the reviews move without stopping, in an endless band.
+* New: Design with AI for Slider and Grid: your AI chat (ChatGPT, Gemini, Claude or DeepSeek) writes the look from your words or a screenshot.
+* New: Style option "Stars shape": outline stars, filled tiles or filled circles.
+* Fixed: on touch screens the slider autoplay stayed paused after a tap on the slider.
 
 = 7.2.2 =
 * Fixed: no reviews shown on sites where the plugin's review and text tables had different database collations; the update gives the text table the collation of the reviews table.

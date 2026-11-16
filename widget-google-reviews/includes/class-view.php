@@ -108,6 +108,7 @@ class View {
                 array(
                     'speed'       => $options->slider_speed ? $options->slider_speed : 3,
                     'autoplay'    => $options->slider_autoplay,
+                    'loop'        => filter_var($options->slider_loop, FILTER_VALIDATE_BOOLEAN),
                     'mousestop'   => $options->slider_mousestop,
                     'breakpoints' => $options->slider_breakpoints
                 )
@@ -332,8 +333,7 @@ class View {
             },
             // A logo drawn by ::before would clash with the stars' own pseudo-elements, so the stars get a wrapper that carries it.
             'stars' => function($d, $o) use ($rating, $options, $provider, $attr) {
-                $stars = '<span class="' . trim('rpi-stars ' . ($attr($o, 'first') ? 'rpi-stars-first ' : '') . ($o['logo'] ? '' : $o['cls'])) . '"' . $this->grw_rating_label($options, $rating) .
-                    ' style="--rating:' . esc_attr($rating) . ($attr($o, 'one') ? ';--stars:1' : '') . '">' . ($attr($o, 'nonum') ? '' : esc_html($rating)) . '</span>';
+                $stars = $this->stars($rating, $options, $o['logo'] ? '' : $o['cls'], $attr($o, 'nonum') ? '' : esc_html($rating), $attr($o, 'first'), $attr($o, 'one'));
                 return $o['logo'] ? '<span class="' . trim('rpi-logo rpi-logo-' . esc_attr($provider) . ' ' . $o['cls']) . '" aria-hidden="true">' . $stars . '</span>' : $stars;
             },
             'based' => function($d, $o) use ($place, $options, $count, $cls, $attr) {
@@ -519,7 +519,7 @@ class View {
                                 ?></div><?php
                                 break;
                             case 'stars':
-                                ?><span class="rpi-stars"<?php echo $this->grw_rating_label($options, $rating); ?> style="--rating:<?php echo $rating; ?>"><?php if (!$options->header_hide_grade) echo $rating; ?></span><?php
+                                echo $this->stars($rating, $options, '', $options->header_hide_grade ? '' : esc_html($rating));
                                 break;
                             case 'based':
                                 if (!$options->hide_based_on && isset($place->review_count)) {
@@ -644,7 +644,7 @@ class View {
                     }
                     $this->review_time($review, $options);
                     ?><div class="wp-google-feedback">
-                        <span class="rpi-stars"<?php echo $this->grw_rating_label($options, $review->rating); ?> style="--rating:<?php echo $review->rating; ?>"></span><?php
+                        <?php echo $this->stars($review->rating, $options);
                         if (!empty($review->text)) { ?><span class="wp-google-text"><?php echo $this->text($review->text); ?></span><?php }
                     ?></div>
                 </div>
@@ -674,7 +674,7 @@ class View {
                         $this->review_time($review, $options);
                     ?></div>
                 </div>
-                <span class="rpi-stars"<?php echo $this->grw_rating_label($options, $review->rating); ?> style="--rating:<?php echo $review->rating; ?>"></span>
+                <?php echo $this->stars($review->rating, $options); ?>
                 <div class="rpi-flx rpi-col4"><?php
                     $this->review_body($review, $options);
                 ?></div><?php
@@ -714,7 +714,7 @@ class View {
             },
             // A logo drawn by ::before would clash with the stars' own pseudo-elements, so the stars get a wrapper that carries it.
             'stars' => function($review, $o) use ($options) {
-                $stars = '<span class="' . trim('rpi-stars ' . ($o['logo'] ? '' : $o['cls'])) . '"' . $this->grw_rating_label($options, $review->rating) . ' style="--rating:' . $review->rating . '"></span>';
+                $stars = $this->stars($review->rating, $options, $o['logo'] ? '' : $o['cls']);
                 return $o['logo'] ? '<span class="' . trim('rpi-logo rpi-logo-' . esc_attr($review->provider) . ' ' . $o['cls']) . '">' . $stars . '</span>' : $stars;
             },
             // The admin's hide control rides in the text block: the engine has no slot of its own for it.
@@ -859,6 +859,19 @@ class View {
     function grw_anchor($url, $class, $text, $options, $aria_label = '', $onclick = '', $after_raw = '') {
         $al = $this->grw_aria_label($options, esc_attr($aria_label) . ' - ' . __('opens in a new window', 'widget-google-reviews'));
         echo '<a href="' . esc_url($url) . '"' . ($class ? ' class="' . $class . '"' : '') . ($options->open_link ? ' target="_blank"' : '') . ' rel="' . ($options->nofollow_link ? 'nofollow ' : '') . 'noopener"' . $al . (empty($onclick) ? '' : ' onclick="' . $onclick . '"') . '>' . esc_html($text) . $after_raw . '</a>';
+    }
+
+    // $num is the rating printed with the stars, '' for the stars alone.
+    private function stars($rating, $options, $cls = '', $num = '', $first = false, $one = false) {
+        $icon = isset($options->star_icon) ? $options->star_icon : '';
+        $label = $this->grw_rating_label($options, $rating);
+        if ($icon !== 'tile' && $icon !== 'round') {
+            return '<span class="' . trim('rpi-stars ' . ($first ? 'rpi-stars-first ' : '') . $cls) . '"' . $label .
+                ' style="--rating:' . esc_attr($rating) . ($one ? ';--stars:1' : '') . '">' . $num . '</span>';
+        }
+        $tiles = str_repeat('<i></i>', $one ? 1 : 5);
+        return '<span class="' . trim('rpi-stars-tile ' . ($icon === 'round' ? 'rpi-stars-round ' : '') . $cls) . '"' . $label .
+            ' style="--rating:' . esc_attr($rating) . '">' . ($first ? $tiles . $num : $num . $tiles) . '</span>';
     }
 
     function grw_rating_label($options, $rating) {

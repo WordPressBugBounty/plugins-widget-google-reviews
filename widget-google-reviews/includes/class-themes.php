@@ -28,18 +28,20 @@ class Themes {
 
     private static $themes;
 
-    // In debug mode the file comes from the CDN, as the rpi modules do; otherwise, or if the CDN does not answer, the copy the build put beside them.
+    // In debug mode a file comes from the CDN, as the rpi modules do; otherwise, or if the CDN does not answer, the copy the build put beside them.
+    private static function file($path, $cdn = true) {
+        if ($cdn && get_option('grw_debug_mode') == '1') {
+            $res = wp_remote_get(apply_filters('grw_cdn_url', 'https://cdn.reviewsplugin.com') . '/assets/' . $path, array('timeout' => 3));
+            if (wp_remote_retrieve_response_code($res) === 200) return wp_remote_retrieve_body($res);
+        }
+        $file = GRW_PLUGIN_PATH . 'assets/' . GRW_VERSION . '/' . basename($path);
+        return is_readable($file) ? file_get_contents($file) : '';
+    }
+
     public static function all() {
         if (self::$themes === null) {
-            $json = null;
-            if (get_option('grw_debug_mode') == '1') {
-                $res = wp_remote_get(apply_filters('grw_cdn_url', 'https://cdn.reviewsplugin.com') . '/assets/json/themes.json', array('timeout' => 3));
-                if (wp_remote_retrieve_response_code($res) === 200) $json = json_decode(wp_remote_retrieve_body($res), true);
-            }
-            if (!is_array($json)) {
-                $file = GRW_PLUGIN_PATH . 'assets/' . GRW_VERSION . '/themes.json';
-                $json = is_readable($file) ? json_decode(file_get_contents($file), true) : null;
-            }
+            $json = json_decode(self::file('json/themes.json'), true);
+            if (!is_array($json)) $json = json_decode(self::file('json/themes.json', false), true);
             self::$themes = array();
             foreach (is_array($json) && isset($json['themes']) && is_array($json['themes']) ? $json['themes'] : array() as $theme) {
                 if (!is_array($theme) || empty($theme['id']) || empty($theme['opts']['view_mode'])) continue;
@@ -65,9 +67,13 @@ class Themes {
     const CARD_VARS = array('--card-bg', '--card-tail', '--card-br', '--card-br-color', '--card-shadow', '--card-radius', '--card-band-bg', '--card-sep-color',
                             '--card-star-color', '--card-star-size', '--name-color', '--card-color', '--time-color', '--card-img-size', '--img-filter', '--card-text-lines');
 
+    // The theme format as an AI chat is told it: the same file the prompt links on the CDN.
+    const FORMAT = 'txt/grw-theme-1.txt';
+
     // What the admin pages draw and edit widgets with.
     public static function client() {
-        return array('themes' => self::all(), 'shadows' => self::SHADOWS, 'legacy' => Legacy_Presets::PRESETS);
+        return array('themes' => self::all(), 'shadows' => self::SHADOWS, 'legacy' => Legacy_Presets::PRESETS, 'img' => GRW_ASSETS_URL . 'img/',
+                     'format' => array('url' => 'https://cdn.reviewsplugin.com/assets/' . self::FORMAT, 'text' => self::file(self::FORMAT)));
     }
 
     public static function declarations($vars) {
