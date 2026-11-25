@@ -494,6 +494,8 @@
 
 /* common.css forces .wp-gr to display:block!important, so nothing weaker can hide the popup. */
 .wp-gr.grw-popup {
+    --hl-bg: #f3f3f5;
+    --mark-bg: #fff1a8;
     display: none!important;
 }
 
@@ -529,13 +531,13 @@
     padding: 0!important;
     border-radius: 2px!important;
     color: inherit!important;
-    background-color: #fff1a8!important;
+    background-color: var(--mark-bg)!important;
 }
 
 /* The spread stands in for padding, so the highlight adds no height to the list. */
 .wp-gr.grw-popup .grw-review-hl {
-    background-color: #f3f3f5!important;
-    box-shadow: 0 0 0 8px #f3f3f5!important;
+    background-color: var(--hl-bg)!important;
+    box-shadow: 0 0 0 8px var(--hl-bg)!important;
 }
 
 /* Without this the review list is shrunk to the panel height and clipped, so it never scrolls. */
@@ -554,6 +556,8 @@
 }
 
 .wp-gr.wp-dark.grw-popup {
+    --hl-bg: #3a3a3a;
+    --mark-bg: rgba(255, 213, 0, .3);
     background-color: #1e1e1e!important;
 }
 
@@ -1254,7 +1258,8 @@
 /* The engine's groups keep the 8px the header column had, and the lines inside the header see the card padding it was given. */
 .wp-gr .grw-header.rpi-rate {
     --card-padding: 16px;
-    --logo-size: 14px;
+    /* "Google logo size" rests at 18px, the wordmark's height; the G is drawn smaller in the same proportion. */
+    --logo-size: calc(var(--head-logo-size, 18px) * 7 / 9);
 }
 
 .wp-gr .grw-header.rpi-rate .rpi-row > .rpi-col {

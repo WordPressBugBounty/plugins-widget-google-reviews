@@ -280,8 +280,26 @@ const GRW_MODEL = (function () {
 
     /* ------------------------------------------------------------ a theme written by an AI chat */
 
-    const CODE_OPTS = {slider_head_pos: ['1', '2', '3'], header_hide_social: [true, false], slider_hide_dots: [true, false],
-        slider_hide_prevnext: [true, false], star_icon: ['star', 'tile', 'round'], dark_theme: [true, false]};
+    // Each with its test and the words for the chat; a value other than true or false is tested as the string a save stores.
+    const one = (...xs) => [v => xs.includes(v), xs.map(x => JSON.stringify(x)).join(' or ')];
+    const int = (min, max, words) => [v => /^\d+$/.test(v) && +v >= min && +v <= max, words || 'a whole number from ' + min + ' to ' + max];
+    const BOOL = one(true, false);
+    const CODE_OPTS = {
+        slider_head_pos: one('1', '2', '3'), header_hide_social: BOOL, disable_biz_link: BOOL,
+        pagination: int(0, 100, 'a whole number from 1 to 100, or 0 for all'), text_size: int(0, 5000), more_popup: BOOL,
+        short_last_name: BOOL, anonym_avatar: BOOL, min_letter: BOOL,
+        slider_autoplay: one(false, true, 'continuous'), slider_speed: int(1, 10), slider_mousestop: BOOL, slider_loop: BOOL,
+        slider_hide_prevnext: BOOL, slider_hide_dots: BOOL,
+        slider_breakpoints: [v => /^\d{3,4}:([1-9]|1[0-2])(,\d{3,4}:([1-9]|1[0-2]))*$/.test(v), 'width:columns pairs, such as "1200:3,768:2,480:1"'],
+        view_mode: one('slider', 'grid'), dark_theme: BOOL, star_icon: one('star', 'tile', 'round'),
+        reviewer_avatar_size: one('56', '128', '256'), cache: one('1', '3', '6', '12', '24', '48', '168', ''), reviews_limit: int(0, 10000),
+        lazy_load_img: BOOL, nofollow_link: BOOL, open_link: BOOL, aria_label: BOOL, media: BOOL, reply: BOOL, google_def_rev_link: BOOL
+    };
+    const stored = v => typeof v === 'boolean' ? v : String(v).trim();
+    // Core's default of a switch may be empty (min_letter): off and empty are the same choice.
+    const same = (v, d) => stored(v) === stored(d == null ? '' : d) || v === false && (d === '' || d == null);
+    // A stored value as Plugin_Theme::options takes it on save.
+    const read = (k, v, d) => v !== '' ? v : k === 'cache' ? '' : k === 'pagination' ? '0' : d;
     const hex = v => /^#[0-9a-f]{6}$/i.test(v);
     const px = (min, max) => v => /^\d+px$/.test(v) && parseInt(v, 10) >= min && parseInt(v, 10) <= max;
     // The card variables as the card controls can show them (Themes::valid on the server drops any other value), each with the words for the chat.
@@ -321,9 +339,9 @@ const GRW_MODEL = (function () {
             try { opts[key] = rpi.Card.serialize(rpi.Card.parse(code.opts[key], kind, true)); } catch (e) { errors.push(key + ': ' + e.message + '.'); }
         });
         Object.keys(CODE_OPTS).forEach(k => {
-            const v = k === 'slider_head_pos' && code.opts[k] !== undefined ? String(code.opts[k]) : code.opts[k];
-            if (v === undefined) return;
-            if (!CODE_OPTS[k].includes(v)) errors.push(k + ': use ' + CODE_OPTS[k].map(x => JSON.stringify(x)).join(' or ') + '.');
+            if (code.opts[k] === undefined) return;
+            const v = stored(code.opts[k]);
+            if (!CODE_OPTS[k][0](v)) errors.push(k + ': use ' + CODE_OPTS[k][1] + '.');
             else opts[k] = v;
         });
         const given = code.vars && typeof code.vars === 'object' ? code.vars : {};
@@ -340,14 +358,33 @@ const GRW_MODEL = (function () {
         return errors.length ? {errors} : {opts, vars};
     }
 
-    // A look option the theme leaves out is back at its default; dark_theme says what the site is and stays unless the theme names it.
-    function applyCode(options, theme, shadows) {
+    // An option the code leaves out is absent, its default; pagination is written, since a save without it keeps the stored one.
+    // view_mode and dark_theme say what the widget is and what the site is: they stay unless the code names them.
+    const KEPT = ['view_mode', 'dark_theme'];
+    function applyCode(options, theme, shadows, defaults) {
         const o = Object.assign({}, options);
-        Object.keys(CODE_OPTS).concat('theme').forEach(k => { if (k !== 'dark_theme') delete o[k]; });
+        delete o.theme;
+        Object.keys(CODE_OPTS).forEach(k => { if (!KEPT.includes(k)) delete o[k]; });
+        o.pagination = defaults.pagination;
         const sv = text(theme.vars);
         return Object.assign(o, theme.opts, {style_vars: withCard(sv, skinOf(sv, shadows), shadows)});
     }
 
+    // The prompt names the layout and the page in words; in the code a chat would keep them and undo a switch made in the plugin since.
+    function codeOf(options, shadows, defaults) {
+        const opts = {card_layout: options.card_layout || '', rating_layout: options.rating_layout || ''};
+        Object.keys(CODE_OPTS).forEach(k => {
+            if (options[k] == null || KEPT.includes(k)) return;
+            const v = read(k, options[k], defaults[k]);
+            if (!same(v, defaults[k]) && CODE_OPTS[k][0](stored(v))) opts[k] = stored(v);
+        });
+        const vars = pairs(options.style_vars);
+        delete vars['--card-tail'];
+        const shadow = Object.keys(shadows).find(k => shadows[k] === vars['--card-shadow']);
+        if (shadow) vars['--card-shadow'] = shadow;
+        return {opts, vars};
+    }
+
     return {LEGACY_KEYS, LIGHT, CARD_VARS, pairs, text, cardVars, cardRead, skinOf, withCard, dark, applyTheme, hasTheme, defaultTheme,
-        headerLayout, badgeLayout, wideHeader, standardSkin, convert, isLegacy, attr, has, drop, lead, after, readTheme, applyCode};
+        headerLayout, badgeLayout, wideHeader, standardSkin, convert, isLegacy, attr, has, drop, lead, after, readTheme, applyCode, codeOf};
 })();

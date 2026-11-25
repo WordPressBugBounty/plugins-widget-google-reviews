@@ -3,7 +3,7 @@ Contributors: widgetpack
 Tags: google reviews, reviews, review slider, review widget, reviews plugin
 Requires PHP: 7.2
 Tested up to: 7.1
-Stable tag: 7.3
+Stable tag: 7.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -154,6 +154,14 @@ Only when Debug mode is switched on in the Settings: the plugin's scripts and de
 * Under discussion.
 
 == Changelog ==
+
+= 7.3.1 =
+* New: Design with AI changes only what you ask and can also set the slider's motion, columns and switch between slider and grid.
+* New: "Continuous band" slider design that moves without stopping.
+* Improved: the Design with AI window stays open after Apply, so you can paste the next code right away. The plugin no longer reads your clipboard.
+* Improved: the plugin's admin styles and scripts load only where they are needed.
+* Fixed: "Google logo size" now also resizes the "G" in the rating header.
+* Fixed: in the dark theme the review opened by "read more" in the popup was unreadable.
 
 = 7.3 =
 * New: Slider option "Infinite loop": after the last review comes the first one, with no scroll back.

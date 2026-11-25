@@ -172,7 +172,20 @@ class Assets {
         $this->register_scripts_loop($scripts);
     }
 
+    // What this admin screen needs: grw's pages everything, the Plugins page the deactivation survey, a block editor the block's preview.
+    private function admin_needs() {
+        $screen = get_current_screen();
+        if (!$screen) return array();
+        if (Admin\Admin_Menu::is_plugin_screen($screen->id) || in_array($screen->id, array('plugins', 'plugins-network'), true)) return array('admin', 'public');
+        return $screen->is_block_editor() ? array('public') : array();
+    }
+
     public function enqueue_admin_styles() {
+        $needs = $this->admin_needs();
+        if (!in_array('admin', $needs, true)) {
+            if ($needs) $this->enqueue_public_styles();
+            return;
+        }
         wp_enqueue_style('wp-jquery-ui-dialog');
         wp_enqueue_style('grw-admin-main-css');
         wp_style_add_data('grw-admin-main-css', 'rtl', 'replace');
@@ -183,6 +196,11 @@ class Assets {
     }
 
     public function enqueue_admin_scripts() {
+        $needs = $this->admin_needs();
+        if (!in_array('admin', $needs, true)) {
+            if ($needs) $this->enqueue_public_scripts();
+            return;
+        }
         wp_enqueue_script('jquery');
         wp_enqueue_script('jquery-ui-core');
         wp_enqueue_script('jquery-ui-dialog');

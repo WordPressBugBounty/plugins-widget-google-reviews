@@ -120,7 +120,7 @@ function grw_themes_page() {
         const pick = t => { applyDesign(t); W.rebuild(); };
         return [
             {type: 'select', label: 'Layout', items: KINDS.concat(BADGE_KINDS), get: kind, change: () => {},
-                set: k => { const t = own(); if (hasCards(k) && hasCards(o().view_mode)) { o().view_mode = k; if (t) o().theme = k + t.id.slice(t.id.indexOf(':')); W.rebuild(); } else pick(C.themes.find(t => kindOf(t) === k)); }},
+                set: k => { const t = own(); if (hasCards(k) && hasCards(o().view_mode)) { o().view_mode = k; const twin = t && k + t.id.slice(t.id.indexOf(':')); if (C.themes.some(x => x.id === twin)) o().theme = twin; W.rebuild(); } else pick(C.themes.find(t => kindOf(t) === k)); }},
             {type: 'select', label: 'Theme', items: [['', 'Custom']].concat(C.themes.filter(t => kindOf(t) === kind()).map(t => [t.id, t.name || t.opts.view_mode])), change: () => {},
                 get: () => own() ? o().theme : '', hidden: () => own() ? [''] : [],
                 set: id => pick(C.themes.find(t => t.id === id))}
@@ -637,7 +637,7 @@ function grw_themes_page() {
             ]}
         ]);
 
-        if (cards() && C.format.text) aiHelper(ctx.foot);
+        if (cards() && C.format) aiHelper(ctx.foot);
 
         // Variables paint, the rest is a render; the device buttons only change the stage width.
         return key => {
@@ -649,28 +649,26 @@ function grw_themes_page() {
 
     /* ------------------------------------------------------------ step 2: a design from the user's own AI chat */
 
-    // Name, address (one that ends in "=" takes the prompt, the other chats get it from the clipboard), the px a mark is drawn at: the files' own margins differ.
-    const CHATS = [['ChatGPT', 'https://chatgpt.com/?hints=search&q=', 20], ['Gemini', 'https://gemini.google.com/app', 22],
-        ['Claude', 'https://claude.ai/new?q=', 20], ['DeepSeek', 'https://chat.deepseek.com/', 27]];
+    // Name, address, the px a mark is drawn at: the files' own margins differ.
+    const CHATS = [['ChatGPT', 'https://chatgpt.com/', 20], ['Gemini', 'https://gemini.google.com/app', 22],
+        ['Claude', 'https://claude.ai/new', 20], ['DeepSeek', 'https://chat.deepseek.com/', 27]];
     const SPARK = '<svg viewBox="3 3 19 19" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 3l1.9 5.1L17 10l-5.1 1.9L10 17l-1.9-5.1L3 10l5.1-1.9L10 3zm8 10l1 2.6 2.6 1-2.6 1-1 2.6-1-2.6-2.6-1 2.6-1 1-2.6z"/></svg>';
 
-    // The plugin talks to no AI: a chat opens with the prompt (C.format), the user brings its answer back by the clipboard or the field.
+    // The plugin talks to no AI and never reads the clipboard: the user copies the prompt (C.format) by its button, pastes it into a chat, and pastes the chat's answer into the field.
     function aiHelper(foot) {
         const ai = state.ai || (state.ai = {});
-        const canRead = !!(navigator.clipboard && navigator.clipboard.readText);
-        const flat = s => s.replace(/\r/g, '');
         const btn = h('button', {type: 'button', class: 'grw-ai-btn', title: ai.open ? 'Close' : 'Design with AI', 'aria-label': 'Design with AI', 'aria-expanded': String(!!ai.open)}, SPARK + '<span>AI</span>' + CROSS);
         const box = h('div', {class: 'grw-pl-card grw-ai', role: 'dialog', 'aria-label': 'Design with AI', hidden: !ai.open});
         const head = h('div', {class: 'grw-pl-head'}, 'Design with AI');
         const body = h('div', {class: 'grw-pl-body'});
         const steps = [1, 2, 3].map(n => h('li', {'data-n': n}));
+        const prompt = h('button', {type: 'button', class: 'button button-small'}, 'Copy prompt');
         const pick = h('div', {class: 'grw-ai-pick', role: 'group', 'aria-label': 'AI chats'});
         const field = h('textarea', {class: 'grw-pl-textarea', rows: 3, spellcheck: 'false', 'aria-label': 'The AI chat\'s code',
             placeholder: '{"opts":{"card_layout":"stars|text"},\n"vars":{"--card-bg":"#ffffff"}}'});
         const go = h('button', {type: 'button', class: 'button button-primary'}, 'Apply');
         const errors = h('div', {class: 'grw-card-error grw-ai-errors', role: 'alert', hidden: true});
-        const spare = h('a', {href: '#'}, 'Click here to copy the initial prompt');
-        const tip = h('div', {class: 'grw-pl-hint'}, 'Not right yet? Send the AI chat a screenshot of this page with the widget, then paste its new code.');
+        const tip = h('div', {class: 'grw-pl-hint'}, 'Not right yet? Tell the AI chat what to change and paste its new code.');
         // Once a chat is in use the window opens ready for a paste; on a touch screen that would raise the keyboard over it.
         const show = open => {
             ai.open = open;
@@ -684,93 +682,74 @@ function grw_themes_page() {
             if (!open) { errors.hidden = true; steps[0].hidden = steps[1].hidden = tip.hidden = false; }
             if (open && ai.chat && !W.touch()) field.focus({preventScroll: true});
         };
-        // The editor is drawn anew with a new round button: the focus goes to it, or the keyboard would start from the top of the page.
-        const redraw = () => { W.rebuild(); const b = document.querySelector('.grw-ai-btn'); if (b) b.focus({preventScroll: true}); };
-        // A copy control says so for two seconds; a button keeps its width, and the lines around a link keep their height.
-        const copied = (b, label) => {
-            const row = b.parentNode;
+        // The editor is drawn anew: the focus goes back into its window, or the keyboard would start from the top of the page.
+        const redraw = () => { W.rebuild(); const b = document.querySelector(ai.open && !W.touch() ? '.grw-ai textarea' : '.grw-ai-btn'); if (b) b.focus({preventScroll: true}); };
+        // A copy button says so for two seconds and keeps its width.
+        const copy = (b, text) => {
+            if (!W.copy(text)) return;
+            const label = b.textContent;
             b.style.minWidth = b.offsetWidth + 'px';
-            row.style.minHeight = row.offsetHeight + 'px';
             b.textContent = 'Copied';
-            setTimeout(() => { b.textContent = label; row.style.minHeight = ''; }, 2000);
+            setTimeout(() => { b.textContent = label; }, 2000);
         };
-        // A code with mistakes goes back to the chat that wrote it; a copy without a code is the user's to make again.
+        // A code with mistakes goes back to the chat that wrote it; a text without a code is the user's to copy again.
         const fail = list => {
             errors.innerHTML = list ? '<div><b>The theme was not applied.</b> Send this to the same AI chat:</div><ul>' + list.map(e => '<li>' + esc(e) + '</li>').join('') + '</ul>'
-                : 'There is no code in that text. Copy the code from the AI chat\'s answer.';
+                : 'There is no code in that text. In the AI chat\'s answer, click Copy on the code and paste it here.';
             if (list) {
                 const again = h('button', {type: 'button', class: 'button button-small'}, 'Copy for the AI chat');
-                again.onclick = () => {
-                    const text = 'The plugin did not accept the theme code:\n' + list.map(e => '- ' + e).join('\n');
-                    ai.last = flat(text);
-                    if (W.copy(text)) copied(again, 'Copy for the AI chat');
-                };
+                again.onclick = () => copy(again, 'The plugin did not accept the theme code:\n' + list.map(e => '- ' + e).join('\n'));
                 errors.firstChild.after(again);
             }
             errors.hidden = false;
             tip.hidden = true;
-            // A chat opened from here would be a new conversation, and the copied mistakes would give way to the request.
+            // A chat opened from here would be a new conversation, which knows nothing of the code with the mistakes.
             steps[0].hidden = steps[1].hidden = !!list;
             show(true);
             box.scrollTop = errors.offsetTop - head.offsetHeight - 8;
         };
-        // All or nothing: the answer becomes the widget's look and the window leaves the preview, or the window says what is wrong with it.
+        // All or nothing: the answer becomes the widget's look, or the window says what is wrong with it.
         const apply = answer => {
             ai.chat = true;
-            ai.last = flat(answer);
             field.value = '';
             const t = M.readTheme(answer, C.shadows);
             if (!t || t.errors) return fail(t && t.errors);
-            ai.open = false;
-            ai.applied = Date.now();
+            // Beside the preview the window stays for the next code; where the columns stack it lies over the preview and would hide the result.
+            const r = box.getBoundingClientRect(), s = state.stage.getBoundingClientRect();
+            ai.open = r.left >= s.right || r.right <= s.left;
             const was = {options: state.options, light: state.light, darkened: state.darkened, kept: state.kept};
-            state.options = M.applyCode(state.options, t, C.shadows);
+            state.options = M.applyCode(state.options, t, C.shadows, D);
             state.light = state.darkened = null;
             state.kept = {};
             redraw();
             W.toast('The theme is applied. ' + (state.options.css_vars ? 'The CSS variables in Advanced still win over it.' : 'Not right yet? Tell the AI chat what to change.'),
                 'success', {label: 'Undo', undo: true, onClick: () => { Object.assign(state, was); redraw(); }});
         };
-        const first = () => 'My widget is a ' + state.options.view_mode + ' on a ' + (state.options.dark_theme ? 'dark' : 'light') + ' page.';
-        const copy = () => {
-            const text = C.format.text + '\n' + first();
+        prompt.onclick = () => {
             ai.chat = true;
-            ai.last = flat(text);
-            return W.copy(text);
+            copy(prompt, C.format + '\nMy widget is a ' + state.options.view_mode + ' on a ' + (state.options.dark_theme ? 'dark' : 'light') + ' page. Its current code: ' +
+                JSON.stringify(M.codeOf(state.options, C.shadows, D)));
         };
         CHATS.forEach(([name, url, size]) => {
             const b = h('button', {type: 'button', class: 'button', title: name, 'aria-label': 'Open ' + name + ' in a new tab'}, '<img src="' + C.img + 'chat-' + name.toLowerCase() + '.svg" width="' + size + '" height="' + size + '" alt="">');
             b.onclick = () => {
-                copy();
-                window.open(url + (/=$/.test(url) ? encodeURIComponent('Read ' + C.format.url + ' and do what it says. ' + first()) : ''), '_blank', 'noopener');
+                ai.chat = true;
+                window.open(url, '_blank', 'noopener');
                 show(true);
             };
             pick.append(b);
         });
-        spare.onclick = e => { e.preventDefault(); if (copy()) copied(spare, 'Click here to copy the initial prompt'); };
-        // Over an open window the button is its cross. The clipboard is read only once a chat is in use, and no more after the browser has refused it: Chrome asks the user once, Firefox and Safari at every read.
-        btn.onclick = () => {
-            // The second click of a double click lands on the button drawn anew for the applied theme.
-            if (Date.now() - ai.applied < 600) return;
-            if (ai.open || !ai.chat || ai.refused || !canRead) return show(!ai.open);
-            if (ai.reading) return;
-            ai.reading = true;
-            navigator.clipboard.readText().then(text => {
-                ai.reading = false;
-                // Whatever else lies on the clipboard is no answer of a chat: the window only opens.
-                if (flat(text) === ai.last || !M.readTheme(text, C.shadows)) show(true);
-                else apply(text);
-            }, () => { ai.reading = false; ai.refused = true; show(true); });
-        };
+        // Over an open window the button is its cross.
+        btn.onclick = () => show(!ai.open);
         btn.onkeydown = box.onkeydown = e => { if (e.key === 'Escape' && ai.open) { show(false); btn.focus(); } };
         // The window covers the settings above the foot: a focus that moves to one of them would be under it.
         foot.addEventListener('focusout', e => { if (ai.open && e.relatedTarget && foot.parentNode.contains(e.relatedTarget) && !foot.contains(e.relatedTarget)) show(false); });
-        go.onclick = () => apply(field.value);
-        const how = h('div', {class: 'grw-ai-note'}, 'AI chat opened empty? ');
-        how.append(spare, ' and paste it there as your first message. ', h('b', null, 'It tells the AI chat how the widget is built.'));
-        steps[0].append(h('b', null, 'Open your AI chat'), pick);
-        steps[1].append(h('b', null, 'Design in the AI chat, not here'), h('div', null, 'Describe the look you want or send a screenshot of a design you like.'), how);
-        steps[2].append(h('b', null, 'Paste the code from the AI chat\'s answer'), field, go, errors, tip);
+        go.onclick = () => field.value.trim() ? apply(field.value) : field.focus();
+        const paste = W.touch() ? 'press and hold, then Paste' : /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘V' : 'Ctrl+V';
+        steps[0].append(h('b', null, 'Copy the prompt'), h('div', null, 'It explains the widget to the AI chat and shows how yours looks now.'), prompt);
+        steps[1].append(h('b', null, 'Open an AI chat and paste the prompt'), pick,
+            h('div', null, 'Paste it as your first message (' + paste + '), then describe the design you want or send a screenshot of one.'));
+        steps[2].append(h('b', null, 'Paste the AI chat\'s latest code here'), h('div', null, 'Click Copy on the code in the AI chat\'s answer, paste it below and press Apply.'), field, go, errors, tip);
         const list = h('ol', {class: 'grw-ai-steps'});
         list.append(...steps);
         body.append(list);

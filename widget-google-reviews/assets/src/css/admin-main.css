@@ -2457,20 +2457,6 @@
     grid-column: 2;
 }
 
-.grw-ai-note {
-    box-sizing: border-box;
-    padding: 8px 12px;
-    border-radius: 8px;
-    background: #fff4d6;
-    font-size: 12px;
-    line-height: 16px;
-}
-
-.grw-ai-note a {
-    font-size: 13px;
-    font-weight: 600;
-}
-
 /* Core gives a button a bottom margin on phones. */
 .wp-core-ui .grw-ai .button {
     margin: 0;

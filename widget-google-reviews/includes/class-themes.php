@@ -67,13 +67,13 @@ class Themes {
     const CARD_VARS = array('--card-bg', '--card-tail', '--card-br', '--card-br-color', '--card-shadow', '--card-radius', '--card-band-bg', '--card-sep-color',
                             '--card-star-color', '--card-star-size', '--name-color', '--card-color', '--time-color', '--card-img-size', '--img-filter', '--card-text-lines');
 
-    // The theme format as an AI chat is told it: the same file the prompt links on the CDN.
-    const FORMAT = 'txt/grw-theme-1.txt';
+    // The theme format the AI prompt carries: a CDN file, which the build bakes into the plugin.
+    const FORMAT = 'txt/grw-theme-2.txt';
 
     // What the admin pages draw and edit widgets with.
     public static function client() {
         return array('themes' => self::all(), 'shadows' => self::SHADOWS, 'legacy' => Legacy_Presets::PRESETS, 'img' => GRW_ASSETS_URL . 'img/',
-                     'format' => array('url' => 'https://cdn.reviewsplugin.com/assets/' . self::FORMAT, 'text' => self::file(self::FORMAT)));
+                     'format' => self::file(self::FORMAT));
     }
 
     public static function declarations($vars) {
